@@ -1,0 +1,36 @@
+name: Network validation
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: .browser-cache
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --no-fund
+      - run: npm run assets
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run package
+      - run: npm run notices
+      - run: node scripts/inspect-package.mjs
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
+      - run: npm run audit
+      - run: npm run certification
+      - uses: actions/upload-artifact@v4
+        with:
+          name: atlyn-network-review-package
+          path: dist/
+          retention-days: 30
