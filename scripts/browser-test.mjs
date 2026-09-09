@@ -16,7 +16,7 @@ const noticeText = await readFile(path.join(root, "THIRD_PARTY_NOTICES.txt"), "u
 await extractArtifact(artifact);
 const browser = await chromium.launch({
     headless: true,
-    executablePath: process.env.CHROMIUM_EXECUTABLE_PATH ?? chromium.executablePath()
+    ...(process.env.CHROMIUM_EXECUTABLE_PATH ? { executablePath: process.env.CHROMIUM_EXECUTABLE_PATH } : {})
 });
 const context = await browser.newContext({ viewport: { width: 1600, height: 1000 }, offline: true, serviceWorkers: "block" });
 const requests = [];
