@@ -1,0 +1,44 @@
+{
+  "name": "atlyn-network",
+  "version": "1.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "engines": { "node": ">=24.0.0" },
+  "description": "Offline arbitrary relationship exploration for Power BI",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src test scripts",
+    "test": "vitest run",
+    "build": "node scripts/package.mjs",
+    "package": "node scripts/package.mjs --audit && node scripts/inspect-package.mjs",
+    "test:browser": "node scripts/browser-test.mjs",
+    "audit": "npm audit --omit=dev",
+    "certification": "node scripts/certification.mjs",
+    "notices": "node scripts/notices.mjs",
+    "assets": "node assets/generate.mjs"
+  },
+  "dependencies": {
+    "powerbi-visuals-utils-formattingmodel": "7.1.0",
+    "powerbi-visuals-utils-formattingutils": "7.0.0"
+  },
+  "devDependencies": {
+    "acorn": "8.18.0",
+    "acorn-walk": "8.3.5",
+    "@eslint/js": "9.39.1",
+    "@playwright/test": "1.58.2",
+    "@types/node": "24.10.1",
+    "eslint": "9.39.1",
+    "eslint-plugin-powerbi-visuals": "1.0.0",
+    "jsdom": "26.1.0",
+    "jszip": "3.10.1",
+    "powerbi-visuals-api": "5.11.1",
+    "powerbi-visuals-tools": "7.2.1",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.48.1",
+    "vitest": "4.1.11"
+  },
+  "overrides": {
+    "webpack-dev-server": { "qs": "6.16.0" },
+    "sockjs": { "uuid": "11.1.1" }
+  }
+}

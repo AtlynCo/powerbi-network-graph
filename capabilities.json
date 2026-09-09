@@ -1,0 +1,40 @@
+{
+  "dataRoles": [
+    { "name": "source", "displayName": "Source ID", "displayNameKey": "Role_Source", "kind": "Grouping" },
+    { "name": "target", "displayName": "Target ID", "displayNameKey": "Role_Target", "kind": "Grouping" },
+    { "name": "weight", "displayName": "Weight", "displayNameKey": "Role_Weight", "kind": "Measure", "requiredTypes": [{ "numeric": true }] },
+    { "name": "relationshipType", "displayName": "Relationship type", "displayNameKey": "Role_Type", "kind": "Grouping" },
+    { "name": "edgeId", "displayName": "Edge ID", "displayNameKey": "Role_Edge", "kind": "Grouping" },
+    { "name": "tooltips", "displayName": "Tooltips", "displayNameKey": "Role_Tooltips", "kind": "Measure" }
+  ],
+  "dataViewMappings": [{
+    "conditions": [{ "source": { "min": 1, "max": 1 }, "target": { "min": 1, "max": 1 }, "weight": { "max": 1 }, "relationshipType": { "max": 1 }, "edgeId": { "max": 1 }, "tooltips": { "max": 8 } }],
+    "categorical": {
+      "categories": {
+        "select": [{ "for": { "in": "source" } }, { "for": { "in": "target" } }, { "for": { "in": "relationshipType" } }, { "for": { "in": "edgeId" } }],
+        "dataReductionAlgorithm": { "top": { "count": 5000 } }
+      },
+      "values": { "select": [{ "bind": { "to": "weight" } }, { "for": { "in": "tooltips" } }] }
+    }
+  }],
+  "objects": {
+    "appearance": {
+      "displayName": "Appearance",
+      "properties": {
+        "nodeColor": { "type": { "fill": { "solid": { "color": true } } } },
+        "edgeColor": { "type": { "fill": { "solid": { "color": true } } } },
+        "showLabels": { "type": { "bool": true } },
+        "labelSize": { "type": { "numeric": true } }
+      }
+    }
+  },
+  "privileges": [],
+  "supportsHighlight": true,
+  "supportsKeyboardFocus": true,
+  "supportsMultiVisualSelection": true,
+  "supportsEmptyDataView": true,
+  "supportsLandingPage": true,
+  "tooltips": { "supportedTypes": { "default": true, "canvas": true }, "roles": ["tooltips"] },
+  "sorting": { "default": {} },
+  "drilldown": { "roles": [] }
+}

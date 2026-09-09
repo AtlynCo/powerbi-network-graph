@@ -1,0 +1,15 @@
+SourceID,TargetID,RelationshipType,EdgeID,Weight,DurationMs,EventCount
+Gateway,Orders,calls,S01,120,18,120
+Orders,Payments,calls,S02,90,32,90
+Payments,Ledger,writes,S03,85,12,85
+Ledger,Orders,reconciles,S04,15,22,15
+Orders,Gateway,responds,S05,118,17,118
+Gateway,Orders,monitors,S06,12,4,12
+Orders,Orders,retries,S07,6,40,6
+Payments,Alerts,emits,S08,8,5,8
+Alerts,Gateway,notifies,S09,8,9,8
+Orders,Inventory,reserves,S10,100,14,100
+Inventory,Orders,confirms,S11,97,11,97
+Orders,Payments,calls,S12,10,30,10
+Archive,Backup,copies,S13,25,80,25
+Backup,Archive,verifies,S14,25,70,25
