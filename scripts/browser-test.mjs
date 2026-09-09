@@ -1,146 +1,27 @@
 import assert from "node:assert/strict";
-import { mkdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { extractArtifact, readArtifact, root, verifyBundledNotices, writeReport } from "./artifact.mjs";
+import { createBrowserHarness } from "./browser-harness.mjs";
 
-process.env.PLAYWRIGHT_BROWSERS_PATH ??= path.resolve(".browser-cache");
-const browserWork = path.join(root, ".tool-home", "browser");
-await mkdir(browserWork, { recursive: true });
-process.env.TEMP = browserWork;
-process.env.TMP = browserWork;
-process.env.TMPDIR = browserWork;
-const { chromium } = await import("@playwright/test");
-const artifact = await readArtifact();
-const bundledNotices = await verifyBundledNotices(artifact);
-const noticeText = await readFile(path.join(root, "THIRD_PARTY_NOTICES.txt"), "utf8");
-await extractArtifact(artifact);
-const browser = await chromium.launch({
-    headless: true,
-    ...(process.env.CHROMIUM_EXECUTABLE_PATH ? { executablePath: process.env.CHROMIUM_EXECUTABLE_PATH } : {})
-});
-const context = await browser.newContext({ viewport: { width: 1600, height: 1000 }, offline: true, serviceWorkers: "block" });
-const requests = [];
-const errors = [];
-const checks = [];
-await context.route("**/*", async route => {
-    requests.push(route.request().url());
-    await route.abort("blockedbyclient");
-});
-const page = await context.newPage();
-page.on("pageerror", error => errors.push(error.message));
-page.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
-
-function installMockHost({ guid, resources, locale, highContrast, width, height }) {
-    const calls = { select: [], clear: 0, context: [], tooltips: [], lifecycle: [], forbidden: [] };
-    let selected = [];
-    let callback = () => {};
-    const identity = (key, selectors) => ({
-        getKey: () => key, hasIdentity: () => true,
-        getSelector: () => ({ data: selectors }), getSelectorsByColumn: () => ({ dataMap: selectors }),
-        equals: other => other?.getKey?.() === key, includes: other => other?.getKey?.() === key
+let artifact, bundledNotices, noticeText, harness;
+try {
+    artifact = await readArtifact();
+    bundledNotices = await verifyBundledNotices(artifact);
+    noticeText = await readFile(path.join(root, "THIRD_PARTY_NOTICES.txt"), "utf8");
+    await extractArtifact(artifact);
+    harness = await createBrowserHarness({ artifact });
+} catch (error) {
+    await writeReport("browser-test-results.json", {
+        artifact: artifact?.filename ?? null, sha256: artifact?.sha256 ?? null,
+        checks: [], passed: false, error: String(error), host: "Mocked Power BI host; not native Power BI validation"
     });
-    const manager = {
-        select(ids, multi) {
-            calls.select.push({ keys: ids.map(id => id.getKey()), multi });
-            selected = multi ? [...new Map([...selected, ...ids].map(id => [id.getKey(), id])).values()] : ids;
-            callback();
-            return Promise.resolve(selected);
-        },
-        clear() { calls.clear++; selected = []; callback(); return Promise.resolve([]); },
-        getSelectionIds: () => selected, hasSelection: () => selected.length > 0,
-        registerOnSelectCallback(fn) { callback = fn; },
-        showContextMenu(id, position) {
-            calls.context.push({ key: id.getKey?.() ?? null, position });
-            return Promise.resolve();
-        }
-    };
-    const host = {
-        locale,
-        hostCapabilities: { allowInteractions: true },
-        createSelectionManager: () => manager,
-        createSelectionIdBuilder() {
-            const parts = [];
-            const builder = {
-                withCategory(column, index) { parts.push([column.source.queryName, column.identity[index].key]); return builder; },
-                withMeasure() { throw new Error("Measure identity must not substitute for relationship identity"); },
-                createSelectionId: () => identity(JSON.stringify(parts), parts)
-            };
-            return builder;
-        },
-        createLocalizationManager: () => ({ getDisplayName: key => resources[locale]?.[key] ?? key }),
-        colorPalette: {
-            isHighContrast: highContrast,
-            foreground: { value: "#FFFF00" }, background: { value: "#000000" },
-            foregroundSelected: { value: "#00FFFF" }, hyperlink: { value: "#00FFFF" },
-            getColor: () => ({ value: "#007D87" })
-        },
-        tooltipService: {
-            enabled: () => true, show: info => calls.tooltips.push(info), move: () => {}, hide: () => {}
-        },
-        eventService: {
-            renderingStarted: () => calls.lifecycle.push("started"),
-            renderingFinished: () => calls.lifecycle.push("finished"),
-            renderingFailed: (_options, message) => calls.lifecycle.push(`failed: ${message}`)
-        },
-        fetchMoreData: () => { calls.forbidden.push("fetchMoreData"); throw new Error("Segment fetching forbidden"); },
-        launchUrl: () => { calls.forbidden.push("launchUrl"); throw new Error("Network navigation forbidden"); },
-        persistProperties: () => {}, refreshHostData: () => {}, displayWarningIcon: () => {}
-    };
-    const container = document.getElementById("visual");
-    const visual = window.powerbi.visuals.plugins[guid].create({ element: container, host });
-    const state = {
-        visual, host, calls, rows: [], view: undefined,
-        update(rows, options = {}) {
-            state.rows = rows;
-            const fields = ["source", "target", ...(options.types === false ? [] : ["relationshipType"]), ...(options.edgeIds ? ["edgeId"] : [])];
-            const categories = fields.map(role => ({
-                source: { displayName: role, queryName: `fixture.${role}`, roles: { [role]: true }, type: { text: true } },
-                values: rows.map(row => row[role === "relationshipType" ? "type" : role] ?? (role === "relationshipType" ? "uses" : null)),
-                identity: options.missingIdentity === role ? undefined : rows.map((_, index) => ({ key: `${role}:${index}` }))
-            }));
-            const values = options.weighted === false ? [] : [{
-                source: { displayName: "Delivered weight", queryName: "fixture.weight", roles: { weight: true }, type: { numeric: true }, format: "0.00" },
-                values: rows.map(row => row.weight ?? null),
-                ...(options.highlights ? { highlights: rows.map(row => row.highlight ?? null) } : {})
-            }];
-            values.push({
-                source: { displayName: "Delivered tooltip", queryName: "fixture.tooltip", roles: { tooltips: true }, type: { numeric: true }, format: "0.00" },
-                values: rows.map((row, index) => row.tooltip ?? index)
-            });
-            values.grouped = () => [{ values }];
-            state.view = {
-                metadata: { columns: [...categories.map(column => column.source), ...values.map(column => column.source)], ...(options.partial ? { segment: {} } : {}), objects: options.objects ?? {} },
-                categorical: { categories, values }
-            };
-            visual.update({ dataViews: [state.view], viewport: { width: options.width ?? width, height: options.height ?? height }, type: 2 });
-        },
-        resize(w, h) { visual.update({ viewport: { width: w, height: h }, type: 4 }); },
-        setHostSelection(indices) {
-            selected = indices.map(index => {
-                let builder = host.createSelectionIdBuilder();
-                for (const category of state.view.categorical.categories) builder = builder.withCategory(category, index);
-                return builder.createSelectionId();
-            });
-            callback();
-        }
-    };
-    window.fixture = state;
+    throw error;
 }
-
-async function mount({ width = 1000, height = 700, locale = "en-US", highContrast = false } = {}) {
-    await page.setContent("<!doctype html><html><head><meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; font-src 'none'\"></head><body style=\"margin:0\"><div id=\"visual\"></div></body></html>");
-    await page.evaluate(() => { window.powerbi = { visuals: { plugins: {} } }; });
-    await page.addStyleTag({ content: artifact.visual.content.css });
-    await page.addScriptTag({ content: artifact.visual.content.js });
-    await page.evaluate(installMockHost, { guid: artifact.config.visual.guid, resources: artifact.visual.stringResources, locale, highContrast, width, height });
-}
-async function update(rows, options = {}) {
-    await page.evaluate(({ rows, options }) => window.fixture.update(rows, options), { rows, options });
-    const events = await page.evaluate(() => window.fixture.calls.lifecycle);
-    assert.equal(events.at(-1), "finished", `Rendering failed: ${events.join(", ")}`);
-}
+const { browser, page, requests, errors, mount, update, settle } = harness;
+const checks = [];
 const act = action => page.locator(`[data-action="${action}"]`);
-async function calls() { return page.evaluate(() => window.fixture.calls); }
+async function calls() { await settle(); return page.evaluate(() => window.fixture.calls); }
 async function check(name, action) {
     await action();
     checks.push(name);
@@ -154,7 +35,7 @@ const normal = [
 ];
 
 try {
-    await mount();
+    await mount({ width: 1000, height: 700 });
     await update(normal);
     await check("actual packaged plugin renders nodes, labels, reciprocal edges, self-loop and complete lists", async () => {
         assert.equal(await page.locator(".network-node").count(), 6);
@@ -257,7 +138,7 @@ try {
         const key = (await calls()).context.at(-1).key;
         assert(key && JSON.parse(key).every(part => part[1].endsWith(":2")));
     });
-    await check("wheel/buttons/keyboard zoom, pan and fit remain functional", async () => {
+    await check("buttons/keyboard zoom, pan and fit remain functional", async () => {
         const world = page.locator(".network-svg > g");
         const initial = await world.getAttribute("transform");
         await act("zoom-in").click();
@@ -274,11 +155,13 @@ try {
         await page.evaluate(() => window.fixture.resize(240, 220));
         assert.equal(await page.locator(".atlyn-network.tiny").count(), 1);
         assert.equal(await page.locator(".network-node").count(), 6);
+        if (!(await act("entities").isVisible())) await act("toggle-view").click();
         await act("entities").click();
         await act("select-node").first().scrollIntoViewIfNeeded();
         await act("select-node").first().click();
         assert((await calls()).select.length > 0);
         await page.evaluate(() => window.fixture.resize(1400, 900));
+        while (!(await page.locator(".network-svg").isVisible()) || !(await act("entities").isVisible())) await act("toggle-view").click();
         assert.deepEqual(await page.locator(".network-node").evaluateAll(nodes => nodes.map(node => node.getAttribute("transform"))), positions);
     });
     await check("data order/weight/highlight updates retain topology-only positions", async () => {
@@ -363,11 +246,15 @@ try {
         await update(rows, { edgeIds: true, width: 1000, height: 700 });
         await act("entities").click();
         const before = (await calls()).select.length;
-        await page.locator('button[data-node-id="s:Hub"]').click();
+        assert.equal(await page.locator('button[data-node-id="s:Hub"]').getAttribute("aria-disabled"), "true");
+        await page.locator('button[data-node-id="s:Hub"]').focus();
+        await page.keyboard.press("Enter");
         assert.equal((await calls()).select.length, before);
         assert.match(await page.locator('[role="alert"]').innerText(), /200/);
         await update([{ source: "A", target: "B" }], { missingIdentity: "target" });
-        await act("select-node").first().click();
+        assert.equal(await act("select-node").first().getAttribute("aria-disabled"), "true");
+        await act("select-node").first().focus();
+        await page.keyboard.press("Enter");
         assert.equal((await calls()).select.length, before);
         assert.match(await page.locator('[role="alert"]').innerText(), /unavailable|identit/i);
     });

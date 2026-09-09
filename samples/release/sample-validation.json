@@ -1,0 +1,194 @@
+{
+  "status": "local-structure-only",
+  "assemblerSha256": "e7564f937e6e57d34ecae20fc08fe1cfd224f3b5ebdaaf5d9a6230947dfd9f4e",
+  "visual": {
+    "guid": "AtlynNetworkAB24C68297094C32AF64D50D92C01711",
+    "version": "1.1.0.0",
+    "apiVersion": "5.11.0"
+  },
+  "archive": {
+    "source": "dist/AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.1.0.0.pbiviz",
+    "embeddedCopy": "package/AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.1.0.0.pbiviz",
+    "bytes": 149064,
+    "sourceSha256": "a291552f2b459da622513ece4eec440226693de1fbd7f91020ac4f441e2c1514",
+    "embeddedSha256": "a291552f2b459da622513ece4eec440226693de1fbd7f91020ac4f441e2c1514",
+    "equal": true
+  },
+  "resources": [
+    {
+      "path": "package.json",
+      "bytes": 735,
+      "sourceSha256": "5fcc6e71ec35ea31d8ade81505ab59b7772945778a640af4fc403f9c11c70160",
+      "embeddedSha256": "5fcc6e71ec35ea31d8ade81505ab59b7772945778a640af4fc403f9c11c70160",
+      "equal": true
+    },
+    {
+      "path": "resources/AtlynNetworkAB24C68297094C32AF64D50D92C01711.pbiviz.json",
+      "bytes": 865016,
+      "sourceSha256": "ba79f009500d64424810b04180f3a34672278d991a1eb7d244cc6b170f962734",
+      "embeddedSha256": "ba79f009500d64424810b04180f3a34672278d991a1eb7d244cc6b170f962734",
+      "equal": true
+    }
+  ],
+  "schemas": {
+    "commit": "83ce11373faada0d01e76264a5cceb0ba70003e6",
+    "documents": 14,
+    "validatedFiles": 22
+  },
+  "model": {
+    "tables": 8,
+    "relationships": 6,
+    "measures": 14,
+    "pages": 3,
+    "boundGraphVisuals": 2,
+    "verifiedFieldBindings": 34,
+    "rows": {
+      "Services": 14,
+      "Accounts": 16
+    },
+    "externalDataSources": 0,
+    "validation": "strict-authored-template-and-references"
+  },
+  "limitations": [
+    "No Power BI Desktop opening, Power Query refresh, DAX execution or PBIX conversion is performed by this script.",
+    "TMDL validation is a strict authored-template and referential check, not a substitute for Microsoft's TOM/TMDL parser or native model loading.",
+    "Public PBIR schemas validate structure, not Power BI query execution, custom-visual loading, native layout or host interactions.",
+    "A cache-free PBIP opens without imported rows until Desktop refreshes its literal tables. No cache.abf or fabricated PBIX is included.",
+    "Partner Center requires an offline PBIX with the same visual version/content; native conversion and offline retest remain release blockers.",
+    "No certification, marketplace submission, publication, permission change or cloud execution is performed."
+  ],
+  "sourceFiles": [
+    {
+      "path": "Network.Report/definition.pbir",
+      "sha256": "244e1ee363b2dbf62f16104623fe09c537e1602a81d12659fea53d70403e0823"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageAccounts/page.json",
+      "sha256": "580de9ccdcd408d31e36384fc4cbcf7e9ac8193efc359b0da2bb61d5eb8c3086"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageAccounts/visuals/ADetails/visual.json",
+      "sha256": "e2dd6dda2f1e8b801e08b9501f05fd00e1b1dd5d2fdc330d4836feff9dfb373a"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageAccounts/visuals/AGraph/visual.json",
+      "sha256": "3809980aa365c75e1a7d4b36157cabe8bf4e015b36dfa85f3f7598aedbae3de1"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageAccounts/visuals/AGuide/visual.json",
+      "sha256": "9c9ad16db668d5477a8b4436b3136a704337879888d1a10a0a16b98124d9e818"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageAccounts/visuals/AHeading/visual.json",
+      "sha256": "d425b584df0052532e22240bc25f046cb62beb2905a8a73ac38a0313432a10d2"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageAccounts/visuals/ASubheading/visual.json",
+      "sha256": "54c5c644b1e43362566f577e141f8bdc639babe9550076a73cf1bbced859a53d"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageAccounts/visuals/ATypes/visual.json",
+      "sha256": "0f49e8c1b68e958b9fc05c5b474bc56b609e597b3929535390ffee9bf88264fd"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageHints/page.json",
+      "sha256": "9b72fd9a45c3dbf88da6f3acd659e93dd77e083cc6ec5f3d481f35f172bb8edc"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageHints/visuals/Hints/visual.json",
+      "sha256": "7611137c59ab1a9f9e32c4bb14dbe13e8931fc3de59221290a2c1953f5d3f0ed"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageServices/page.json",
+      "sha256": "63bf2feacfa76d92c266e8d91a819f5407060cf2248b7092404eb96c68df649e"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageServices/visuals/SDetails/visual.json",
+      "sha256": "8c8c822b69fd18c7f9976809f994b740415a287704503db446967951ca3a06b3"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageServices/visuals/SGraph/visual.json",
+      "sha256": "9886b736335daca62292ed2da91e079f69438f9956b3b985f99ff0771aa9e4e1"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageServices/visuals/SGuide/visual.json",
+      "sha256": "bbe340b8aec3664b026e0ceed41e14d68f90e2b20542604cfc3f68922df84c0c"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageServices/visuals/SHeading/visual.json",
+      "sha256": "ae999f8dcc0eb3252fdead62b44c5b7dee208d403b2e2ec4f950aaa6d4a475b3"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageServices/visuals/SSubheading/visual.json",
+      "sha256": "28801f58a34895797ab962bd3789d6264f7b9b108cd0766ec9f8dfd1208997aa"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageServices/visuals/STypes/visual.json",
+      "sha256": "63382aee6937224e8c6b691aa786c6561be13e319ad411af49c66746a681295b"
+    },
+    {
+      "path": "Network.Report/definition/pages/pages.json",
+      "sha256": "6b12907e14766aeac9700fc44a94eda392b4c394135518063c6832125d36339f"
+    },
+    {
+      "path": "Network.Report/definition/report.json",
+      "sha256": "8d462defd1e16efde04ca3b4b5186a449ed4c7f93cdb26ee5aa4a42d2632384c"
+    },
+    {
+      "path": "Network.Report/definition/version.json",
+      "sha256": "c761e768563bdd636679fc53a7acf2c973f02a8843ee7dcdfb0cc82616c28c38"
+    },
+    {
+      "path": "Network.SemanticModel/definition.pbism",
+      "sha256": "c6ac66b7d299865a5936942e3c39cfbbf936bf086b63c53123e4ab9d12f7f21e"
+    },
+    {
+      "path": "Network.SemanticModel/definition/database.tmdl",
+      "sha256": "02a4f2fe934e8cf4204b89423dad45be7be37db8b376ec834f49e8b08e8d2710"
+    },
+    {
+      "path": "Network.SemanticModel/definition/model.tmdl",
+      "sha256": "b50e7e20a9271b20786e9264b040619439abe70c72db80b0c69b9b723c77a27c"
+    },
+    {
+      "path": "Network.SemanticModel/definition/relationships.tmdl",
+      "sha256": "30969ea314ddbf9d9790f13315f94ec2b99acd0e006ae3d8e84069db3212ab44"
+    },
+    {
+      "path": "Network.SemanticModel/definition/tables/Accounts.tmdl",
+      "sha256": "e64562d98a6943a0d1abb55cbb0231cd7ab3d1f589bae93b1f3060f44746c11b"
+    },
+    {
+      "path": "Network.SemanticModel/definition/tables/AccountsSources.tmdl",
+      "sha256": "045c9acd87bd52db513a8d43e301d7bdba19c847eb995f4a75e0b1475cf393e6"
+    },
+    {
+      "path": "Network.SemanticModel/definition/tables/AccountsTargets.tmdl",
+      "sha256": "28f36e0efb74eecd11dcc24c8f07e9301154d3faa92c0b69fc11c088ff528aa7"
+    },
+    {
+      "path": "Network.SemanticModel/definition/tables/AccountsTypes.tmdl",
+      "sha256": "a16a62ccafea0de77b136be54783f4efde2da52dd077b5fce760b0b825c7f84f"
+    },
+    {
+      "path": "Network.SemanticModel/definition/tables/Services.tmdl",
+      "sha256": "b91d7a4da87a71f1f9f7f712f5f4fa9678dbcc48c0bce7523f428a8554c60dfc"
+    },
+    {
+      "path": "Network.SemanticModel/definition/tables/ServicesSources.tmdl",
+      "sha256": "988ddb1ddd6d47f5d0e9a814df465ef4879caf4bf86d09a1deaaf3503b25d793"
+    },
+    {
+      "path": "Network.SemanticModel/definition/tables/ServicesTargets.tmdl",
+      "sha256": "d945f1389b3ac01a63aa9c04cb0569a52ec1c67736f971f370eef51852d67f35"
+    },
+    {
+      "path": "Network.SemanticModel/definition/tables/ServicesTypes.tmdl",
+      "sha256": "cb7a5e14b8c75c44e1b1b43d4116c018574d18eeed70b6fbd793050193241d12"
+    },
+    {
+      "path": "Network.pbip",
+      "sha256": "169e7eb2f9634f331bc4e2df07f1e928e216e7bffc4e1459b3ea35e8ce9f2cce"
+    }
+  ]
+}

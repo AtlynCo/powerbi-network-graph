@@ -1,0 +1,458 @@
+{
+  "authoredOn": "2026-09-09",
+  "source": "samples/OfflineSamples.pq",
+  "sourceSha256": "5219771283720e4cec8aadad0e4ad072ef483e04ff0f9168d7d037c08df4fdb6",
+  "guid": "AtlynNetworkAB24C68297094C32AF64D50D92C01711",
+  "domains": [
+    {
+      "table": "Services",
+      "variable": "CyclicServices",
+      "label": "Cyclic services",
+      "prefix": "S",
+      "count": 14,
+      "rows": [
+        [
+          "Gateway",
+          "Orders",
+          "calls",
+          "S01",
+          120,
+          18,
+          120
+        ],
+        [
+          "Orders",
+          "Payments",
+          "calls",
+          "S02",
+          90,
+          32,
+          90
+        ],
+        [
+          "Payments",
+          "Ledger",
+          "writes",
+          "S03",
+          85,
+          12,
+          85
+        ],
+        [
+          "Ledger",
+          "Orders",
+          "reconciles",
+          "S04",
+          15,
+          22,
+          15
+        ],
+        [
+          "Orders",
+          "Gateway",
+          "responds",
+          "S05",
+          118,
+          17,
+          118
+        ],
+        [
+          "Gateway",
+          "Orders",
+          "monitors",
+          "S06",
+          12,
+          4,
+          12
+        ],
+        [
+          "Orders",
+          "Orders",
+          "retries",
+          "S07",
+          6,
+          40,
+          6
+        ],
+        [
+          "Payments",
+          "Alerts",
+          "emits",
+          "S08",
+          8,
+          5,
+          8
+        ],
+        [
+          "Alerts",
+          "Gateway",
+          "notifies",
+          "S09",
+          8,
+          9,
+          8
+        ],
+        [
+          "Orders",
+          "Inventory",
+          "reserves",
+          "S10",
+          100,
+          14,
+          100
+        ],
+        [
+          "Inventory",
+          "Orders",
+          "confirms",
+          "S11",
+          97,
+          11,
+          97
+        ],
+        [
+          "Orders",
+          "Payments",
+          "calls",
+          "S12",
+          10,
+          30,
+          10
+        ],
+        [
+          "Archive",
+          "Backup",
+          "copies",
+          "S13",
+          25,
+          80,
+          25
+        ],
+        [
+          "Backup",
+          "Archive",
+          "verifies",
+          "S14",
+          25,
+          70,
+          25
+        ]
+      ],
+      "dimensions": [
+        {
+          "table": "ServicesSources",
+          "field": "NodeID",
+          "values": [
+            "Alerts",
+            "Archive",
+            "Backup",
+            "Gateway",
+            "Inventory",
+            "Ledger",
+            "Orders",
+            "Payments"
+          ]
+        },
+        {
+          "table": "ServicesTargets",
+          "field": "NodeID",
+          "values": [
+            "Alerts",
+            "Archive",
+            "Backup",
+            "Gateway",
+            "Inventory",
+            "Ledger",
+            "Orders",
+            "Payments"
+          ]
+        },
+        {
+          "table": "ServicesTypes",
+          "field": "RelationshipType",
+          "values": [
+            "calls",
+            "confirms",
+            "copies",
+            "emits",
+            "monitors",
+            "notifies",
+            "reconciles",
+            "reserves",
+            "responds",
+            "retries",
+            "verifies",
+            "writes"
+          ]
+        }
+      ],
+      "measures": [
+        [
+          "Total Weight",
+          "SUM('Services'[Weight])",
+          "#,0.##"
+        ],
+        [
+          "Input Rows",
+          "COUNTROWS('Services')",
+          "#,0"
+        ],
+        [
+          "Events",
+          "SUM('Services'[EventCount])",
+          "#,0"
+        ],
+        [
+          "Average Duration ms",
+          "AVERAGE('Services'[DurationMs])",
+          "#,0.0"
+        ],
+        [
+          "Blank Weights",
+          "COUNTROWS(FILTER('Services', ISBLANK('Services'[Weight])))",
+          "#,0"
+        ],
+        [
+          "Nonpositive Weights",
+          "COUNTROWS(FILTER('Services', NOT(ISBLANK('Services'[Weight])) && 'Services'[Weight] <= 0))",
+          "#,0"
+        ],
+        [
+          "Visible Nodes",
+          "COUNTROWS(DISTINCT(UNION(SELECTCOLUMNS('Services', \"ID\", 'Services'[SourceID]), SELECTCOLUMNS('Services', \"ID\", 'Services'[TargetID]))))",
+          "#,0"
+        ]
+      ]
+    },
+    {
+      "table": "Accounts",
+      "variable": "ReciprocalAccounts",
+      "label": "Reciprocal accounts",
+      "prefix": "A",
+      "count": 16,
+      "rows": [
+        [
+          "0001",
+          "0002",
+          "transfer",
+          "T01",
+          100,
+          20,
+          1
+        ],
+        [
+          "0002",
+          "0001",
+          "transfer",
+          "T02",
+          40,
+          18,
+          1
+        ],
+        [
+          "0002",
+          "0003",
+          "transfer",
+          "T03",
+          75,
+          24,
+          1
+        ],
+        [
+          "0003",
+          "0001",
+          "transfer",
+          "T04",
+          25,
+          21,
+          1
+        ],
+        [
+          "0001",
+          "0002",
+          "transfer",
+          "T05",
+          30,
+          22,
+          1
+        ],
+        [
+          "0001",
+          "0002",
+          "fee",
+          "T06",
+          2,
+          5,
+          1
+        ],
+        [
+          "0003",
+          "0003",
+          "adjustment",
+          "T07",
+          5,
+          8,
+          1
+        ],
+        [
+          "0003",
+          "0004",
+          "transfer",
+          "T08",
+          50,
+          25,
+          1
+        ],
+        [
+          "0004",
+          "0005",
+          "transfer",
+          "T09",
+          20,
+          30,
+          1
+        ],
+        [
+          "0005",
+          "0004",
+          "refund",
+          "T10",
+          5,
+          27,
+          1
+        ],
+        [
+          "0001",
+          "0002",
+          "transfer",
+          "T01",
+          20,
+          26,
+          1
+        ],
+        [
+          "0005",
+          "0006",
+          "transfer",
+          "T11",
+          0,
+          16,
+          1
+        ],
+        [
+          "0006",
+          "0005",
+          "transfer",
+          "T12",
+          null,
+          15,
+          1
+        ],
+        [
+          "0006",
+          "0004",
+          "adjustment",
+          "T13",
+          -3,
+          12,
+          1
+        ],
+        [
+          "0007",
+          "0008",
+          "transfer",
+          "T-CONFLICT",
+          10,
+          14,
+          1
+        ],
+        [
+          "0008",
+          "0007",
+          "transfer",
+          "T-CONFLICT",
+          10,
+          14,
+          1
+        ]
+      ],
+      "dimensions": [
+        {
+          "table": "AccountsSources",
+          "field": "NodeID",
+          "values": [
+            "0001",
+            "0002",
+            "0003",
+            "0004",
+            "0005",
+            "0006",
+            "0007",
+            "0008"
+          ]
+        },
+        {
+          "table": "AccountsTargets",
+          "field": "NodeID",
+          "values": [
+            "0001",
+            "0002",
+            "0003",
+            "0004",
+            "0005",
+            "0006",
+            "0007",
+            "0008"
+          ]
+        },
+        {
+          "table": "AccountsTypes",
+          "field": "RelationshipType",
+          "values": [
+            "adjustment",
+            "fee",
+            "refund",
+            "transfer"
+          ]
+        }
+      ],
+      "measures": [
+        [
+          "Total Weight",
+          "SUM('Accounts'[Weight])",
+          "#,0.##"
+        ],
+        [
+          "Input Rows",
+          "COUNTROWS('Accounts')",
+          "#,0"
+        ],
+        [
+          "Events",
+          "SUM('Accounts'[EventCount])",
+          "#,0"
+        ],
+        [
+          "Average Duration ms",
+          "AVERAGE('Accounts'[DurationMs])",
+          "#,0.0"
+        ],
+        [
+          "Blank Weights",
+          "COUNTROWS(FILTER('Accounts', ISBLANK('Accounts'[Weight])))",
+          "#,0"
+        ],
+        [
+          "Nonpositive Weights",
+          "COUNTROWS(FILTER('Accounts', NOT(ISBLANK('Accounts'[Weight])) && 'Accounts'[Weight] <= 0))",
+          "#,0"
+        ],
+        [
+          "Visible Nodes",
+          "COUNTROWS(DISTINCT(UNION(SELECTCOLUMNS('Accounts', \"ID\", 'Accounts'[SourceID]), SELECTCOLUMNS('Accounts', \"ID\", 'Accounts'[TargetID]))))",
+          "#,0"
+        ]
+      ]
+    }
+  ]
+}

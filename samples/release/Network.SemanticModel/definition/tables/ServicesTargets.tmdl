@@ -1,0 +1,23 @@
+table ServicesTargets
+
+	column NodeID
+		dataType: string
+		isKey
+		sourceColumn: NodeID
+		summarizeBy: none
+
+	partition ServicesTargets = m
+		mode: import
+		source =
+			#table(type table [NodeID = text], {
+				{"Alerts"},
+				{"Archive"},
+				{"Backup"},
+				{"Gateway"},
+				{"Inventory"},
+				{"Ledger"},
+				{"Orders"},
+				{"Payments"}
+			})
+
+	annotation PBI_ResultType = Table

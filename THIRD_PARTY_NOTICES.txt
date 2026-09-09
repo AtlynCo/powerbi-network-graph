@@ -1,5 +1,5 @@
 THIRD-PARTY NOTICES — ATLYN NETWORK
-Artifact: AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.0.0.0.pbiviz
+Artifact: AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.1.0.0.pbiviz
 
 These installed package license texts correspond to dependency modules present in the actual packaged JavaScript.
 The build-statistics module list is intersected with the shipped webpack module table; development-only dependencies are excluded.

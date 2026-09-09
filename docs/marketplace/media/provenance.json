@@ -1,0 +1,86 @@
+{
+  "artifact": "AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.1.0.0.pbiviz",
+  "sha256": "a291552f2b459da622513ece4eec440226693de1fbd7f91020ac4f441e2c1514",
+  "status": "Sealed unlicensed quality evidence, not final paid/submission media",
+  "host": "Actual PBIVIZ compiled JS/CSS in offline Chromium; Power BI APIs are mocked. Not native Desktop/Service, export, accessibility certification, Partner Center, or AppSource proof.",
+  "images": [
+    {
+      "filename": "services.png",
+      "label": "SEALED UNLICENSED QUALITY CANDIDATE: Services literal sample — 8 entities / 14 relationships; cycles, reciprocal calls and retries",
+      "artifact": "AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.1.0.0.pbiviz",
+      "sha256": "a291552f2b459da622513ece4eec440226693de1fbd7f91020ac4f441e2c1514",
+      "format": "PNG",
+      "bytes": 66654,
+      "width": 1366,
+      "height": 768,
+      "visualViewport": {
+        "width": 1366,
+        "height": 724
+      },
+      "inputProvenance": {
+        "file": "samples\\release\\sample-contract.json",
+        "sha256": "9a4e738cc3fac6a396918844ea68613b60d1111e29eda404b88fa04898616cbb",
+        "literalSource": "samples/OfflineSamples.pq",
+        "literalSourceSha256": "5219771283720e4cec8aadad0e4ad072ef483e04ff0f9168d7d037c08df4fdb6",
+        "interpretation": "Literal sample-contract rows delivered directly to the offline mock host; no native Power Query refresh, DAX aggregation, or PBIP rendering is implied."
+      },
+      "host": "Actual PBIVIZ compiled JS/CSS in offline Chromium; Power BI APIs are mocked. Not native Desktop/Service, export, accessibility certification, Partner Center, or AppSource proof.",
+      "imageSha256": "2d88df1d6a79dc0c0d2d8dfafb86dd9322df94ea36768b5b5290bb155bd9ed61"
+    },
+    {
+      "filename": "accounts.png",
+      "label": "SEALED UNLICENSED QUALITY CANDIDATE: Accounts literal sample — 16 rows; 6 entities / 13 retained relationships; diagnostics preserved",
+      "artifact": "AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.1.0.0.pbiviz",
+      "sha256": "a291552f2b459da622513ece4eec440226693de1fbd7f91020ac4f441e2c1514",
+      "format": "PNG",
+      "bytes": 93967,
+      "width": 1366,
+      "height": 768,
+      "visualViewport": {
+        "width": 1366,
+        "height": 724
+      },
+      "inputProvenance": {
+        "file": "samples\\release\\sample-contract.json",
+        "sha256": "9a4e738cc3fac6a396918844ea68613b60d1111e29eda404b88fa04898616cbb",
+        "literalSource": "samples/OfflineSamples.pq",
+        "literalSourceSha256": "5219771283720e4cec8aadad0e4ad072ef483e04ff0f9168d7d037c08df4fdb6",
+        "interpretation": "Literal sample-contract rows delivered directly to the offline mock host; no native Power Query refresh, DAX aggregation, or PBIP rendering is implied."
+      },
+      "host": "Actual PBIVIZ compiled JS/CSS in offline Chromium; Power BI APIs are mocked. Not native Desktop/Service, export, accessibility certification, Partner Center, or AppSource proof.",
+      "imageSha256": "4d6a6cc3d5d9e28eb1bf08adf3a68a603fb9b4d465961370d021c91468b13b2f"
+    },
+    {
+      "filename": "dense-overview.png",
+      "label": "SEALED UNLICENSED QUALITY CANDIDATE: Dense overview — all 250 entities, 1000 relationships, 5000 rows; labels selectively placed",
+      "artifact": "AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.1.0.0.pbiviz",
+      "sha256": "a291552f2b459da622513ece4eec440226693de1fbd7f91020ac4f441e2c1514",
+      "format": "PNG",
+      "bytes": 393525,
+      "width": 1366,
+      "height": 768,
+      "visualViewport": {
+        "width": 1366,
+        "height": 724
+      },
+      "host": "Actual PBIVIZ compiled JS/CSS in offline Chromium; Power BI APIs are mocked. Not native Desktop/Service, export, accessibility certification, Partner Center, or AppSource proof.",
+      "imageSha256": "f46ee390b31cd455cf054816e57ebb1a1deebfdb5865bd52c9f1298e2b2dc0a2"
+    },
+    {
+      "filename": "dense-neighborhood.png",
+      "label": "SEALED UNLICENSED QUALITY CANDIDATE: Dense graph — 250 entities, 1000 relationships, 5000 rows; local neighborhood focus",
+      "artifact": "AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.1.0.0.pbiviz",
+      "sha256": "a291552f2b459da622513ece4eec440226693de1fbd7f91020ac4f441e2c1514",
+      "format": "PNG",
+      "bytes": 86154,
+      "width": 1366,
+      "height": 768,
+      "visualViewport": {
+        "width": 1366,
+        "height": 724
+      },
+      "host": "Actual PBIVIZ compiled JS/CSS in offline Chromium; Power BI APIs are mocked. Not native Desktop/Service, export, accessibility certification, Partner Center, or AppSource proof.",
+      "imageSha256": "8775af497624e5a9d2f3b65fab4ca17ebb3a7cfa57b09390ef83aeb8c183520c"
+    }
+  ]
+}

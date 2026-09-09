@@ -1,4 +1,4 @@
-export const LIMITS = Object.freeze({ rows: 5000, nodes: 250, edges: 1000, idLength: 512, selection: 200 });
+export const LIMITS = Object.freeze({ rows: 5000, nodes: 250, edges: 1000, idLength: 512, selection: 200, tooltipCell: 2048, tooltipCharacters: 1000000 });
 
 export interface InputRow {
     source: unknown;
@@ -7,6 +7,7 @@ export interface InputRow {
     edgeId?: unknown;
     weight?: unknown;
     highlight?: unknown;
+    highlightActive?: boolean;
     index: number;
 }
 
@@ -23,6 +24,7 @@ export interface GraphEdge {
     missingWeight: boolean;
     highlighted: boolean;
     highlightWeight: number | null;
+    weightOverflow?: boolean;
 }
 export interface Diagnostics {
     invalidIds: number;
@@ -54,6 +56,20 @@ const compare = (a: string, b: string): number => a < b ? -1 : a > b ? 1 : 0;
 const numericWeight = (value: unknown): value is number =>
     typeof value === "number" && Number.isFinite(value) && value >= 0;
 
+function sumContributions(values: number[]): number | null {
+    if (!values.length) return null;
+    let total = 0;
+    let correction = 0;
+    for (const value of values.sort((a, b) => a - b)) {
+        const adjusted = value - correction;
+        const next = total + adjusted;
+        if (!Number.isFinite(next)) return null;
+        correction = (next - total) - adjusted;
+        total = next;
+    }
+    return total;
+}
+
 export function buildGraph(rows: readonly InputRow[], options: GraphOptions): Graph {
     const diagnostics: Diagnostics = {
         invalidIds: 0, duplicateRows: 0, ambiguousIds: 0, missingWeights: 0,
@@ -63,6 +79,7 @@ export function buildGraph(rows: readonly InputRow[], options: GraphOptions): Gr
     const groups = new Map<string, GraphEdge>();
     const nodes = new Map<string, GraphNode>();
     const ambiguous = new Set<string>();
+    const contributions = new Map<string, { weights: number[]; highlights: number[] }>();
     for (const row of rows.slice(0, LIMITS.rows)) {
         const source = stableId(row.source);
         const target = stableId(row.target);
@@ -88,22 +105,32 @@ export function buildGraph(rows: readonly InputRow[], options: GraphOptions): Gr
         };
         if (previous) diagnostics.duplicateRows++;
         edge.rows.push(row.index);
+        const totals = contributions.get(id) ?? { weights: [], highlights: [] };
         if (options.weighted) {
-            if (numericWeight(row.weight) && Number.isFinite((edge.weight ?? 0) + row.weight)) {
-                edge.weight = (edge.weight ?? 0) + row.weight;
+            if (numericWeight(row.weight)) {
+                totals.weights.push(row.weight);
             } else {
                 edge.missingWeight = true;
                 diagnostics.missingWeights++;
             }
         }
-        if (row.highlight !== null && row.highlight !== undefined) edge.highlighted = true;
-        if (numericWeight(row.highlight) && Number.isFinite((edge.highlightWeight ?? 0) + row.highlight)) {
-            edge.highlightWeight = (edge.highlightWeight ?? 0) + row.highlight;
-        }
+        edge.highlighted ||= row.highlightActive ?? (row.highlight !== null && row.highlight !== undefined);
+        if (numericWeight(row.highlight)) totals.highlights.push(row.highlight);
+        contributions.set(id, totals);
         groups.set(id, edge);
     }
     diagnostics.ambiguousIds = ambiguous.size;
     for (const id of ambiguous) groups.delete(id);
+    for (const edge of groups.values()) {
+        const totals = contributions.get(edge.id)!;
+        edge.weight = sumContributions(totals.weights);
+        edge.highlightWeight = sumContributions(totals.highlights);
+        if (totals.weights.length && edge.weight === null) {
+            edge.weightOverflow = true;
+            edge.missingWeight = true;
+            diagnostics.missingWeights++;
+        }
+    }
     const keptNodes = new Map<string, GraphNode>();
     const edges: GraphEdge[] = [];
     for (const edge of [...groups.values()].sort((a, b) => compare(a.id, b.id))) {
@@ -122,9 +149,10 @@ export function buildGraph(rows: readonly InputRow[], options: GraphOptions): Gr
     };
 }
 
-export type FocusMode = "all" | "neighbors" | "upstream" | "downstream";
+export type FocusMode = "all" | "neighbors" | "upstream" | "downstream" | "incident" | "path";
 
-export function reachable(graph: Graph, start: string, mode: FocusMode): Set<string> {
+export function reachable(graph: Graph, start: string, mode: FocusMode, target?: string): Set<string> {
+    if (mode === "path") return new Set(shortestPath(graph, start, target ?? "").nodes);
     if (mode === "all") return new Set(graph.nodes.map(node => node.id));
     if (!graph.nodes.some(node => node.id === start)) return new Set();
     const adjacency = new Map<string, Set<string>>();
@@ -142,7 +170,7 @@ export function reachable(graph: Graph, start: string, mode: FocusMode): Set<str
         for (const id of adjacency.get(queue[i]) ?? []) {
             if (seen.has(id)) continue;
             seen.add(id);
-            if (mode !== "neighbors") queue.push(id);
+            if (mode !== "neighbors" && mode !== "incident") queue.push(id);
         }
     }
     return seen;
@@ -152,4 +180,60 @@ export function incidentRows(graph: Graph, nodeId: string): number[] {
     return [...new Set(graph.edges
         .filter(edge => edge.source === nodeId || edge.target === nodeId)
         .flatMap(edge => edge.rows))].sort((a, b) => a - b);
+}
+
+export interface GraphIndex {
+    nodes: Map<string, GraphNode>;
+    edges: Map<string, GraphEdge>;
+    incident: Map<string, number[]>;
+    incoming: Map<string, GraphEdge[]>;
+    outgoing: Map<string, GraphEdge[]>;
+    highlightedNodes: Set<string>;
+}
+
+export function indexGraph(graph: Graph): GraphIndex {
+    const nodes = new Map(graph.nodes.map(node => [node.id, node]));
+    const incoming = new Map(graph.nodes.map(node => [node.id, [] as GraphEdge[]]));
+    const outgoing = new Map(graph.nodes.map(node => [node.id, [] as GraphEdge[]]));
+    const incident = new Map(graph.nodes.map(node => [node.id, new Set<number>()]));
+    const highlightedNodes = new Set<string>();
+    for (const edge of graph.edges) {
+        incoming.get(edge.target)!.push(edge);
+        outgoing.get(edge.source)!.push(edge);
+        for (const id of new Set([edge.source, edge.target])) {
+            for (const row of edge.rows) incident.get(id)!.add(row);
+            if (edge.highlighted) highlightedNodes.add(id);
+        }
+    }
+    return {
+        nodes, incoming, outgoing, highlightedNodes,
+        edges: new Map(graph.edges.map(edge => [edge.id, edge])),
+        incident: new Map([...incident].map(([id, rows]) => [id, [...rows].sort((a, b) => a - b)]))
+    };
+}
+
+export function shortestPath(graph: Graph, start: string, target: string): { nodes: string[]; edges: string[] } {
+    const index = indexGraph(graph);
+    if (!index.nodes.has(start) || !index.nodes.has(target)) return { nodes: [], edges: [] };
+    const previous = new Map<string, { node: string; edge: string }>();
+    const seen = new Set([start]);
+    const queue = [start];
+    for (let i = 0; i < queue.length && !seen.has(target); i++) {
+        for (const edge of index.outgoing.get(queue[i])!) {
+            if (seen.has(edge.target)) continue;
+            seen.add(edge.target);
+            previous.set(edge.target, { node: queue[i], edge: edge.id });
+            queue.push(edge.target);
+        }
+    }
+    if (!seen.has(target)) return { nodes: [], edges: [] };
+    const nodes = [target];
+    const edges: string[] = [];
+    for (let id = target; id !== start;) {
+        const step = previous.get(id)!;
+        edges.push(step.edge);
+        nodes.push(step.node);
+        id = step.node;
+    }
+    return { nodes: nodes.reverse(), edges: edges.reverse() };
 }

@@ -20,10 +20,27 @@ class Appearance extends formattingSettings.SimpleCard {
             maxValue: { type: powerbi.visuals.ValidatorType.Max, value: 24 }
         }
     });
-    public override slices = [this.nodeColor, this.edgeColor, this.showLabels, this.labelSize];
+    public avoidLabelOverlap = new formattingSettings.ToggleSwitch({
+        name: "avoidLabelOverlap", displayNameKey: "AvoidLabelOverlap", value: true
+    });
+    public override slices = [this.nodeColor, this.edgeColor, this.showLabels, this.labelSize, this.avoidLabelOverlap];
+}
+
+class Exploration extends formattingSettings.SimpleCard {
+    public override name = "exploration";
+    public override displayNameKey = "Exploration";
+    public view = new formattingSettings.ItemDropdown({
+        name: "view", displayNameKey: "InitialView", value: { value: "auto", displayName: "Automatic" },
+        items: [
+            { value: "auto", displayNameKey: "ViewAuto" }, { value: "split", displayNameKey: "ViewSplit" },
+            { value: "graph", displayNameKey: "ViewGraph" }, { value: "list", displayNameKey: "ViewList" }
+        ]
+    });
+    public override slices = [this.view];
 }
 
 export class Settings extends formattingSettings.Model {
     public appearance = new Appearance();
-    public override cards = [this.appearance];
+    public exploration = new Exploration();
+    public override cards = [this.appearance, this.exploration];
 }
