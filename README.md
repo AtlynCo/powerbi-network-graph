@@ -168,7 +168,7 @@ npm run notices
 
 These are **commands to run, not a record of successful execution**. Browser checks use the actual package produced by `package`, not an independent source build. The browser cache above is worktree-local and ignored; on Unix/CI, export `PLAYWRIGHT_BROWSERS_PATH` instead of using PowerShell syntax. Review actual logs and [release evidence requirements](docs/RELEASE.md); do not infer a passing gate from a generated package alone.
 
-Without an explicit `PLAYWRIGHT_BROWSERS_PATH`, the runner uses `node_modules\.cache\ms-playwright` when present, otherwise the standard Playwright cache. `CHROMIUM_EXECUTABLE_PATH` can select an approved compatible Chromium executable. Browser provisioning may require a development-time download; the test context itself is offline.
+Without an explicit `PLAYWRIGHT_BROWSERS_PATH`, the runner defaults to the worktree-local `.browser-cache` directory, not the user's default Playwright cache. Set `PLAYWRIGHT_BROWSERS_PATH` **before** `npx playwright install chromium`, as shown above, so installation and testing use the same location. On Unix/CI, use `export PLAYWRIGHT_BROWSERS_PATH="$PWD/.browser-cache"` before installation. An explicit path overrides the default; `CHROMIUM_EXECUTABLE_PATH` can select an approved compatible Chromium executable. Browser provisioning may require a development-time download; the test context itself is offline.
 
 | Script | Purpose |
 | --- | --- |
