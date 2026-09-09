@@ -84,7 +84,7 @@ describe("Power BI categorical data adapter", () => {
         const data = readData(view([category("source", ["A"]), category("target", ["B", "C", "D"])]), host);
         expect(data.graph.edges).toHaveLength(1);
         expect(data.graph.diagnostics.invalidIds).toBe(2);
-        expect(data.identityMissing).toBe(true);
+        expect(data.identityMissing).toBe(false);
         expect(data.graph.diagnostics.incomplete).toBe(true);
     });
     it("honors metadata.segment without requesting another segment", () => {

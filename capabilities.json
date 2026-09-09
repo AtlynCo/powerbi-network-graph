@@ -24,8 +24,24 @@
         "nodeColor": { "type": { "fill": { "solid": { "color": true } } } },
         "edgeColor": { "type": { "fill": { "solid": { "color": true } } } },
         "showLabels": { "type": { "bool": true } },
-        "labelSize": { "type": { "numeric": true } }
+        "labelSize": { "type": { "numeric": true } },
+        "avoidLabelOverlap": { "type": { "bool": true } }
       }
+    },
+    "exploration": {
+      "displayName": "Exploration",
+      "properties": {
+        "view": { "type": { "enumeration": [
+          { "value": "auto", "displayName": "Automatic" },
+          { "value": "split", "displayName": "Graph and list" },
+          { "value": "graph", "displayName": "Graph" },
+          { "value": "list", "displayName": "List" }
+        ] } }
+      }
+    },
+    "navigation": {
+      "displayName": "Saved local view",
+      "properties": { "savedView": { "type": { "text": true } } }
     }
   },
   "privileges": [],

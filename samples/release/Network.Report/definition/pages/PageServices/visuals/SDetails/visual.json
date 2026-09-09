@@ -1,0 +1,170 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "SDetails",
+  "position": {
+    "x": 24,
+    "y": 566,
+    "width": 960,
+    "height": 178,
+    "z": 5684,
+    "tabOrder": 5684
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Services"
+                    }
+                  },
+                  "Property": "SourceID"
+                }
+              },
+              "queryRef": "Services.SourceID",
+              "nativeQueryRef": "SourceID"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Services"
+                    }
+                  },
+                  "Property": "TargetID"
+                }
+              },
+              "queryRef": "Services.TargetID",
+              "nativeQueryRef": "TargetID"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Services"
+                    }
+                  },
+                  "Property": "RelationshipType"
+                }
+              },
+              "queryRef": "Services.RelationshipType",
+              "nativeQueryRef": "RelationshipType"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Services"
+                    }
+                  },
+                  "Property": "EdgeID"
+                }
+              },
+              "queryRef": "Services.EdgeID",
+              "nativeQueryRef": "EdgeID"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Services"
+                    }
+                  },
+                  "Property": "Total Weight"
+                }
+              },
+              "queryRef": "Services.Total Weight",
+              "nativeQueryRef": "Total Weight"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Services"
+                    }
+                  },
+                  "Property": "Events"
+                }
+              },
+              "queryRef": "Services.Events",
+              "nativeQueryRef": "Events"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Services"
+                    }
+                  },
+                  "Property": "Input Rows"
+                }
+              },
+              "queryRef": "Services.Input Rows",
+              "nativeQueryRef": "Input Rows"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Services"
+                    }
+                  },
+                  "Property": "Average Duration ms"
+                }
+              },
+              "queryRef": "Services.Average Duration ms",
+              "nativeQueryRef": "Average Duration ms"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Relationship detail — compare with host selections'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Relationship detail — compare with host selections'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

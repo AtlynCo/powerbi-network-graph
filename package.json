@@ -1,9 +1,11 @@
 {
   "name": "atlyn-network",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "license": "UNLICENSED",
-  "engines": { "node": ">=24.0.0" },
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "description": "Offline arbitrary relationship exploration for Power BI",
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -12,6 +14,10 @@
     "build": "node scripts/package.mjs",
     "package": "node scripts/package.mjs --audit && node scripts/inspect-package.mjs",
     "test:browser": "node scripts/browser-test.mjs",
+    "test:release": "node scripts/release-browser.mjs",
+    "benchmark": "node scripts/release-benchmark.mjs",
+    "sample": "node scripts/sample-package.mjs",
+    "release:manifest": "node scripts/release-manifest.mjs",
     "audit": "npm audit --omit=dev",
     "certification": "node scripts/certification.mjs",
     "notices": "node scripts/notices.mjs",
@@ -22,11 +28,12 @@
     "powerbi-visuals-utils-formattingutils": "7.0.0"
   },
   "devDependencies": {
-    "acorn": "8.18.0",
-    "acorn-walk": "8.3.5",
     "@eslint/js": "9.39.1",
     "@playwright/test": "1.58.2",
     "@types/node": "24.10.1",
+    "acorn": "8.18.0",
+    "acorn-walk": "8.3.5",
+    "ajv": "6.15.0",
     "eslint": "9.39.1",
     "eslint-plugin-powerbi-visuals": "1.0.0",
     "jsdom": "26.1.0",
@@ -38,7 +45,11 @@
     "vitest": "4.1.11"
   },
   "overrides": {
-    "webpack-dev-server": { "qs": "6.16.0" },
-    "sockjs": { "uuid": "11.1.1" }
+    "webpack-dev-server": {
+      "qs": "6.16.0"
+    },
+    "sockjs": {
+      "uuid": "11.1.1"
+    }
   }
 }

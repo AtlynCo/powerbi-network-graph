@@ -1,0 +1,19 @@
+table AccountsTypes
+
+	column RelationshipType
+		dataType: string
+		isKey
+		sourceColumn: RelationshipType
+		summarizeBy: none
+
+	partition AccountsTypes = m
+		mode: import
+		source =
+			#table(type table [RelationshipType = text], {
+				{"adjustment"},
+				{"fee"},
+				{"refund"},
+				{"transfer"}
+			})
+
+	annotation PBI_ResultType = Table

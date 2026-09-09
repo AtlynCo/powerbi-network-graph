@@ -5,9 +5,11 @@
 - Publisher: Atlyn; private `AtlynCo/powerbi-network-graph` repository.
 - Visual: Atlyn Network.
 - Stable GUID: `AtlynNetworkAB24C68297094C32AF64D50D92C01711`.
-- Visual version: `1.0.0.0`; npm version: `1.0.0`.
+- Visual version: `1.1.0.0`; npm version: `1.1.0`.
 - Intended artifact: the audited `.pbiviz` package, not source renamed as `.pbix`.
 - Certification-oriented engineering **does not mean Microsoft certified**.
+
+The owner has approved paid distribution through existing Atlyn subscriptions. This candidate is **unlicensed rendering/quality evidence**, not the final paid/submission package. The coordinator owns the shared entitlement contract. Until it arrives, hold certification-reference movement, merge, and submission; do not add ad hoc licensing or external runtime requests.
 
 This document is an **acceptance checklist, not a completed test report**. Unchecked items are required evidence, not known failures. Record the commit, tool versions, exact commands, dates, artifact hashes, outcomes, and remaining limitations in the authorized release record. Do not claim native outcomes from tests that use a mock host.
 
@@ -21,7 +23,7 @@ No publication, AppSource submission, public GitHub release, screenshot upload, 
 - [ ] Run `npm run assets` with the project-required Node.js version and review regenerated icon/localization output; do not rely on a lower upstream tool minimum.
 - [ ] Run `npm run typecheck`, `npm run lint`, and `npm test`; retain actual outcomes.
 - [ ] Run `npm run build` and `npm run package`; retain inspection and packaging logs.
-- [ ] Use the isolated `scripts/package.mjs` wrapper with PowerShell 7 (`pwsh`) on Windows or OpenSSL on Unix/CI. Do not require `pbiviz install-cert` or mutate a user's certificate store/trust settings.
+- [ ] Run all gates locally; do not run GitHub Actions, hosted CI/CD, cloud coding or Codespaces. Use the isolated `scripts/package.mjs` wrapper with PowerShell 7 (`pwsh`) on Windows or OpenSSL on a local Unix host. Do not require `pbiviz install-cert` or mutate a user's certificate store/trust settings.
 - [ ] Verify ignored `.tool-home` isolation, cleanup of local short-lived certificate/key/PFX/passphrase material, and exclusion of that private material from Git, the final package, logs, and release evidence. Check cleanup explicitly if packaging was interrupted.
 - [ ] Preserve/revalidate the package wrapper's official `--all-locales` compatibility option for visuals tools 7.2.1 / formatting utilities 7. Confirm number/date culture data is bundled offline and UI resources remain `en-US`/`ar-SA`.
 - [ ] After packaging, run `npm run test:browser` against that artifact; record browser/version and what was tested. Before provisioning Chromium with `npx playwright install chromium`, set `PLAYWRIGHT_BROWSERS_PATH` to the worktree-local `.browser-cache` path to match the runner default, or use the documented explicit path override consistently. Do not treat offline mock-host browser checks as native Power BI verification.
@@ -35,7 +37,7 @@ No publication, AppSource submission, public GitHub release, screenshot upload, 
 Example hash command after packaging:
 
 ```powershell
-Get-FileHash -Algorithm SHA256 .\dist\AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.0.0.0.pbiviz
+Get-FileHash -Algorithm SHA256 .\dist\AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.1.0.0.pbiviz
 ```
 
 Do not silently convert a warning into a passing gate. Keep verification artifacts private and exclude report/customer data and credentials.
@@ -56,6 +58,9 @@ Do not silently convert a warning into a passing gate. Keep verification artifac
 - [ ] Verify capped or invalid/conflicting/segmented data visibly disclose known incompleteness.
 - [ ] Verify the visual never calls `fetchMoreData`. Search, traversal, and counts must remain labeled **loaded** even without a host segment marker; absence of a marker is not proof of the complete model.
 - [ ] Verify cycle-safe upstream/downstream traversal and single-hop neighborhood, including disconnected components and self-links.
+- [ ] Verify incident-only focus and deterministic shortest directed paths, including unreachable targets and focus-to-self paths. Confirm every result describes loaded topology only.
+- [ ] Verify stable compensated weight aggregation under row permutations; an overflowing group must have unavailable weight, never an arbitrary partial sum.
+- [ ] Verify tooltip text/format budgets and that omitted tooltip values produce a notice without silently removing topology or creating distinct-value counts.
 
 Power BI may aggregate equal categorical rows before delivery. Verify delivered-row behavior in automated fixtures and model-level behavior in Desktop separately; neither establishes the other.
 
@@ -71,6 +76,7 @@ Use an actual report with a relationship table, another visual displaying those 
 - [ ] Clear report selection independently of pan/zoom, local focus, and search.
 - [ ] Verify local focus/search/traversal do not send a report filter or alter native selection.
 - [ ] Verify disabled host interactions are respected, and host selection/context failures produce usable notices.
+- [ ] Verify pending selection followed by Clear settles cleared; destroy prevents late host actions. Tooltip failures must leave the accessible relationship list usable.
 - [ ] Verify a single-identity edge's native context menu; entity and multi-identity edge context menus are explicitly visual-level.
 - [ ] Verify default and report-page tooltips in Desktop and service, including aggregated relationship identity propagation, model formats, all eight optional measures, keyboard focus, and missing identities.
 
@@ -87,8 +93,11 @@ The current context-menu SDK surface accepts a single identity. Do not pass an a
 - [ ] Verify host high contrast and normal palettes; information must not depend on color alone.
 - [ ] Verify `en-US` and `ar-SA`, RTL controls, mixed-direction IDs, localized warnings/tooltips/formatting, and long labels.
 - [ ] Verify reduced-motion preference; all modes remain animation-free.
-- [ ] Test normal, tiny, compact, very wide, and large/tall visual viewports; ensure scrollable controls/lists remain usable.
-- [ ] Verify modern formatting changes and persistence: entity color, relationship color, label visibility, and 8–24 label size.
+- [ ] Test 80×80, 258×198, 398×298, 1280×620, and 1366×768; ensure graph/list switching and scrollable controls/lists remain usable.
+- [ ] Verify modern formatting changes and persistence: entity color, relationship color, label visibility, 8–24 label size, overlap avoidance, and initial view.
+- [ ] Verify pan starting over marks, move/tap discrimination, two-pointer pinch, transformed picking, and simultaneous visual instances.
+- [ ] Verify explicit Save local view and native bookmark replay separately from report selection; invalid or unavailable-entity snapshots must reset visibly.
+- [ ] Inspect actual dense final-package screenshots and retain reproducible render/navigation/selection p50/p95/max with hardware, warmups, samples, and contention disclosed. A local mock selection roundtrip is not native report-filter latency.
 
 Browser tests can support DOM/SVG, keyboard, layout, and injected-host behavior. They cannot certify assistive-technology behavior inside native Power BI.
 
@@ -117,8 +126,8 @@ Uncertified custom visuals may be unavailable for some export routes or blocked 
 - [ ] Review product wording: relationship exploration only; no causal prediction, fraud-detection, complete-network, or full process-mining claims.
 - [ ] Obtain separate owner authorization for any distribution or publishing action. This project is currently private only.
 
-## Native sample project deferral
+## Authored offline sample and submission baseline
 
-The repository supplies offline CSV and Power Query source, **not a validated native PBIX/PBIP**. Follow [samples/README.md](../samples/README.md), import the exact package in Desktop, and save/reopen a native report there. If saving PBIP, let Desktop generate its report and semantic-model structure, validate the project's data-source portability, and test a clean reopen before calling it self-contained.
+The release must include a fully authored offline PBIP source with useful bound report pages, semantic-model tables, literal synthetic data, and the exact tested embedded visual. Validate schema/reference/field bindings and retain its asset hashes. Authored source validation is **not** evidence that Desktop has opened, rendered, saved, or reopened it.
 
-Do not handcraft placeholder project metadata, refer to nonexistent semantic models, or label a file-based query with an absolute local path as a portable offline PBIP. A future approved native sample must have documented Desktop provenance and successful reopen/export evidence.
+The coordinator owns native Desktop opening and conversion to a real PBIX, service/export evidence, genuine legal/pricing approvals, and live Partner Center actions. Do not fabricate PBIX, native screenshots, successful import, certification, or publication approval. Freeze a lowercase certification source baseline only after final source is committed, and never overwrite an existing submitted baseline.

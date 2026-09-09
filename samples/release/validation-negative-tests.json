@@ -1,0 +1,41 @@
+{
+  "runner": "node scripts/sample-package.mjs --validate",
+  "assemblerSha256": "7884cb489be1bb6388da3153d2e9f3bc83904e21464e4a29992cdbe01c494b6e",
+  "method": "Each case mutates one authored file, expects nonzero exit, and restores exact original bytes in finally.",
+  "tests": [
+    {
+      "test": "invalid schema dimension",
+      "rejected": true
+    },
+    {
+      "test": "nonexistent bound field",
+      "rejected": true
+    },
+    {
+      "test": "wrong role kind",
+      "rejected": true
+    },
+    {
+      "test": "swapped source and target",
+      "rejected": true
+    },
+    {
+      "test": "wrong private-resource path base",
+      "rejected": true
+    },
+    {
+      "test": "altered model measure",
+      "rejected": true
+    },
+    {
+      "test": "external data source",
+      "rejected": true
+    },
+    {
+      "test": "changed embedded final resource",
+      "rejected": true
+    }
+  ],
+  "finalRestoredValidationPassed": true,
+  "deterministicReassembly": true
+}

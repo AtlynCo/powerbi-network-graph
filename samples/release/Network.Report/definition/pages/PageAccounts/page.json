@@ -1,0 +1,30 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/1.0.0/schema.json",
+  "name": "PageAccounts",
+  "displayName": "2. Reciprocal accounts",
+  "displayOption": "FitToPage",
+  "width": 1366,
+  "height": 768,
+  "visualInteractions": [
+    {
+      "source": "AGraph",
+      "target": "ADetails",
+      "type": "DataFilter"
+    },
+    {
+      "source": "ADetails",
+      "target": "AGraph",
+      "type": "DataFilter"
+    },
+    {
+      "source": "ATypes",
+      "target": "AGraph",
+      "type": "DataFilter"
+    },
+    {
+      "source": "ATypes",
+      "target": "ADetails",
+      "type": "DataFilter"
+    }
+  ]
+}

@@ -8,8 +8,9 @@ All names, accounts, and values are synthetic. These examples demonstrate direct
 | `reciprocal-accounts.csv` | Text account codes with leading zeros, repeated and conflicting Edge IDs, zero/missing/negative weights |
 | `LoadRelationships.pq` | Power Query M import from a local CSV path |
 | `OfflineSamples.pq` | Self-contained literal Power Query tables for either sample; no path or network dependency |
+| [`release/Network.pbip`](release/README.md) | Fully authored offline PBIP: bound graph pages, native detail tables/slicers, literal model tables, measures, and exact embedded release visual |
 
-**Native report creation is deferred to Power BI Desktop.** No PBIX or PBIP is included or claimed to have been opened/tested. The M files are query source, not report projects. A valid PBIP needs the report and semantic-model structure generated and validated by Desktop; a CSV or JSON placeholder is not a PBIX.
+**The PBIP is authored and locally structure-validated; native opening and PBIX conversion remain Desktop gates.** Follow the [authored sample instructions](release/README.md), refresh its literal tables, inspect both bound graph pages, and save/reopen a genuine PBIX. No native opening, query execution, or PBIX is fabricated or claimed here. The alternative M/CSV recipes below remain useful for building your own report.
 
 ## Option A: self-contained offline query
 

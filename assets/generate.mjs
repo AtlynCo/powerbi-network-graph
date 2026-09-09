@@ -2,30 +2,51 @@ import { deflateSync } from "node:zlib";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { en, ar } from "../src/strings.ts";
 
-// All artwork is original. A small raster graph matches the visual's cyclic, directed topology.
-const width = 20;
-const pixels = Buffer.alloc(width * width * 4, 255);
-const set = (x, y, color) => {
-    if (x >= 0 && x < width && y >= 0 && y < width) pixels.set(color, (y * width + x) * 4);
-};
-const teal = [0, 125, 135, 255];
-const ink = [23, 45, 61, 255];
-function line(x0, y0, x1, y1) {
-    const steps = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0));
-    for (let i = 0; i <= steps; i++) set(Math.round(x0 + (x1 - x0) * i / steps), Math.round(y0 + (y1 - y0) * i / steps), ink);
+function artwork(size) {
+    const width = size * 2;
+    const scale = width / 20;
+    const raster = Buffer.alloc(width * width * 4, 255);
+    const teal = [0, 125, 135, 255];
+    const ink = [23, 45, 61, 255];
+    const circle = (cx, cy, radius, color) => {
+        for (let y = Math.max(0, Math.floor((cy - radius) * scale)); y < Math.min(width, Math.ceil((cy + radius) * scale)); y++) {
+            for (let x = Math.max(0, Math.floor((cx - radius) * scale)); x < Math.min(width, Math.ceil((cx + radius) * scale)); x++) {
+                if (Math.hypot((x + 0.5) / scale - cx, (y + 0.5) / scale - cy) <= radius) raster.set(color, (y * width + x) * 4);
+            }
+        }
+    };
+    const stroke = (points, thickness = 0.55) => {
+        for (let i = 1; i < points.length; i++) {
+            const [a, b] = [points[i - 1], points[i]];
+            const steps = Math.max(1, Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) * scale * 2));
+            for (let step = 0; step <= steps; step++) circle(a[0] + (b[0] - a[0]) * step / steps, a[1] + (b[1] - a[1]) * step / steps, thickness / 2, ink);
+        }
+    };
+    // Original Atlyn network artwork: a directed cycle with reciprocal and self relationships.
+    stroke([[4, 5], [15, 5], [10, 16], [4, 5]]);
+    stroke([[9.5, 3.8], [11.3, 5], [9.5, 6.2]]);
+    stroke([[14.5, 10], [13, 12], [11.6, 10.6]]);
+    stroke([[5.1, 10.3], [5.5, 8.1], [7.6, 8.9]]);
+    const reciprocal = [];
+    const loop = [];
+    for (let i = 0; i <= 40; i++) {
+        const t = i / 40;
+        reciprocal.push([14 - 9 * t, 6 + Math.sin(t * Math.PI) * 2]);
+        loop.push([16 + Math.cos(t * Math.PI * 1.7 - 0.5) * 2.4, 3.5 + Math.sin(t * Math.PI * 1.7 - 0.5) * 2.4]);
+    }
+    stroke(reciprocal, 0.4);
+    stroke([[7, 6.3], [5.8, 6.7], [6.4, 8]], 0.4);
+    stroke(loop, 0.4);
+    for (const [x, y] of [[4, 5], [15, 5], [10, 16]]) circle(x, y, 2.1, teal);
+    const pixels = Buffer.alloc(size * size * 4);
+    for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) for (let channel = 0; channel < 4; channel++) {
+        let sum = 0;
+        for (let dy = 0; dy < 2; dy++) for (let dx = 0; dx < 2; dx++) sum += raster[((y * 2 + dy) * width + x * 2 + dx) * 4 + channel];
+        pixels[(y * size + x) * 4 + channel] = Math.round(sum / 4);
+    }
+    return pixels;
 }
-line(4, 5, 15, 5);
-line(15, 5, 10, 16);
-line(10, 16, 4, 5);
-line(9, 3, 12, 5);
-line(12, 5, 9, 7);
-line(14, 10, 14, 13);
-line(14, 13, 11, 12);
-line(5, 10, 5, 7);
-line(5, 7, 8, 9);
-for (const [cx, cy] of [[4, 5], [15, 5], [10, 16]]) {
-    for (let y = -2; y <= 2; y++) for (let x = -2; x <= 2; x++) if (x * x + y * y <= 5) set(cx + x, cy + y, teal);
-}
+
 function crc32(bytes) {
     let value = 0xffffffff;
     for (const byte of bytes) {
@@ -42,20 +63,23 @@ function chunk(type, bytes) {
     crc.writeUInt32BE(crc32(payload));
     return Buffer.concat([header, payload, crc]);
 }
-const header = Buffer.alloc(13);
-header.writeUInt32BE(width, 0);
-header.writeUInt32BE(width, 4);
-header[8] = 8;
-header[9] = 6;
-const rows = [];
-for (let y = 0; y < width; y++) rows.push(Buffer.from([0]), pixels.subarray(y * width * 4, (y + 1) * width * 4));
-writeFileSync(new URL("./icon.png", import.meta.url), Buffer.concat([
-    Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk("IHDR", header),
-    chunk("IDAT", deflateSync(Buffer.concat(rows))), chunk("IEND", Buffer.alloc(0))
-]));
+for (const [size, filename] of [[20, "icon.png"], [300, "logo-300.png"]]) {
+    const pixels = artwork(size);
+    const header = Buffer.alloc(13);
+    header.writeUInt32BE(size, 0);
+    header.writeUInt32BE(size, 4);
+    header[8] = 8;
+    header[9] = 6;
+    const rows = [];
+    for (let y = 0; y < size; y++) rows.push(Buffer.from([0]), pixels.subarray(y * size * 4, (y + 1) * size * 4));
+    writeFileSync(new URL(filename, import.meta.url), Buffer.concat([
+        Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk("IHDR", header),
+        chunk("IDAT", deflateSync(Buffer.concat(rows))), chunk("IEND", Buffer.alloc(0))
+    ]));
+}
 for (const [locale, strings] of [["en-US", en], ["ar-SA", ar]]) {
     const folder = new URL(`../stringResources/${locale}/`, import.meta.url);
     mkdirSync(folder, { recursive: true });
     writeFileSync(new URL("resources.resjson", folder), `${JSON.stringify(strings, null, 2)}\n`);
 }
-console.log("Generated original 20x20 PNG icon and en-US/ar-SA SDK resources.");
+console.log("Generated original 20px icon, 300px logo, and en-US/ar-SA SDK resources.");

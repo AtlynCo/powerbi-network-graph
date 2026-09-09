@@ -2,8 +2,14 @@ import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { randomBytes } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
+import assert from "node:assert/strict";
+import { readArtifact, writeReport } from "./artifact.mjs";
+import { buildInputs, git, toolVersions } from "./provenance.mjs";
 
 const root = process.cwd();
+const startedAt = new Date().toISOString();
+const sourceHeadAtBuild = git("rev-parse", "HEAD");
+const inputs = await buildInputs();
 const tools = path.join(root, "node_modules", "powerbi-visuals-tools");
 const config = JSON.parse(readFileSync(path.join(tools, "config.json"), "utf8"));
 const home = path.join(root, ".tool-home");
@@ -58,3 +64,10 @@ try {
 } finally {
     for (const file of Object.values(files)) rmSync(file, { force: true });
 }
+assert.deepEqual(await buildInputs(), inputs, "Build inputs changed while packaging; rebuild a stable source baseline");
+const artifact = await readArtifact();
+await writeReport("build-inputs.json", {
+    artifact: artifact.filename, sha256: artifact.sha256, startedAt, completedAt: new Date().toISOString(),
+    sourceHeadAtBuild, inputs, tools: await toolVersions(),
+    note: "Source may be uncommitted at build time. Release manifest requires a clean committed tree with exactly these build-input hashes."
+});

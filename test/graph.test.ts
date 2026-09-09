@@ -86,7 +86,8 @@ describe("weight and partial-data semantics", () => {
     });
     it("never emits infinite aggregated weights and retains all rows", () => {
         const g = graph([Number.MAX_VALUE, Number.MAX_VALUE].map(weight => ({ source: "A", target: "B", weight })), { weighted: true });
-        expect(Number.isFinite(g.edges[0].weight)).toBe(true);
+        expect(g.edges[0].weight).toBeNull();
+        expect(g.edges[0].weightOverflow).toBe(true);
         expect(g.edges[0].missingWeight).toBe(true);
         expect(g.edges[0].rows).toEqual([0, 1]);
     });
