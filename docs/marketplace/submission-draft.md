@@ -17,7 +17,7 @@ Exact field names and behavior: [Microsoft offer setup](https://learn.microsoft.
 | Offer alias | `Atlyn Network` | Proposed internal name |
 | Publisher | **UNRESOLVED — select authorized verified Atlyn legal publisher** | GitHub organization `AtlynCo` is not evidence of Partner Center publisher identity/enrollment |
 | Setup details | **External Atlyn storefront subscriptions; ungated runtime/free shared viewing** | Owner-approved model. Coordinator must reconcile exact portal classification/disclosures with Microsoft; this is not a runtime implementation blocker |
-| Power BI certification | **REQUIRED: additional Power BI visual certification/badge** | Owner requirement approved; eligibility, native evidence, source access and Microsoft's award remain pending. Do not submit before the final gate |
+| Power BI certification | **REQUIRED: additional Power BI visual certification/badge** | Owner requirement approved; eligibility, remaining native coverage, source access and Microsoft's award remain pending. Do not submit before the final gate |
 | Customer leads / CRM | No connection proposed | Optional; any future connection requires owner/privacy approval |
 
 The exact documented setup choices are:
@@ -125,7 +125,7 @@ Exact requirements: [Microsoft technical configuration](https://learn.microsoft.
 | Field | Draft artifact/identity | Status |
 | --- | --- | --- |
 | PBIVIZ package | `AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.1.0.0.pbiviz` | Final coordinator artifact only, not a stale candidate |
-| Sample PBIX report file | `Atlyn Network Offline Sample.pbix` | Proposed filename; **file not produced by this task** |
+| Sample PBIX report file | `AtlynNetwork-1.1.0.0-native.pbix` | Genuine coordinator-produced Public PBIX; bounded Desktop 2.157.1354.0 save/cold-reopen and embedded-member equality recorded; full submission coverage remains open |
 | Internal identity | Stable GUID above; four-part version `1.1.0.0`; API `5.11.0` | Never change GUID to bypass AppSource update behavior |
 | Author | `Atlyn` | Existing verified metadata |
 | Author email | `atlyn.help@gmail.com` | Existing verified metadata; monitoring/support authority unresolved |
@@ -133,6 +133,13 @@ Exact requirements: [Microsoft technical configuration](https://learn.microsoft.
 | Source repository | `https://github.com/AtlynCo/powerbi-network-graph` | Private; reviewer access unresolved |
 
 Native PBIX conversion must use the PBIP **after** `node .\scripts\sample-package.mjs` embeds the final package. Attach final PBIVIZ SHA-256 and verify PBIX embedded visual version/content independently. Do not upload a source ZIP renamed `.pbix`.
+
+The coordinator's 2026-09-10 PBIX is 202,265 bytes, SHA-256
+`8d1a2b245733169d5f4a54b2d3c3d878cd0e01238dc7369b6a053031c50c6f19`;
+embedded manifest/resource bytes match the unchanged `a291552f...` PBIVIZ.
+The first refresh left native banners; the second observed refresh completed.
+See the [bounded native record](../validation/RESULTS.md#bounded-native-desktop-result-2026-09-10).
+This is a candidate asset, not authorization to upload or submit.
 
 ## Review and publish — Notes for certification draft
 
@@ -146,7 +153,7 @@ Visual API: 5.11.0
 Source: https://github.com/AtlynCo/powerbi-network-graph/tree/certification
 Frozen source commit: [UNRESOLVED FINAL COMMIT]
 Submitted PBIVIZ SHA-256: [UNRESOLVED FINAL ARTIFACT HASH]
-Offline sample PBIX SHA-256: [UNRESOLVED NATIVE PBIX HASH]
+Candidate sample PBIX SHA-256: 8d1a2b245733169d5f4a54b2d3c3d878cd0e01238dc7369b6a053031c50c6f19
 
 The lowercase certification branch contains the matching single-visual source and locked dependencies. Follow the repository's local package command and documented tooling/locale prerequisites. Generated dist, node_modules and .tmp directories are not part of the submitted source tree.
 
@@ -177,6 +184,7 @@ All items below remain unresolved unless the coordinator supplies dated authorit
 - [ ] Support owner, monitored address, escalation and service commitments.
 - [ ] Markets, industry claims, localization and commercial/tax requirements.
 - [ ] Final accurate logo/screenshots; mock/native evidence distinction.
-- [ ] Full native/submission testing, offline PBIX and same-package content proof.
+- [x] Coordinator-produced Public PBIX, bounded Desktop save/cold-reopen and exact same-package embedded-member proof, 2026-09-10. First-refresh banners remain part of the record.
+- [ ] Remaining native/submission testing, including explicit offline refresh and full interaction/measure coverage.
 - [ ] Exact-source certification branch, API/tools requirement reconciliation and secure reviewer access.
 - [ ] Explicit approval to submit; separate approval to publish. Neither is granted here.

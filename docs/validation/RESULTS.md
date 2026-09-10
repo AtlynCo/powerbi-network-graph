@@ -1,6 +1,6 @@
 # Sealed offline quality candidate
 
-**Evidence captured 2026-09-09; version 1.1.0.0. Owner runtime approval updated 2026-09-10.**
+**Sealed local evidence captured 2026-09-09; version 1.1.0.0. Owner runtime approval and bounded coordinator Desktop evidence updated 2026-09-10.**
 
 The owner approved external Atlyn storefront subscription acquisition with
 intentionally ungated runtime/free shared viewing. This existing offline
@@ -155,8 +155,9 @@ PowerShell wrapper independently checks the deserialized TOM measure collection
 with case-insensitive model-global comparison. Regressions cover all seven
 original duplicate names and actual authored model/binding consistency.
 Calculations, formats, literal rows, relationships, report artifact `4.0`,
-report-definition `2.0.0` and sealed SDK bytes are unchanged. Native model
-loading/refresh/render and PBIX conversion remain pending with the coordinator.
+report-definition `2.0.0` and sealed SDK bytes are unchanged. At this correction's
+handoff, native loading/refresh/render and PBIX conversion were still pending;
+the subsequent coordinator result is recorded below.
 A new standalone corrected sample/source handoff supersedes earlier samples
 without rewriting any frozen bundle.
 
@@ -169,13 +170,48 @@ fourteen globally unique measures and six relationships. JavaScript validates
 `dist\tmdl-validation.json` and `dist\measure-scope-verification.json` retain
 local results: every DAX expression/format/literal row is unchanged, and the
 four bound graph/detail visuals differ only in measure/query identifiers.
-This is source/model preflight, not a replacement for the failed native gate.
+This is source/model preflight, not a replacement for a native attempt.
 
 The offline PBIP has three pages, two bound graph visuals, eight literal tables,
-fourteen measures and six relationships. Public schemas and strict references
-and official TOM deserialization are checked; M/DAX execution, Desktop refresh/render/save/reopen and a
-genuine offline PBIX conversion remain with the coordinator. Source-only PBIP
-validation does not close them.
+fourteen measures and six relationships. Public schemas, strict references and
+official TOM deserialization are checked. Source-only PBIP validation did not
+establish native loading; the following evidence is from a separate actual
+Desktop run.
+
+### Bounded native Desktop result, 2026-09-10
+
+**Coordinator-reported PASS with bounded coverage**, Power BI Desktop
+**2.157.1354.0**, using corrected sample source
+`cbd21bee3de4f62ffaa93eb49a2e7881814913e5`. This session did not operate
+Desktop or a browser for this native run.
+
+| Observation | Reported outcome |
+| --- | --- |
+| First refresh | Native manual-refresh/incomplete-data banners remained; not a clean first-refresh pass |
+| Second observed refresh | Completed with no dialog |
+| Services page | Rendered 8 entities / 14 relationships |
+| Accounts page | Rendered 6 retained entities / 13 retained relationships |
+| Hints page | Rendered; all three pages observed |
+| Persistence | Public PBIX saved and cold-reopened without refresh; Gateway/Orders/120 present |
+
+The coordinator retains `AtlynNetwork-1.1.0.0-native.pbix`, **202,265 bytes**,
+SHA-256 `8d1a2b245733169d5f4a54b2d3c3d878cd0e01238dc7369b6a053031c50c6f19`.
+The unchanged version `1.1.0.0` PBIVIZ is **149,064 bytes**, SHA-256
+`a291552f2b459da622513ece4eec440226693de1fbd7f91020ac4f441e2c1514`.
+The coordinator reported exact embedded-member equality. This session also
+independently checked archive CRCs, both archive hashes, and byte-for-byte
+equality of `Report/CustomVisuals/<GUID>/package.json` (735 bytes) and
+`resources/<GUID>.pbiviz.json` (865,016 bytes) against the sealed PBIVIZ.
+`dist\native-desktop-evidence.json` records the offline comparison separately
+from the attributed native observations; a durable copy is retained in session
+artifacts. The native PBIX is not checked into source.
+
+This closes the observed sample-loading/rendering/save/cold-reopen slice, not
+the full native matrix. It does not establish every model measure, native
+selection/slicer/tooltip/bookmark behavior, accessibility, explicit offline
+refresh, Service/mobile/export behavior or Microsoft certification. No runtime
+retry change was made and no first-refresh cause is asserted. Earlier frozen
+packages, source archives, receipts and browser evidence remain unchanged.
 
 Also pending: native selection/bookmark/context/tooltip propagation, service/mobile/actual
 exports, native assistive technology, official submission dataset clarification,

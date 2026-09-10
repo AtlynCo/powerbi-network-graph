@@ -4,7 +4,7 @@
 
 **Owner-approved pattern (2026-09-10):** external storefront subscriptions govern acquisition; visuals run ungated, with free shared viewing and no paid-author enforcement. The existing offline renderer is intended, following the coordinator's assessment of existing Distribution/Scatter source. No keys, new signer, AAD/API integration, feature gates or runtime requests are to be added. Runtime licensing is no longer a blocker.
 
-**Still held:** native evidence, real PBIX/final assets, legal/reviewer-access and the coordinator's final gate. The additional Microsoft Power BI visual certification badge is **required, not achieved**; general Marketplace approval is not a substitute. Do not move main/certification refs, merge, or submit before that gate. This decision does not repackage, bump the version, or modify frozen evidence.
+**Still held:** remaining native/submission coverage, final assets, legal/reviewer-access and the coordinator's final gate. A genuine PBIX and bounded Desktop render/save/cold-reopen evidence now exist; see the dated record below. The additional Microsoft Power BI visual certification badge is **required, not achieved**; general Marketplace approval is not a substitute. Do not move main/certification refs, merge, or submit before that gate. This decision does not repackage, bump the version, or modify frozen evidence.
 
 This directory separates Microsoft requirements, repository evidence, proposed listing copy, and decisions that only an authorized Atlyn owner can approve. No Partner Center account was accessed or changed by this work. No offer was created/submitted/published; no reviewer permissions or hosted workflow runs were created. Source changes are delivered separately through a private review branch/PR, with no certification-reference movement.
 
@@ -18,7 +18,7 @@ This directory separates Microsoft requirements, repository evidence, proposed l
 | Item | Requirement verified in Microsoft documentation | Preparation status |
 | --- | --- | --- |
 | PBIVIZ | Real compiled package; complete metadata; four-part version; same GUID on updates | Target `AtlynNetworkAB24C68297094C32AF64D50D92C01711`, `1.1.0.0`, API `5.11.0`; coordinator must freeze final artifact |
-| Sample PBIX | **Required**, works offline with no external connections; visual version and content match PBIVIZ | A complete source PBIP is authored; **native conversion, offline reopen and PBIX content verification unresolved** |
+| Sample PBIX | **Required**, works offline with no external connections; visual version and content match PBIVIZ | Coordinator saved `AtlynNetwork-1.1.0.0-native.pbix` and cold-reopened without refresh; exact embedded package/resource equality confirmed. Explicit offline refresh and full sample interactions remain separate gates |
 | Logo | PNG, **exactly 300×300** | Coordinator owns final asset and approval; 20×20 package icon is not a substitute |
 | Screenshots | **1–5 PNGs**, **exactly 1366×768**, each **≤1024 KB**; sharp, inclusive, accurate | Coordinator owns final images; use comfortably below 1,024,000 bytes to avoid ambiguous KB interpretation |
 | Support | Public HTTPS support link | Existing metadata: `https://www.atlynco.com/docs/faq`; operational support commitment unresolved |
@@ -64,7 +64,7 @@ node .\scripts\sample-package.mjs --validate
 - [Official Microsoft source example][example]: consulted for TMDL model/partition organization, not copied as an unrelated model. The sample's synthetic facts and report are authored for this repository.
 - [Public MIT-licensed private-visual PBIR example][private-example]: corroborates the private visual registration convention: metadata `name` and `path` are the resource filename, while the physical file remains under `CustomVisuals/<GUID>/resources/`. Only configuration conventions were inspected; no third-party visual code/report content is bundled.
 
-The source project passes public JSON schemas and strict authored-template/referential checks. The separate `scripts/validate-tmdl.ps1` preflight also successfully deserializes it using official Microsoft TOM and checks required PBIR version/structure. **No Power Query runtime, DAX engine or Desktop renderer has been invoked.** These gates establish model grammar and report structure, not private-visual native loading. The coordinator must record and resolve any native diagnostic before calling it release-ready.
+The source project passes public JSON schemas and strict authored-template/referential checks. The separate `scripts/validate-tmdl.ps1` preflight also successfully deserializes it using official Microsoft TOM and checks required PBIR version/structure. **Those scripts do not invoke Power Query, a DAX engine or Desktop rendering.** They establish model grammar and report structure, not private-visual native loading. The separate coordinator-owned native result is recorded below.
 
 **Native-driven sample correction (2026-09-10):** preserve `definition.pbir`
 artifact version `"4.0"` but use `"2.0.0"` in `definition/version.json`.
@@ -72,7 +72,7 @@ The earlier `"4.0.0"` report-definition value passed schema checks yet caused
 no pages to load in the coordinator's other-sample native A/B. The Network
 generator and both validators now distinguish these versions, with regression
 coverage. This corrects sample metadata only; the SDK-produced PBIVIZ stays
-byte-identical. Network native acceptance is still pending.
+byte-identical. The later bounded Network native result is recorded below.
 
 **Subsequent actual Network native blocker (2026-09-10):** Desktop 2.157
 rejected the corrected-version project before model loading because Services
@@ -82,8 +82,20 @@ TMDL, PBIR bindings/query identifiers, contract metadata and sample guidance.
 JavaScript and the TOM wrapper explicitly reject model-global duplicate names,
 including case-only collisions; TOM deserialization alone did not enforce this.
 Data, DAX calculations, formats and embedded SDK bytes are unchanged. The
-corrected model awaits coordinator-owned native acceptance; no native pass
-or PBIX conversion follows from local preflight.
+corrected model was subsequently used in the coordinator's native run; no
+native pass or PBIX conversion is inferred from local preflight.
+
+**Bounded native result (2026-09-10):** Desktop **2.157.1354.0** rendered all
+three corrected sample pages: Services 8 entities/14 relationships, Accounts
+6 retained entities/13 retained relationships, and hints. The first refresh
+left manual-refresh/incomplete-data banners; the second observed refresh
+completed without a dialog. The coordinator saved a Public PBIX and
+cold-reopened it without refresh, with Gateway/Orders/120 present.
+PBIX SHA-256:
+`8d1a2b245733169d5f4a54b2d3c3d878cd0e01238dc7369b6a053031c50c6f19`.
+Its embedded manifest/resource bytes exactly match the unchanged `a291552f...`
+package, independently compared offline. See the [dated evidence and boundaries](../validation/RESULTS.md#bounded-native-desktop-result-2026-09-10).
+No full-interaction, Service/export or certification claim follows.
 
 ## Release decision
 

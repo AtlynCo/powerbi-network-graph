@@ -1,7 +1,7 @@
 # Atlyn Network — authored offline sample
 
 **Target:** `1.1.0.0`, GUID `AtlynNetworkAB24C68297094C32AF64D50D92C01711`, API `5.11.0`.
-**Evidence status:** authored PBIP/PBIR/TMDL, locally validated. The coordinator's native open was rejected before model loading by duplicate measure names; this corrected source awaits another native attempt. **No successful native open, refresh, PBIX conversion or certification is claimed.**
+**Evidence status:** the coordinator reports **bounded PASS on Desktop 2.157.1354.0** for corrected sample commit `cbd21bee3de4f62ffaa93eb49a2e7881814913e5`: three pages rendered, Public PBIX saved and cold-reopened without refresh. The first refresh left manual-refresh/incomplete-data banners; the second observed refresh completed without a dialog. This is not full interaction, Service, export or certification acceptance.
 
 This is a complete source project, not a placeholder or instructions to build an empty report. It contains two graph pages with real field projections, type slicers, relationship detail tables, explanatory text, and a third hints page. Both graphs reference the embedded private custom visual. Eight semantic-model tables, fourteen DAX measures and six single-direction relationships are authored. All data partitions use literal `#table` expressions; they read no CSV, workbook, URL, database or sibling directory.
 
@@ -16,8 +16,8 @@ These are independent formats, not alternative spellings of one version.
 The coordinator's single-variable native A/B in Desktop 2.157 found that
 `4.0.0` in the second file passed JSON schema checks but silently loaded no
 report pages; `2.0.0` restored the other sample's pages. This Network source
-now uses the corrected value, but **Network native acceptance remains with
-the coordinator**. The public schema URI versions and `definition.pbism`
+now uses the corrected value. The coordinator's later bounded Network result
+is recorded below. The public schema URI versions and `definition.pbism`
 are separate and unchanged.
 
 The generator uses distinct constants in `scripts\sample-report-versions.mjs`;
@@ -46,9 +46,28 @@ the original qualified fact columns; calculations, formats and data are unchange
 The JavaScript validator checks actual authored TMDL names and contract metadata;
 the PowerShell wrapper checks the deserialized TOM collection independently.
 `test\sample-measures.test.ts` covers all seven original cross-table collisions,
-case-only/same-table collisions, and real model/projection metadata. Native
-Network model loading, refresh and rendering still belong to the coordinator.
+case-only/same-table collisions, and real model/projection metadata. The
+coordinator subsequently observed the corrected source loading and rendering.
 No runtime/PBIVIZ rebuild or frozen-artifact modification is involved.
+
+## Bounded native result, 2026-09-10
+
+The coordinator observed all three pages: Services **8 entities/14
+relationships**, Accounts **6 retained entities/13 retained relationships**,
+and hints. After the second observed refresh completed, a Public PBIX was
+saved and cold-reopened **without refresh**, with Gateway/Orders/120 present.
+Do not describe the first refresh as a clean pass or infer an automatic retry
+fix; no such fix was made.
+
+The actual `AtlynNetwork-1.1.0.0-native.pbix` is retained by the coordinator:
+202,265 bytes, SHA-256
+`8d1a2b245733169d5f4a54b2d3c3d878cd0e01238dc7369b6a053031c50c6f19`.
+Its embedded `package.json` and compiled resource match the unchanged
+`a291552f...` PBIVIZ exactly, also independently compared offline by this
+session. The source handoff at `cbd21bee` remains immutable; this live README
+records later evidence. Full measure/selection/slicer/tooltip/bookmark/
+accessibility checks, explicit offline refresh, Service/export and Microsoft
+review remain separate gates. See the [evidence record](../../docs/validation/RESULTS.md#bounded-native-desktop-result-2026-09-10).
 
 ## Open and use — manual native gate
 
