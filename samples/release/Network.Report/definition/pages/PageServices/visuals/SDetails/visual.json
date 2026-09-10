@@ -79,11 +79,11 @@
                       "Entity": "Services"
                     }
                   },
-                  "Property": "Total Weight"
+                  "Property": "Services Total Weight"
                 }
               },
-              "queryRef": "Services.Total Weight",
-              "nativeQueryRef": "Total Weight"
+              "queryRef": "Services.Services Total Weight",
+              "nativeQueryRef": "Services Total Weight"
             },
             {
               "field": {
@@ -93,11 +93,11 @@
                       "Entity": "Services"
                     }
                   },
-                  "Property": "Events"
+                  "Property": "Services Events"
                 }
               },
-              "queryRef": "Services.Events",
-              "nativeQueryRef": "Events"
+              "queryRef": "Services.Services Events",
+              "nativeQueryRef": "Services Events"
             },
             {
               "field": {
@@ -107,11 +107,11 @@
                       "Entity": "Services"
                     }
                   },
-                  "Property": "Input Rows"
+                  "Property": "Services Input Rows"
                 }
               },
-              "queryRef": "Services.Input Rows",
-              "nativeQueryRef": "Input Rows"
+              "queryRef": "Services.Services Input Rows",
+              "nativeQueryRef": "Services Input Rows"
             },
             {
               "field": {
@@ -121,11 +121,11 @@
                       "Entity": "Services"
                     }
                   },
-                  "Property": "Average Duration ms"
+                  "Property": "Services Average Duration ms"
                 }
               },
-              "queryRef": "Services.Average Duration ms",
-              "nativeQueryRef": "Average Duration ms"
+              "queryRef": "Services.Services Average Duration ms",
+              "nativeQueryRef": "Services Average Duration ms"
             }
           ]
         }

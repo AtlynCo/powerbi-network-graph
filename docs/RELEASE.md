@@ -109,13 +109,19 @@ Record tested Desktop build, operating system, browser, service environment, rep
 
 | Environment | Required verification | Evidence status |
 | --- | --- | --- |
-| Power BI Desktop | Import exact package; bind/rebind; save/reopen; selection; context; default/report tooltips; formatting; resize | Manual gate; not asserted here |
+| Power BI Desktop | Import exact package; bind/rebind; save/reopen; selection; context; default/report tooltips; formatting; resize | Bounded coordinator evidence on 2.157.1354.0: corrected sample's three pages, second observed refresh, Public PBIX save/cold-reopen. Remaining interaction/formatting/rebind cases unverified |
 | Power BI service | Authorized private test deployment; tenant policy; visual loading; selection/tooltips; browser/locale behavior | Manual gate; not asserted here |
 | PDF export | Actual export from authorized host; custom-visual availability; complete intended visual viewport; graph/list clipping and empty output | Manual gate; not asserted here |
 | PowerPoint export | Actual export; custom-visual availability; full-viewport bounds and fidelity, not just a browser screenshot | Manual gate; not asserted here |
 | Keyboard / assistive technology | Native host focus order, accessible lists, notices, all loaded-data pages, high contrast/RTL | Manual gate; not asserted here |
 
 Uncertified custom visuals may be unavailable for some export routes or blocked by tenant policy. Document the observed supported route; do not promise PDF/PPT compatibility or certification. Browser screenshots, mocks, and package generation do not close these gates.
+
+The [dated native record](validation/RESULTS.md#bounded-native-desktop-result-2026-09-10)
+includes exact PBIX/PBIVIZ hashes and embedded-member equality. The first refresh
+left manual-refresh/incomplete-data banners; only the second observed refresh
+completed with no dialog. This is not full-matrix or first-refresh acceptance,
+and does not authorize merging, certification-reference changes or submission.
 
 ## 6. Privacy, ownership, and approval
 

@@ -6,7 +6,7 @@ An offline custom visual for exploring **directed relationships supplied by a Po
 
 **Approved commercial/runtime model (2026-09-10):** acquisition is through existing Atlyn storefront subscriptions; the visual runtime is intentionally ungated, including free shared-report viewing. It does not enforce paid-author status. No license keys, new signer, AAD/API integration, feature gates, WebAccess, or runtime license requests are required or authorized. The existing offline renderer is the intended runtime; licensing integration is no longer a blocker.
 
-**Release hold:** the additional Microsoft Power BI visual certification badge is **required, not yet obtained**. Native evidence, a genuine PBIX, final assets, and the coordinator's final release gate remain pending. Main/certification ref movement, merging, and submission remain on hold. Historical sealed bundles and their "unlicensed quality candidate" labels are preserved unchanged; that wording is not a requirement to add runtime enforcement.
+**Release hold:** the additional Microsoft Power BI visual certification badge is **required, not yet obtained**. The coordinator recorded bounded Desktop `2.157.1354.0` sample rendering and genuine PBIX save/cold-reopen evidence; [the dated record](docs/validation/RESULTS.md#bounded-native-desktop-result-2026-09-10) preserves the first-refresh banners and exact coverage. Remaining native/submission cases, final assets, and the coordinator's final release gate are still open. Main/certification ref movement, merging, and submission remain on hold. Historical sealed bundles and their "unlicensed quality candidate" labels are preserved unchanged; that wording is not a requirement to add runtime enforcement.
 
 ## Scope
 

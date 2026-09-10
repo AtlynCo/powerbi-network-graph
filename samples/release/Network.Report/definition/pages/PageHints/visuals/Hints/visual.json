@@ -91,7 +91,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "BINDING: Source ID and Target ID are text. Edge ID and relationship type are categories. Total Weight is a SUM measure. Average Duration ms, Events and Input Rows are tooltip measures. Two source rows for T01 become one Power BI category tuple with weight 120.",
+                    "value": "BINDING: Source ID and Target ID are text. Edge ID and relationship type are categories. Services Total Weight and Accounts Total Weight are SUM measures. Tooltip measures use the same table prefixes: e.g. Accounts Average Duration ms, Accounts Events and Accounts Input Rows. All 14 measure names are model-global unique. Two source rows for T01 become one Power BI category tuple with weight 120.",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "14pt"

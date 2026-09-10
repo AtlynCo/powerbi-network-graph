@@ -1,30 +1,30 @@
 table Accounts
 
-	measure 'Total Weight' = SUM('Accounts'[Weight])
+	measure 'Accounts Total Weight' = SUM('Accounts'[Weight])
 		formatString: #,0.##
 		displayFolder: Investigation
 
-	measure 'Input Rows' = COUNTROWS('Accounts')
+	measure 'Accounts Input Rows' = COUNTROWS('Accounts')
 		formatString: #,0
 		displayFolder: Investigation
 
-	measure 'Events' = SUM('Accounts'[EventCount])
+	measure 'Accounts Events' = SUM('Accounts'[EventCount])
 		formatString: #,0
 		displayFolder: Investigation
 
-	measure 'Average Duration ms' = AVERAGE('Accounts'[DurationMs])
+	measure 'Accounts Average Duration ms' = AVERAGE('Accounts'[DurationMs])
 		formatString: #,0.0
 		displayFolder: Investigation
 
-	measure 'Blank Weights' = COUNTROWS(FILTER('Accounts', ISBLANK('Accounts'[Weight])))
+	measure 'Accounts Blank Weights' = COUNTROWS(FILTER('Accounts', ISBLANK('Accounts'[Weight])))
 		formatString: #,0
 		displayFolder: Investigation
 
-	measure 'Nonpositive Weights' = COUNTROWS(FILTER('Accounts', NOT(ISBLANK('Accounts'[Weight])) && 'Accounts'[Weight] <= 0))
+	measure 'Accounts Nonpositive Weights' = COUNTROWS(FILTER('Accounts', NOT(ISBLANK('Accounts'[Weight])) && 'Accounts'[Weight] <= 0))
 		formatString: #,0
 		displayFolder: Investigation
 
-	measure 'Visible Nodes' = COUNTROWS(DISTINCT(UNION(SELECTCOLUMNS('Accounts', "ID", 'Accounts'[SourceID]), SELECTCOLUMNS('Accounts', "ID", 'Accounts'[TargetID]))))
+	measure 'Accounts Visible Nodes' = COUNTROWS(DISTINCT(UNION(SELECTCOLUMNS('Accounts', "ID", 'Accounts'[SourceID]), SELECTCOLUMNS('Accounts', "ID", 'Accounts'[TargetID]))))
 		formatString: #,0
 		displayFolder: Investigation
 

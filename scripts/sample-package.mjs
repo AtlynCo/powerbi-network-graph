@@ -5,6 +5,7 @@ import path from "node:path";
 import JSZip from "jszip";
 import Ajv from "ajv";
 import { assertReportVersions, PBIR_ARTIFACT_VERSION, PBIR_DEFINITION_VERSION } from "./sample-report-versions.mjs";
+import { assertUniqueMeasureNames, measureDefinitions, measureName } from "./sample-measures.mjs";
 
 const root = process.cwd();
 const sample = path.join(root, "samples", "release");
@@ -92,17 +93,6 @@ const domains = [
 ];
 const databaseDefinition = "database Network\n\tcompatibilityLevel: 1600\n\tcompatibilityMode: powerBI\n";
 const modelDefinition = tables => `model Model\n\tculture: en-US\n\tdefaultPowerBIDataSourceVersion: powerBI_V3\n\tdiscourageImplicitMeasures\n\tsourceQueryCulture: en-US\n\nannotation __PBI_TimeIntelligenceEnabled = 0\n\n${tables.map(table => `ref table ${table}`).join("\n")}\n`;
-function measureDefinitions(table) {
-    return [
-        ["Total Weight", `SUM('${table}'[Weight])`, "#,0.##"],
-        ["Input Rows", `COUNTROWS('${table}')`, "#,0"],
-        ["Events", `SUM('${table}'[EventCount])`, "#,0"],
-        ["Average Duration ms", `AVERAGE('${table}'[DurationMs])`, "#,0.0"],
-        ["Blank Weights", `COUNTROWS(FILTER('${table}', ISBLANK('${table}'[Weight])))`, "#,0"],
-        ["Nonpositive Weights", `COUNTROWS(FILTER('${table}', NOT(ISBLANK('${table}'[Weight])) && '${table}'[Weight] <= 0))`, "#,0"],
-        ["Visible Nodes", `COUNTROWS(DISTINCT(UNION(SELECTCOLUMNS('${table}', "ID", '${table}'[SourceID]), SELECTCOLUMNS('${table}', "ID", '${table}'[TargetID]))))`, "#,0"]
-    ];
-}
 function tableDefinition(table, rows) {
     const mColumns = columns.map(([name, , type]) => `${name} = ${type}`).join(", ");
     const mRows = rows.map(row => `\t\t\t\t{${row.map(value => JSON.stringify(value)).join(", ")}}`).join(",\n");
@@ -117,10 +107,11 @@ function dimensionDefinition(table, field, values) {
 }
 const literal = value => ({ expr: { Literal: { Value: typeof value === "string" ? `'${value.replaceAll("'", "''")}'` : String(value) } } });
 function projection(table, name, measure = false) {
+    const property = measure ? measureName(table, name) : name;
     return {
-        field: { [measure ? "Measure" : "Column"]: { Expression: { SourceRef: { Entity: table } }, Property: name } },
-        queryRef: `${table}.${name}`,
-        nativeQueryRef: name
+        field: { [measure ? "Measure" : "Column"]: { Expression: { SourceRef: { Entity: table } }, Property: property } },
+        queryRef: `${table}.${property}`,
+        nativeQueryRef: property
     };
 }
 function visual(name, type, x, y, width, height, queryState, title) {
@@ -160,11 +151,12 @@ const tasks = {
         "T01 appears twice with the same endpoints/type; its weight sums to 120. T05 remains a separate parallel edge.",
         "T-CONFLICT is reused with reversed endpoints: both conflicting relationships are omitted and diagnosed.",
         "Zero weight is valid. Blank/negative weights are incomplete, use neutral styling, and are not comparable totals.",
-        "Select an edge and compare Events with Input Rows in tooltips. These synthetic records do not establish fraud or causality."
+        "Select an edge and compare Accounts Events with Accounts Input Rows in tooltips. These synthetic records do not establish fraud or causality."
     ]
 };
 
 async function author() {
+    assertUniqueMeasureNames(domains.map(({ table }) => ({ table, measures: measureDefinitions(table).map(([name]) => name) })));
     const pq = await readFile(path.join(root, "samples", "OfflineSamples.pq"), "utf8");
     const contract = { authoredOn: "2026-09-09", source: "samples/OfflineSamples.pq", sourceSha256: hash(pq), guid, domains: [] };
     const allTables = [];
@@ -233,7 +225,7 @@ async function author() {
     const hints = [
         "3. Hints and semantics",
         "START OFFLINE: open Network.pbip with current Power BI Desktop; enable PBIP/PBIR/TMDL preview features if required. Refresh loads only literal in-project tables; it needs no files, credentials or network data source.",
-        "BINDING: Source ID and Target ID are text. Edge ID and relationship type are categories. Total Weight is a SUM measure. Average Duration ms, Events and Input Rows are tooltip measures. Two source rows for T01 become one Power BI category tuple with weight 120.",
+        "BINDING: Source ID and Target ID are text. Edge ID and relationship type are categories. Services Total Weight and Accounts Total Weight are SUM measures. Tooltip measures use the same table prefixes: e.g. Accounts Average Duration ms, Accounts Events and Accounts Input Rows. All 14 measure names are model-global unique. Two source rows for T01 become one Power BI category tuple with weight 120.",
         "INVESTIGATION: distinguish source → target direction, reciprocal pairs, parallel typed relationships, self-loops and disconnected components. Use search and local neighborhood controls for exploration; use host selections and slicers for model filtering.",
         "MODEL: separate source-node and target-node dimension tables avoid ambiguous bidirectional filter paths. Type dimensions filter edge facts through single-direction many-to-one relationships. Cycles in the drawn graph are not model relationship cycles.",
         "LIMITS: this is a bounded relationship explorer, not a DAG/process miner, causal inference engine, fraud detector, arbitrary large-graph engine, or raw-event deduplication service. Incomplete known weight is not a complete total or financial balance.",
@@ -372,9 +364,23 @@ async function validate(release) {
         "Sample contract differs from its literal source; regenerate the authored sample");
     const expectedTables = new Map();
     const expectedRelationships = [];
+    const tableFiles = (await readdir(path.join(modelRoot, "definition", "tables"))).sort();
+    const modelTables = new Map();
+    const modelMeasures = [];
+    for (const filename of tableFiles) {
+        const source = await readFile(path.join(modelRoot, "definition", "tables", filename), "utf8");
+        modelTables.set(filename, source);
+        modelMeasures.push({
+            table: path.basename(filename, ".tmdl"),
+            measures: [...source.matchAll(/^\tmeasure '((?:[^']|'')+)' =/gm)].map(match => match[1].replaceAll("''", "'"))
+        });
+    }
+    assertUniqueMeasureNames(modelMeasures);
+    assertUniqueMeasureNames(contract.domains.map(domain => ({ table: domain.table, measures: domain.measures.map(([name]) => name) })));
     for (const domain of contract.domains) {
         assert.equal(domain.rows.length, domain.count);
-        const source = await readFile(path.join(modelRoot, "definition", "tables", `${domain.table}.tmdl`), "utf8");
+        assert.deepEqual(domain.measures, measureDefinitions(domain.table), `Stale measure metadata: ${domain.table}`);
+        const source = modelTables.get(`${domain.table}.tmdl`);
         assert.equal(source, tableDefinition(domain.table, domain.rows), `Authored literal table or measure changed: ${domain.table}`);
         expectedTables.set(domain.table, new Map([...columns.map(([name, type]) => [name, type]), ...domain.measures.map(([name]) => [name, "measure"])]));
         for (const dimension of domain.dimensions) {
@@ -393,7 +399,6 @@ async function validate(release) {
     assert.deepEqual([...model.matchAll(/^ref table (.+)$/gm)].map(match => match[1]).sort(), [...expectedTables.keys()].sort());
     assert.equal(model, modelDefinition([...expectedTables.keys()]), "Unsupported authored model root change");
     assert.equal(await readFile(path.join(modelRoot, "definition", "database.tmdl"), "utf8"), databaseDefinition, "Unsupported authored database root change");
-    const tableFiles = (await readdir(path.join(modelRoot, "definition", "tables"))).sort();
     assert.deepEqual(tableFiles, [...expectedTables.keys()].map(table => `${table}.tmdl`).sort());
     for (const filename of await filesBelow(modelRoot)) {
         const text = await readFile(filename, "utf8");
@@ -423,7 +428,8 @@ async function validate(release) {
                 assert.deepEqual(Object.keys(state).sort(), ["edgeId", "relationshipType", "source", "target", "tooltips", "weight"]);
                 const expectedRoleFields = {
                     source: ["SourceID"], target: ["TargetID"], relationshipType: ["RelationshipType"], edgeId: ["EdgeID"],
-                    weight: ["Total Weight"], tooltips: ["Average Duration ms", "Events", "Input Rows"]
+                    weight: [measureName(pageName.slice("Page".length), "Total Weight")],
+                    tooltips: ["Average Duration ms", "Events", "Input Rows"].map(name => measureName(pageName.slice("Page".length), name))
                 };
                 for (const [name, value] of Object.entries(state)) {
                     assert(roleNames.has(name), `Role absent from final visual: ${name}`);
@@ -439,6 +445,11 @@ async function validate(release) {
                 }
             } else assert(["textbox", "slicer", "tableEx"].includes(container.visual.visualType), "Unexpected external visual.");
             walk(container.visual.query, value => {
+                const projectionReference = value.field?.Column || value.field?.Measure;
+                if (projectionReference) {
+                    assert.equal(value.queryRef, `${projectionReference.Expression.SourceRef.Entity}.${projectionReference.Property}`, "Stale PBIR queryRef");
+                    assert.equal(value.nativeQueryRef, projectionReference.Property, "Stale PBIR nativeQueryRef");
+                }
                 const reference = value.Column || value.Measure;
                 if (!reference) return;
                 const fields = expectedTables.get(reference.Expression.SourceRef.Entity);
@@ -455,6 +466,8 @@ async function validate(release) {
     assert(accounts.rows.every(row => /^000[1-8]$/.test(row[0]) && /^000[1-8]$/.test(row[1])), "Leading-zero text IDs must be preserved");
     assert.equal(accounts.rows.filter(row => row[3] === "T01").reduce((sum, row) => sum + row[4], 0), 120);
     evidence.model = { tables: expectedTables.size, relationships: expectedRelationships.length, measures: contract.domains.reduce((count, domain) => count + domain.measures.length, 0),
+        globallyUniqueMeasureNames: true, measureNames: modelMeasures,
+        measureValidatorSha256: hash(await readFile(path.join(root, "scripts", "sample-measures.mjs"))),
         pages: pages.pageOrder.length, boundGraphVisuals: graphCount, verifiedFieldBindings: bindings, rows: Object.fromEntries(contract.domains.map(domain => [domain.table, domain.rows.length])),
         externalDataSources: 0, validation: "strict-authored-template-and-references" };
     evidence.sourceFiles = [];

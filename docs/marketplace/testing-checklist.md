@@ -1,6 +1,6 @@
 # Submission and additional-certification gates
 
-**Verified requirements: 2026-09-09. No checkbox below represents a completed native or Microsoft test.**
+**Verified requirements: 2026-09-09. Only the explicitly dated coordinator observations below represent completed native coverage; none represents a Microsoft certification test.**
 
 **2026-09-10 owner approval:** external Atlyn storefront subscription acquisition with ungated visual runtime/free shared viewing. There is no paid-author enforcement or pending runtime licensing integration. Preserve offline behavior; do not add keys, new signing/AAD/API systems, feature gates or requests. The additional Microsoft Power BI visual certification badge is a required release outcome, not a completed gate. Main/certification refs, merging and submission remain held for the parent's final gate.
 
@@ -99,9 +99,12 @@ Policy §1180.2 explicitly names **string values, empty values, negative values,
 - [x] Fully authored PBIP exists: two bound graph pages, slicers/detail tables, hints, typed literal tables, measures and model relationships.
 - [x] Local source schema/referential validation and exact candidate PBIVIZ/resource hash checks execute through `scripts/sample-package.mjs`.
 - [ ] **Rerun assembly after final source/package freeze**; confirm evidence references the final hash, not the earlier candidate.
-- [ ] Confirm report artifact `definition.pbir.version` is `"4.0"` and report/page `definition/version.json.version` is `"2.0.0"`; then verify actual page loading in Desktop. These versions are independent, and schema acceptance alone did not catch the previous no-pages issue.
+- [x] Corrected handoff has report artifact `definition.pbir.version` `"4.0"` and report/page `definition/version.json.version` `"2.0.0"`; coordinator observed all three pages on Desktop 2.157.1354.0, 2026-09-10. These formats are independent; schema acceptance alone did not catch the original no-pages issue.
+- [x] Corrected handoff has fourteen model-global unique `Services`/`Accounts` measure names and consistent TMDL/contract/PBIR metadata. Coordinator's 2026-09-10 retry loaded/rendered after the original duplicate `Total Weight` blocker; this does not verify every measure result.
 - [ ] Native Desktop open/refresh succeeds without any external data connection.
 - [ ] Both graph pages render correctly; slicers, detail tables and measures execute as intended.
 - [ ] Save real PBIX, reopen/refresh offline, inspect embedded custom visual version and content against final artifact.
+- [x] **2026-09-10 bounded coordinator observation, Desktop 2.157.1354.0:** second observed refresh completed without a dialog; all three pages rendered, with Services 8/14 and Accounts 6/13 retained entities/relationships. First refresh left native manual-refresh/incomplete-data banners; the broader rows above remain open.
+- [x] Coordinator saved `AtlynNetwork-1.1.0.0-native.pbix` and cold-reopened without refresh, with Gateway/Orders/120 present. SHA-256 `8d1a2b245733169d5f4a54b2d3c3d878cd0e01238dc7369b6a053031c50c6f19`; embedded manifest/resource bytes equal the sealed `a291552f...` PBIVIZ. This does not attest explicit offline refresh or every interaction/measure.
 - [ ] Record genuine legal, pricing, privacy, support, publisher, market and media approvals.
 - [ ] Authorized owner approves submission; Microsoft review outcome remains external and unresolved.
