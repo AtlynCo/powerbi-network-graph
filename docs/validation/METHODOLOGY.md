@@ -24,10 +24,13 @@ Desktop/Service interaction, report filtering, bookmark persistence, screen
 reader certification, native export, marketplace, or AppSource certification.
 Those remain explicit manual gates.
 
-The sealed 1.1 candidate is unlicensed rendering evidence. The owner has chosen
-paid use through existing Atlyn subscriptions; the coordinator's shared
-entitlement contract is pending. "Final" harness flags mean a frozen quality
-artifact, not a final paid build or authority to submit.
+On 2026-09-10 the owner approved external Atlyn storefront subscription
+acquisition and ungated runtime/free shared viewing, without paid-author
+enforcement. The sealed offline renderer is intended; no runtime licensing
+integration or rebuild is pending for that decision. Historical "unlicensed"
+evidence labels and frozen bundles stay unchanged. "Final" harness flags mean
+a frozen quality artifact, not authority to submit or proof of the required
+additional Power BI visual certification badge.
 
 ## Reproduce
 

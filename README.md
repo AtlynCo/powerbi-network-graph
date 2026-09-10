@@ -4,7 +4,9 @@ An offline custom visual for exploring **directed relationships supplied by a Po
 
 **Status:** private Atlyn release candidate; version `1.1.0.0`. Certification-oriented, **not Microsoft certified**. Packaging and browser checks are not evidence of native Desktop, service, or export compatibility. See the [release gates](docs/RELEASE.md) before distribution.
 
-**Commercial hold:** the owner has chosen paid distribution through existing Atlyn subscriptions. This candidate has no entitlement enforcement and is retained as **unlicensed rendering/quality evidence**, not the final paid or submission build. The coordinator is defining the shared licensing contract; do not add ad hoc checks, WebAccess, or external runtime license requests. Certification-reference movement, merging, and submission are on hold.
+**Approved commercial/runtime model (2026-09-10):** acquisition is through existing Atlyn storefront subscriptions; the visual runtime is intentionally ungated, including free shared-report viewing. It does not enforce paid-author status. No license keys, new signer, AAD/API integration, feature gates, WebAccess, or runtime license requests are required or authorized. The existing offline renderer is the intended runtime; licensing integration is no longer a blocker.
+
+**Release hold:** the additional Microsoft Power BI visual certification badge is **required, not yet obtained**. Native evidence, a genuine PBIX, final assets, and the coordinator's final release gate remain pending. Main/certification ref movement, merging, and submission remain on hold. Historical sealed bundles and their "unlicensed quality candidate" labels are preserved unchanged; that wording is not a requirement to add runtime enforcement.
 
 ## Scope
 
@@ -237,6 +239,8 @@ No public release, AppSource submission, screenshots, or published report is imp
 ## Ownership and support
 
 Copyright © 2026 Atlyn. Proprietary; see [LICENSE](LICENSE). Third-party dependencies retain their own licenses and notice obligations.
+
+The current first-party package identifier is **`UNLICENSED`** in `package.json`, not an open-source license or a runtime entitlement mechanism. `LICENSE` reserves Atlyn's rights and requires a separate written agreement for use, reproduction, modification, distribution, sublicensing, sale, or public disclosure; it preserves third-party license rights and includes warranty/liability disclaimers. These terms have not been changed. Ungated rendering/free shared viewing describes the approved product behavior, not a new copyright grant or paid-author enforcement; Power BI's own licensing and report security still apply.
 
 Runtime third-party notices are bundled as offline text inside the visual, available by expanding **Atlyn Network → Third-party licenses**, as well as in `THIRD_PARTY_NOTICES.txt`. Run `npm run notices` after a dependency change, review the generated literal source, and rebuild; recipients of only the PBIVIZ must not depend on an omitted bundler license sidecar.
 

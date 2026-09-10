@@ -1,11 +1,17 @@
-# Sealed unlicensed quality candidate
+# Sealed offline quality candidate
 
-**2026-09-09; version 1.1.0.0. Not the final paid/submission build.**
+**Evidence captured 2026-09-09; version 1.1.0.0. Owner runtime approval updated 2026-09-10.**
 
-The owner has approved paid distribution using existing Atlyn subscriptions.
-The coordinator is resolving the shared entitlement contract. This package
-contains no entitlement enforcement and is preserved as unlicensed rendering
-evidence. Certification-reference movement, merge and submission are on hold.
+The owner approved external Atlyn storefront subscription acquisition with
+intentionally ungated runtime/free shared viewing. This existing offline
+renderer is intended; runtime licensing integration is no longer a blocker,
+and it does not enforce paid-author status. No repackage/version bump or
+modification of frozen bundles, source archives, manifests or images is made.
+Historical "unlicensed" labels mean no runtime checks, not an amended license.
+
+The additional Power BI visual certification badge is required, not obtained.
+Main/certification ref movement, merging and submission remain on hold for the
+parent's final native/assets/legal/release gate.
 
 | Identity | Value |
 |---|---|
@@ -122,10 +128,10 @@ and official TOM deserialization are checked; M/DAX execution, Desktop refresh/r
 genuine offline PBIX conversion remain with the coordinator. Source-only PBIP
 validation does not close them.
 
-Also pending: agreed paid-entitlement implementation and its final package,
-native selection/bookmark/context/tooltip propagation, service/mobile/actual
+Also pending: native selection/bookmark/context/tooltip propagation, service/mobile/actual
 exports, native assistive technology, official submission dataset clarification,
 legal/privacy/support/market approvals, secure Microsoft source access, and
-authorized submission/review. See the Marketplace matrix and verified
-competitor workflow comparison. No certification branch was moved and no
-merge/submission was performed.
+authorized submission/review and the required additional Power BI visual
+certification badge. See the Marketplace matrix and verified competitor
+workflow comparison. The historical evidence remains unchanged; these
+documentation updates do not move certification refs or authorize submission.
