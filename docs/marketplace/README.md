@@ -74,6 +74,17 @@ generator and both validators now distinguish these versions, with regression
 coverage. This corrects sample metadata only; the SDK-produced PBIVIZ stays
 byte-identical. Network native acceptance is still pending.
 
+**Subsequent actual Network native blocker (2026-09-10):** Desktop 2.157
+rejected the corrected-version project before model loading because Services
+and Accounts both declared the same seven measure names, starting with
+`Total Weight`. All fourteen now carry `Services` or `Accounts` prefixes in
+TMDL, PBIR bindings/query identifiers, contract metadata and sample guidance.
+JavaScript and the TOM wrapper explicitly reject model-global duplicate names,
+including case-only collisions; TOM deserialization alone did not enforce this.
+Data, DAX calculations, formats and embedded SDK bytes are unchanged. The
+corrected model awaits coordinator-owned native acceptance; no native pass
+or PBIX conversion follows from local preflight.
+
 ## Release decision
 
 Local code tests, a completed PBIP, a zero-error static preflight and an attractive image are each useful evidence, but do not replace the [complete native/submission matrix](testing-checklist.md), legal/commercial approvals, a same-version offline PBIX, or Microsoft's own review.

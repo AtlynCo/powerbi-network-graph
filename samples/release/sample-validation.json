@@ -1,6 +1,6 @@
 {
   "status": "local-structure-only",
-  "assemblerSha256": "5f4935cce5e4fed70d55ec28017af1340bd6143f648600b53de57d10257a8304",
+  "assemblerSha256": "1694f1a2631e8fd056f1f00b72921faf8e7ebc7de3170e73db2031fdb72eb369",
   "visual": {
     "guid": "AtlynNetworkAB24C68297094C32AF64D50D92C01711",
     "version": "1.1.0.0",
@@ -39,6 +39,58 @@
     "tables": 8,
     "relationships": 6,
     "measures": 14,
+    "globallyUniqueMeasureNames": true,
+    "measureNames": [
+      {
+        "table": "Accounts",
+        "measures": [
+          "Accounts Total Weight",
+          "Accounts Input Rows",
+          "Accounts Events",
+          "Accounts Average Duration ms",
+          "Accounts Blank Weights",
+          "Accounts Nonpositive Weights",
+          "Accounts Visible Nodes"
+        ]
+      },
+      {
+        "table": "AccountsSources",
+        "measures": []
+      },
+      {
+        "table": "AccountsTargets",
+        "measures": []
+      },
+      {
+        "table": "AccountsTypes",
+        "measures": []
+      },
+      {
+        "table": "Services",
+        "measures": [
+          "Services Total Weight",
+          "Services Input Rows",
+          "Services Events",
+          "Services Average Duration ms",
+          "Services Blank Weights",
+          "Services Nonpositive Weights",
+          "Services Visible Nodes"
+        ]
+      },
+      {
+        "table": "ServicesSources",
+        "measures": []
+      },
+      {
+        "table": "ServicesTargets",
+        "measures": []
+      },
+      {
+        "table": "ServicesTypes",
+        "measures": []
+      }
+    ],
+    "measureValidatorSha256": "5924c543fd0900366dd8db7986ee064c91d0f5cd196492bcc1bcada33a9c0f4d",
     "pages": 3,
     "boundGraphVisuals": 2,
     "verifiedFieldBindings": 34,
@@ -73,15 +125,15 @@
     },
     {
       "path": "Network.Report/definition/pages/PageAccounts/visuals/ADetails/visual.json",
-      "sha256": "e2dd6dda2f1e8b801e08b9501f05fd00e1b1dd5d2fdc330d4836feff9dfb373a"
+      "sha256": "77ec957895a58b98ac636f1c9cb10e142506740c3acffc693cdfd2fdbeae7a3c"
     },
     {
       "path": "Network.Report/definition/pages/PageAccounts/visuals/AGraph/visual.json",
-      "sha256": "3809980aa365c75e1a7d4b36157cabe8bf4e015b36dfa85f3f7598aedbae3de1"
+      "sha256": "26b878c124a3223e8dbe58c6e259f5b4fcb66fde92f3931f4152058864da6625"
     },
     {
       "path": "Network.Report/definition/pages/PageAccounts/visuals/AGuide/visual.json",
-      "sha256": "9c9ad16db668d5477a8b4436b3136a704337879888d1a10a0a16b98124d9e818"
+      "sha256": "408136bb2567a27c5f6c32d466bb9613e004b8f0c56621d46411be6b73793985"
     },
     {
       "path": "Network.Report/definition/pages/PageAccounts/visuals/AHeading/visual.json",
@@ -101,7 +153,7 @@
     },
     {
       "path": "Network.Report/definition/pages/PageHints/visuals/Hints/visual.json",
-      "sha256": "7611137c59ab1a9f9e32c4bb14dbe13e8931fc3de59221290a2c1953f5d3f0ed"
+      "sha256": "6812e2f224732d2e8ed8d96d2a4ac36b81cb8e0d219676066076c610ad918084"
     },
     {
       "path": "Network.Report/definition/pages/PageServices/page.json",
@@ -109,11 +161,11 @@
     },
     {
       "path": "Network.Report/definition/pages/PageServices/visuals/SDetails/visual.json",
-      "sha256": "8c8c822b69fd18c7f9976809f994b740415a287704503db446967951ca3a06b3"
+      "sha256": "fbb1b177da3f8f0391c42ba5574c0e3973c138a971016db6e06478827b2bcb2c"
     },
     {
       "path": "Network.Report/definition/pages/PageServices/visuals/SGraph/visual.json",
-      "sha256": "9886b736335daca62292ed2da91e079f69438f9956b3b985f99ff0771aa9e4e1"
+      "sha256": "18a43732e234f3f6623cc04eb7669e5d78666478c5b49bea196af5850f47d32a"
     },
     {
       "path": "Network.Report/definition/pages/PageServices/visuals/SGuide/visual.json",
@@ -161,7 +213,7 @@
     },
     {
       "path": "Network.SemanticModel/definition/tables/Accounts.tmdl",
-      "sha256": "e64562d98a6943a0d1abb55cbb0231cd7ab3d1f589bae93b1f3060f44746c11b"
+      "sha256": "6eddb520ea023b48cab58fdd786718a4b36d172157745c2eac45da833174fe63"
     },
     {
       "path": "Network.SemanticModel/definition/tables/AccountsSources.tmdl",
@@ -177,7 +229,7 @@
     },
     {
       "path": "Network.SemanticModel/definition/tables/Services.tmdl",
-      "sha256": "b91d7a4da87a71f1f9f7f712f5f4fa9678dbcc48c0bce7523f428a8554c60dfc"
+      "sha256": "f24f89f6b9ad3a089f58241e66bba307bbcf005832ec9237405f3ffe489dcc5f"
     },
     {
       "path": "Network.SemanticModel/definition/tables/ServicesSources.tmdl",

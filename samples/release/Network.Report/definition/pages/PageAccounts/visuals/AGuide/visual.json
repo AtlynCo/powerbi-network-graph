@@ -157,7 +157,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Select an edge and compare Events with Input Rows in tooltips. These synthetic records do not establish fraud or causality.",
+                    "value": "Select an edge and compare Accounts Events with Accounts Input Rows in tooltips. These synthetic records do not establish fraud or causality.",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "10pt"

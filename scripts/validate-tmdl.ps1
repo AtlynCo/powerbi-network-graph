@@ -10,6 +10,18 @@ $reportArtifactVersion = "4.0"
 $reportDefinitionVersion = "2.0.0"
 Add-Type -Path $assembly
 $database = [Microsoft.AnalysisServices.Tabular.TmdlSerializer]::DeserializeDatabaseFromFolder($definition)
+$measureOwners = [System.Collections.Generic.Dictionary[string,string]]::new([StringComparer]::OrdinalIgnoreCase)
+$measureNames = @(
+    foreach ($table in $database.Model.Tables) {
+        foreach ($measure in $table.Measures) {
+            if ($measureOwners.ContainsKey($measure.Name)) {
+                throw "Duplicate model-global measure name '$($measure.Name)' in '$($measureOwners[$measure.Name])' and '$($table.Name)'."
+            }
+            $measureOwners.Add($measure.Name, $table.Name)
+            [ordered]@{ table = $table.Name; name = $measure.Name }
+        }
+    }
+)
 if ($database.Model.Tables.Count -ne 8 -or $database.Model.Relationships.Count -ne 6) {
     throw "The deserialized model does not contain the expected eight tables and six relationships."
 }
@@ -49,11 +61,13 @@ $result = [ordered]@{
     tables = $tables
     relationships = $database.Model.Relationships.Count
     measures = $measures
+    globallyUniqueMeasureNames = $true
+    measureNames = $measureNames
     pbirArtifactVersion = $artifact.version
     pbirDefinitionVersion = $version.version
     reportFiles = $reportFiles
     sourceFiles = $sourceFiles
-    limitations = "Official local TOM grammar/deserialization and required PBIR structure only. No Desktop UI, server, Power Query refresh, DAX evaluation, visual loading or PBIX conversion."
+    limitations = "Official local TOM grammar/deserialization, explicit model-global measure uniqueness and required PBIR structure only. No Desktop UI, server, Power Query refresh, DAX evaluation, visual loading or PBIX conversion."
 }
 $result | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $root "dist\tmdl-validation.json") -Encoding utf8
-Write-Output "Official TOM deserialized 8 tables, 14 measures and 6 relationships; required PBIR version/structure present."
+Write-Output "Official TOM deserialized 8 tables, 14 globally unique measures and 6 relationships; required PBIR version/structure present."

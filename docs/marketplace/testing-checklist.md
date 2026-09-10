@@ -100,6 +100,7 @@ Policy §1180.2 explicitly names **string values, empty values, negative values,
 - [x] Local source schema/referential validation and exact candidate PBIVIZ/resource hash checks execute through `scripts/sample-package.mjs`.
 - [ ] **Rerun assembly after final source/package freeze**; confirm evidence references the final hash, not the earlier candidate.
 - [ ] Confirm report artifact `definition.pbir.version` is `"4.0"` and report/page `definition/version.json.version` is `"2.0.0"`; then verify actual page loading in Desktop. These versions are independent, and schema acceptance alone did not catch the previous no-pages issue.
+- [ ] Confirm fourteen model-global unique measure names with `Services`/`Accounts` prefixes, matching TMDL/contract/PBIR query metadata. The coordinator's actual Network Desktop 2.157 open rejected duplicate `Total Weight` before model loading; TOM parsing alone did not catch this. Retest the corrected project natively.
 - [ ] Native Desktop open/refresh succeeds without any external data connection.
 - [ ] Both graph pages render correctly; slicers, detail tables and measures execute as intended.
 - [ ] Save real PBIX, reopen/refresh offline, inspect embedded custom visual version and content against final artifact.

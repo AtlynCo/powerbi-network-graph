@@ -188,37 +188,37 @@
       ],
       "measures": [
         [
-          "Total Weight",
+          "Services Total Weight",
           "SUM('Services'[Weight])",
           "#,0.##"
         ],
         [
-          "Input Rows",
+          "Services Input Rows",
           "COUNTROWS('Services')",
           "#,0"
         ],
         [
-          "Events",
+          "Services Events",
           "SUM('Services'[EventCount])",
           "#,0"
         ],
         [
-          "Average Duration ms",
+          "Services Average Duration ms",
           "AVERAGE('Services'[DurationMs])",
           "#,0.0"
         ],
         [
-          "Blank Weights",
+          "Services Blank Weights",
           "COUNTROWS(FILTER('Services', ISBLANK('Services'[Weight])))",
           "#,0"
         ],
         [
-          "Nonpositive Weights",
+          "Services Nonpositive Weights",
           "COUNTROWS(FILTER('Services', NOT(ISBLANK('Services'[Weight])) && 'Services'[Weight] <= 0))",
           "#,0"
         ],
         [
-          "Visible Nodes",
+          "Services Visible Nodes",
           "COUNTROWS(DISTINCT(UNION(SELECTCOLUMNS('Services', \"ID\", 'Services'[SourceID]), SELECTCOLUMNS('Services', \"ID\", 'Services'[TargetID]))))",
           "#,0"
         ]
@@ -418,37 +418,37 @@
       ],
       "measures": [
         [
-          "Total Weight",
+          "Accounts Total Weight",
           "SUM('Accounts'[Weight])",
           "#,0.##"
         ],
         [
-          "Input Rows",
+          "Accounts Input Rows",
           "COUNTROWS('Accounts')",
           "#,0"
         ],
         [
-          "Events",
+          "Accounts Events",
           "SUM('Accounts'[EventCount])",
           "#,0"
         ],
         [
-          "Average Duration ms",
+          "Accounts Average Duration ms",
           "AVERAGE('Accounts'[DurationMs])",
           "#,0.0"
         ],
         [
-          "Blank Weights",
+          "Accounts Blank Weights",
           "COUNTROWS(FILTER('Accounts', ISBLANK('Accounts'[Weight])))",
           "#,0"
         ],
         [
-          "Nonpositive Weights",
+          "Accounts Nonpositive Weights",
           "COUNTROWS(FILTER('Accounts', NOT(ISBLANK('Accounts'[Weight])) && 'Accounts'[Weight] <= 0))",
           "#,0"
         ],
         [
-          "Visible Nodes",
+          "Accounts Visible Nodes",
           "COUNTROWS(DISTINCT(UNION(SELECTCOLUMNS('Accounts', \"ID\", 'Accounts'[SourceID]), SELECTCOLUMNS('Accounts', \"ID\", 'Accounts'[TargetID]))))",
           "#,0"
         ]

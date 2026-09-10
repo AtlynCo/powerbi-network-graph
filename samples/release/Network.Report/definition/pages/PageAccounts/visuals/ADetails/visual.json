@@ -79,11 +79,11 @@
                       "Entity": "Accounts"
                     }
                   },
-                  "Property": "Total Weight"
+                  "Property": "Accounts Total Weight"
                 }
               },
-              "queryRef": "Accounts.Total Weight",
-              "nativeQueryRef": "Total Weight"
+              "queryRef": "Accounts.Accounts Total Weight",
+              "nativeQueryRef": "Accounts Total Weight"
             },
             {
               "field": {
@@ -93,11 +93,11 @@
                       "Entity": "Accounts"
                     }
                   },
-                  "Property": "Events"
+                  "Property": "Accounts Events"
                 }
               },
-              "queryRef": "Accounts.Events",
-              "nativeQueryRef": "Events"
+              "queryRef": "Accounts.Accounts Events",
+              "nativeQueryRef": "Accounts Events"
             },
             {
               "field": {
@@ -107,11 +107,11 @@
                       "Entity": "Accounts"
                     }
                   },
-                  "Property": "Input Rows"
+                  "Property": "Accounts Input Rows"
                 }
               },
-              "queryRef": "Accounts.Input Rows",
-              "nativeQueryRef": "Input Rows"
+              "queryRef": "Accounts.Accounts Input Rows",
+              "nativeQueryRef": "Accounts Input Rows"
             },
             {
               "field": {
@@ -121,11 +121,11 @@
                       "Entity": "Accounts"
                     }
                   },
-                  "Property": "Average Duration ms"
+                  "Property": "Accounts Average Duration ms"
                 }
               },
-              "queryRef": "Accounts.Average Duration ms",
-              "nativeQueryRef": "Average Duration ms"
+              "queryRef": "Accounts.Accounts Average Duration ms",
+              "nativeQueryRef": "Accounts Average Duration ms"
             }
           ]
         }

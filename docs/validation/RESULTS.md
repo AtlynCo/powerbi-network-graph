@@ -140,6 +140,37 @@ remain the sealed `a291552f...` package; no repackage/version bump occurred.
 Frozen evidence is not rewritten. A distinct corrected sample handoff replaces
 the earlier sample for native testing, not the original renderer evidence.
 
+### Model-global measure correction after the native Network attempt
+
+Later on 2026-09-10, the coordinator's Desktop 2.157 rejected the corrected-PBIR
+Network project before model loading/rendering: `Total Weight` already existed
+in `Model`. Services and Accounts each declared the same seven measure names.
+The original successful TOM deserialization did not enforce native model-global
+uniqueness and must not be interpreted as a native model pass.
+
+All fourteen declarations now have table prefixes, with consistent PBIR
+measure properties/query identifiers, contract metadata and visible guidance.
+JavaScript checks actual authored TMDL names and contract metadata; the
+PowerShell wrapper independently checks the deserialized TOM measure collection
+with case-insensitive model-global comparison. Regressions cover all seven
+original duplicate names and actual authored model/binding consistency.
+Calculations, formats, literal rows, relationships, report artifact `4.0`,
+report-definition `2.0.0` and sealed SDK bytes are unchanged. Native model
+loading/refresh/render and PBIX conversion remain pending with the coordinator.
+A new standalone corrected sample/source handoff supersedes earlier samples
+without rewriting any frozen bundle.
+
+Both revised validators rejected the original duplicate-name sample before
+regeneration. On the corrected source, 56 targeted measure/version/topology
+tests pass, including 13 new measure cases; lint and typecheck pass.
+Official TOM plus the independent uniqueness guard reports eight tables,
+fourteen globally unique measures and six relationships. JavaScript validates
+22 schema files and 34 field bindings. `dist\measure-correction-tests.json`,
+`dist\tmdl-validation.json` and `dist\measure-scope-verification.json` retain
+local results: every DAX expression/format/literal row is unchanged, and the
+four bound graph/detail visuals differ only in measure/query identifiers.
+This is source/model preflight, not a replacement for the failed native gate.
+
 The offline PBIP has three pages, two bound graph visuals, eight literal tables,
 fourteen measures and six relationships. Public schemas and strict references
 and official TOM deserialization are checked; M/DAX execution, Desktop refresh/render/save/reopen and a
