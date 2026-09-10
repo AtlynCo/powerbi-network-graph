@@ -9,7 +9,9 @@
 - Intended artifact: the audited `.pbiviz` package, not source renamed as `.pbix`.
 - Certification-oriented engineering **does not mean Microsoft certified**.
 
-The owner has approved paid distribution through existing Atlyn subscriptions. This candidate is **unlicensed rendering/quality evidence**, not the final paid/submission package. The coordinator owns the shared entitlement contract. Until it arrives, hold certification-reference movement, merge, and submission; do not add ad hoc licensing or external runtime requests.
+On 2026-09-10 the owner approved the existing pattern: **external Atlyn storefront subscription acquisition, intentionally ungated visual runtime, and free shared viewing**. The current offline renderer is intended; no runtime licensing work or paid-author enforcement is required. Do not add keys, new signing/AAD/API systems, feature gates, WebAccess, or runtime license requests. Keep the frozen packages, source archives and manifests unchanged; this documentation decision does not require repackaging or a version bump.
+
+The **additional Microsoft Power BI visual certification badge is required**, separately from general Marketplace listing approval. It is not yet obtained. Main/certification ref movement, merging and submission remain held for the coordinator's final native/assets/legal/release gate, not an awaiting-paid-integration gate.
 
 This document is an **acceptance checklist, not a completed test report**. Unchecked items are required evidence, not known failures. Record the commit, tool versions, exact commands, dates, artifact hashes, outcomes, and remaining limitations in the authorized release record. Do not claim native outcomes from tests that use a mock host.
 
@@ -120,6 +122,9 @@ Uncertified custom visuals may be unavailable for some export routes or blocked 
 - [ ] Confirm `privileges: []`, no external JavaScript/assets, no runtime network requests, no telemetry, no authentication, no license gating, and no dynamic evaluation.
 - [ ] Inspect final runtime/package output, not only source, for unexpected content or dependencies.
 - [ ] Confirm proprietary Atlyn licensing and fulfill third-party notices/license obligations.
+- [ ] Preserve the existing first-party `UNLICENSED` package identifier and proprietary `LICENSE`; do not invent or substitute an open-source license or customer contract.
+- [ ] Ensure listing copy distinguishes external subscription acquisition from ungated runtime/free shared viewing; do not claim paid-author enforcement.
+- [ ] Obtain the required additional Power BI visual certification/badge through Microsoft's review; do not infer it from local preflight or Marketplace listing approval.
 - [ ] Verify support responsiveness and suitability for the distribution audience before publication/external distribution. Existing metadata is Atlyn / `atlyn.help@gmail.com` / `https://www.atlynco.com/docs/faq`; the coordinator has confirmed it and verified support-page content. This confirmation does not close the responsiveness gate or authorize publication.
 - [ ] Explain that private GitHub source/issues/PR URLs require authorized access; provide a verified support route appropriate to any eventual distribution audience.
 - [ ] Ensure all examples are synthetic and no report, dataset, credentials, screenshots, or customer identifiers are unintentionally distributed.

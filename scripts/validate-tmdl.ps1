@@ -6,6 +6,8 @@ $root = Split-Path -Parent $PSScriptRoot
 $assembly = (Resolve-Path -LiteralPath $AssemblyPath).Path
 $definition = Join-Path $root "samples\release\Network.SemanticModel\definition"
 $reportRoot = Join-Path $root "samples\release\Network.Report"
+$reportArtifactVersion = "4.0"
+$reportDefinitionVersion = "2.0.0"
 Add-Type -Path $assembly
 $database = [Microsoft.AnalysisServices.Tabular.TmdlSerializer]::DeserializeDatabaseFromFolder($definition)
 if ($database.Model.Tables.Count -ne 8 -or $database.Model.Relationships.Count -ne 6) {
@@ -21,8 +23,16 @@ foreach ($file in @("definition.pbir", "definition\version.json", "definition\re
         throw "Required PBIR structure missing: $file"
     }
 }
+$artifact = Get-Content -LiteralPath (Join-Path $reportRoot "definition.pbir") -Raw | ConvertFrom-Json
 $version = Get-Content -LiteralPath (Join-Path $reportRoot "definition\version.json") -Raw | ConvertFrom-Json
-if ($version.version -ne "4.0.0") { throw "Unexpected PBIR definition version." }
+if ($artifact.version -ne $reportArtifactVersion) { throw "definition.pbir must retain report artifact version 4.0." }
+if ($version.version -ne $reportDefinitionVersion) { throw "definition/version.json must use report definition version 2.0.0, not the artifact version." }
+$reportFiles = @(
+    @("definition.pbir", "definition\version.json", "definition\report.json", "definition\pages\pages.json") | ForEach-Object {
+        $file = Join-Path $reportRoot $_
+        [ordered]@{ file = [IO.Path]::GetRelativePath($root, $file); sha256 = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant() }
+    }
+)
 $sourceFiles = @(
     Get-ChildItem -LiteralPath $definition -File -Recurse | Sort-Object FullName | ForEach-Object {
         [ordered]@{ file = [IO.Path]::GetRelativePath($root, $_.FullName); sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() }
@@ -39,7 +49,9 @@ $result = [ordered]@{
     tables = $tables
     relationships = $database.Model.Relationships.Count
     measures = $measures
+    pbirArtifactVersion = $artifact.version
     pbirDefinitionVersion = $version.version
+    reportFiles = $reportFiles
     sourceFiles = $sourceFiles
     limitations = "Official local TOM grammar/deserialization and required PBIR structure only. No Desktop UI, server, Power Query refresh, DAX evaluation, visual loading or PBIX conversion."
 }

@@ -2,7 +2,9 @@
 
 **Research checked: 2026-09-09. Release target: 1.1.0.0. Status: preparation, not submission or certification.**
 
-**Owner decision / hold:** paid distribution using existing Atlyn subscriptions is approved. Entitlement architecture and the exact storefront/host licensing contract remain with the coordinator. The current package is unlicensed rendering evidence, **not a final paid/submission build**. Do not move the certification ref, merge, submit, or add ad hoc runtime license calls while that contract is pending.
+**Owner-approved pattern (2026-09-10):** external storefront subscriptions govern acquisition; visuals run ungated, with free shared viewing and no paid-author enforcement. The existing offline renderer is intended, following the coordinator's assessment of existing Distribution/Scatter source. No keys, new signer, AAD/API integration, feature gates or runtime requests are to be added. Runtime licensing is no longer a blocker.
+
+**Still held:** native evidence, real PBIX/final assets, legal/reviewer-access and the coordinator's final gate. The additional Microsoft Power BI visual certification badge is **required, not achieved**; general Marketplace approval is not a substitute. Do not move main/certification refs, merge, or submit before that gate. This decision does not repackage, bump the version, or modify frozen evidence.
 
 This directory separates Microsoft requirements, repository evidence, proposed listing copy, and decisions that only an authorized Atlyn owner can approve. No Partner Center account was accessed or changed by this work. No offer was created/submitted/published; no reviewer permissions or hosted workflow runs were created. Source changes are delivered separately through a private review branch/PR, with no certification-reference movement.
 
@@ -23,12 +25,13 @@ This directory separates Microsoft requirements, repository evidence, proposed l
 | Privacy | Valid public HTTPS organization privacy-policy URL | **Unresolved owner/legal approval and verified URL** |
 | Terms | Accepted standard contract or own/Power BI visuals EULA, according to Partner Center options | **Unresolved legal choice and acceptance** |
 | Source | Single visual; reviewable source; lowercase **`certification`** branch matching submitted package | **Coordinator Git action after final baseline; no branch created here** |
+| Additional Power BI visual certification badge | Separate Microsoft review beyond general listing approval | **Owner-required; not yet obtained** |
 
 Sources: [publish requirements][publish], [technical configuration][technical], [listing media][listing], [certification requirements][certification].
 
 Screenshot callouts can explain real features, but must not hide errors or imply unsupported features. Retain original image, package hash, input data, environment and capture method. A browser-host mock image can demonstrate packaged rendering; label it **mock-host evidence, not Power BI Desktop/service validation**. Do not use vendor UI, fabricated Desktop chrome, certification badges, or a screenshot from another package version. Native screenshots and accessible media approval remain operator tasks.
 
-Four [checked-in quality images](media/) now show the actual sealed package with explicit unlicensed/mock-host banners. `media/provenance.json` records package, image and sample hashes. These are retained evidence, **not approved media for the pending paid build**; replace/reapprove them against that build before submission.
+Four [checked-in quality images](media/) show the sealed package with historical unlicensed/mock-host banners. `media/provenance.json` records package, image and sample hashes. Preserve these images and frozen provenance unchanged. "Unlicensed" describes absence of runtime checks, not a missing implementation or a change to copyright terms. Parent-supplied native/final media still needs approval before submission; no new paid-runtime build is expected solely for licensing.
 
 ## Source branch and reproducibility
 
@@ -62,6 +65,14 @@ node .\scripts\sample-package.mjs --validate
 - [Public MIT-licensed private-visual PBIR example][private-example]: corroborates the private visual registration convention: metadata `name` and `path` are the resource filename, while the physical file remains under `CustomVisuals/<GUID>/resources/`. Only configuration conventions were inspected; no third-party visual code/report content is bundled.
 
 The source project passes public JSON schemas and strict authored-template/referential checks. The separate `scripts/validate-tmdl.ps1` preflight also successfully deserializes it using official Microsoft TOM and checks required PBIR version/structure. **No Power Query runtime, DAX engine or Desktop renderer has been invoked.** These gates establish model grammar and report structure, not private-visual native loading. The coordinator must record and resolve any native diagnostic before calling it release-ready.
+
+**Native-driven sample correction (2026-09-10):** preserve `definition.pbir`
+artifact version `"4.0"` but use `"2.0.0"` in `definition/version.json`.
+The earlier `"4.0.0"` report-definition value passed schema checks yet caused
+no pages to load in the coordinator's other-sample native A/B. The Network
+generator and both validators now distinguish these versions, with regression
+coverage. This corrects sample metadata only; the SDK-produced PBIVIZ stays
+byte-identical. Network native acceptance is still pending.
 
 ## Release decision
 

@@ -2,6 +2,8 @@
 
 **Verified requirements: 2026-09-09. No checkbox below represents a completed native or Microsoft test.**
 
+**2026-09-10 owner approval:** external Atlyn storefront subscription acquisition with ungated visual runtime/free shared viewing. There is no paid-author enforcement or pending runtime licensing integration. Preserve offline behavior; do not add keys, new signing/AAD/API systems, feature gates or requests. The additional Microsoft Power BI visual certification badge is a required release outcome, not a completed gate. Main/certification refs, merging and submission remain held for the parent's final gate.
+
 Sources:
 
 1. [Testing submissions](https://learn.microsoft.com/en-us/power-bi/developer/visuals/submission-testing) — general, browser, Desktop and performance cases.
@@ -79,6 +81,7 @@ Policy §1180.2 explicitly names **string values, empty values, negative values,
 
 ## Additional certification code/source gates
 
+- [ ] Obtain the explicitly required additional Power BI visual certification/badge; general Marketplace listing approval and local preflight do not satisfy it.
 - [ ] Single non-R visual, reviewable OSS components only, no private/commercial unreviewable runtime dependencies.
 - [ ] Latest API/tools requirement reconciled with approved release contract; exact-source reproducible final package.
 - [ ] Required files/dependencies/lint command, no tracked `node_modules`, `.tmp`, `dist` in source submission.
@@ -96,6 +99,7 @@ Policy §1180.2 explicitly names **string values, empty values, negative values,
 - [x] Fully authored PBIP exists: two bound graph pages, slicers/detail tables, hints, typed literal tables, measures and model relationships.
 - [x] Local source schema/referential validation and exact candidate PBIVIZ/resource hash checks execute through `scripts/sample-package.mjs`.
 - [ ] **Rerun assembly after final source/package freeze**; confirm evidence references the final hash, not the earlier candidate.
+- [ ] Confirm report artifact `definition.pbir.version` is `"4.0"` and report/page `definition/version.json.version` is `"2.0.0"`; then verify actual page loading in Desktop. These versions are independent, and schema acceptance alone did not catch the previous no-pages issue.
 - [ ] Native Desktop open/refresh succeeds without any external data connection.
 - [ ] Both graph pages render correctly; slicers, detail tables and measures execute as intended.
 - [ ] Save real PBIX, reopen/refresh offline, inspect embedded custom visual version and content against final artifact.

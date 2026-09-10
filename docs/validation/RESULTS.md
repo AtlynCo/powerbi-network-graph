@@ -1,11 +1,17 @@
-# Sealed unlicensed quality candidate
+# Sealed offline quality candidate
 
-**2026-09-09; version 1.1.0.0. Not the final paid/submission build.**
+**Evidence captured 2026-09-09; version 1.1.0.0. Owner runtime approval updated 2026-09-10.**
 
-The owner has approved paid distribution using existing Atlyn subscriptions.
-The coordinator is resolving the shared entitlement contract. This package
-contains no entitlement enforcement and is preserved as unlicensed rendering
-evidence. Certification-reference movement, merge and submission are on hold.
+The owner approved external Atlyn storefront subscription acquisition with
+intentionally ungated runtime/free shared viewing. This existing offline
+renderer is intended; runtime licensing integration is no longer a blocker,
+and it does not enforce paid-author status. No repackage/version bump or
+modification of frozen bundles, source archives, manifests or images is made.
+Historical "unlicensed" labels mean no runtime checks, not an amended license.
+
+The additional Power BI visual certification badge is required, not obtained.
+Main/certification ref movement, merging and submission remain on hold for the
+parent's final native/assets/legal/release gate.
 
 | Identity | Value |
 |---|---|
@@ -116,16 +122,34 @@ all-label visibility, or best-in-class layout is made.
 
 ## Remaining gates
 
+### Sample metadata correction after the sealed runtime
+
+On 2026-09-10, the coordinator reported a native Desktop 2.157 single-variable
+A/B in another visual's sample: report-definition version `4.0.0` passed
+schema validation but silently loaded no report pages; `2.0.0` restored them.
+Network had the same incorrect value. Its live sample and generator now use
+`definition/version.json.version = "2.0.0"` while preserving the independent
+`definition.pbir.version = "4.0"`.
+
+Both updated validators rejected Network's old value before regeneration and
+accepted the corrected sample afterward; official TOM still parses eight
+tables, fourteen measures and six relationships. Eleven focused version
+regressions plus the 32 related topology/sample cases pass. These are local
+checks, **not Network native acceptance**. Runtime and embedded PBIVIZ bytes
+remain the sealed `a291552f...` package; no repackage/version bump occurred.
+Frozen evidence is not rewritten. A distinct corrected sample handoff replaces
+the earlier sample for native testing, not the original renderer evidence.
+
 The offline PBIP has three pages, two bound graph visuals, eight literal tables,
 fourteen measures and six relationships. Public schemas and strict references
 and official TOM deserialization are checked; M/DAX execution, Desktop refresh/render/save/reopen and a
 genuine offline PBIX conversion remain with the coordinator. Source-only PBIP
 validation does not close them.
 
-Also pending: agreed paid-entitlement implementation and its final package,
-native selection/bookmark/context/tooltip propagation, service/mobile/actual
+Also pending: native selection/bookmark/context/tooltip propagation, service/mobile/actual
 exports, native assistive technology, official submission dataset clarification,
 legal/privacy/support/market approvals, secure Microsoft source access, and
-authorized submission/review. See the Marketplace matrix and verified
-competitor workflow comparison. No certification branch was moved and no
-merge/submission was performed.
+authorized submission/review and the required additional Power BI visual
+certification badge. See the Marketplace matrix and verified competitor
+workflow comparison. The historical evidence remains unchanged; these
+documentation updates do not move certification refs or authorize submission.

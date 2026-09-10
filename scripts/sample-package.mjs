@@ -4,6 +4,7 @@ import { readFile, writeFile, mkdir, readdir, rm } from "node:fs/promises";
 import path from "node:path";
 import JSZip from "jszip";
 import Ajv from "ajv";
+import { assertReportVersions, PBIR_ARTIFACT_VERSION, PBIR_DEFINITION_VERSION } from "./sample-report-versions.mjs";
 
 const root = process.cwd();
 const sample = path.join(root, "samples", "release");
@@ -242,12 +243,12 @@ async function author() {
     await put(path.join(reportRoot, "definition", "pages", "PageHints", "visuals", "Hints", "visual.json"),
         textBox("Hints", hints.join("\n\n"), 32, 24, 1290, 712, "14pt"));
     await put(path.join(sample, "Network.pbip"), { $schema: schemas.pbip, version: "1.0", artifacts: [{ report: { path: reportName } }], settings: { enableAutoRecovery: true } });
-    await put(path.join(reportRoot, "definition.pbir"), { $schema: schemas.pbir, version: "4.0", datasetReference: { byPath: { path: `../${modelName}` } } });
+    await put(path.join(reportRoot, "definition.pbir"), { $schema: schemas.pbir, version: PBIR_ARTIFACT_VERSION, datasetReference: { byPath: { path: `../${modelName}` } } });
     await put(path.join(modelRoot, "definition.pbism"), { $schema: schemas.pbism, version: "4.0", settings: {} });
     await put(path.join(modelRoot, "definition", "database.tmdl"), databaseDefinition);
     await put(path.join(modelRoot, "definition", "model.tmdl"), modelDefinition(allTables));
     await put(path.join(modelRoot, "definition", "relationships.tmdl"), relationships.join("\n"));
-    await put(path.join(reportRoot, "definition", "version.json"), { $schema: schemas.version, version: "4.0.0" });
+    await put(path.join(reportRoot, "definition", "version.json"), { $schema: schemas.version, version: PBIR_DEFINITION_VERSION });
     await put(path.join(reportRoot, "definition", "pages", "pages.json"), { $schema: schemas.pages, pageOrder: pages, activePageName: pages[0] });
     await put(path.join(reportRoot, "definition", "report.json"), { $schema: schemas.report, themeCollection: {}, resourcePackages: [] });
     await put(path.join(sample, "sample-contract.json"), contract);
@@ -348,6 +349,12 @@ async function validate(release) {
     const shortcut = await json(path.join(sample, "Network.pbip"));
     assert.equal(inside(sample, shortcut.artifacts[0].report.path), reportRoot);
     const definition = await json(path.join(reportRoot, "definition.pbir"));
+    const versionMetadata = await json(path.join(reportRoot, "definition", "version.json"));
+    assertReportVersions(definition, versionMetadata);
+    evidence.reportVersions = {
+        artifact: definition.version, definition: versionMetadata.version,
+        validatorSha256: hash(await readFile(path.join(root, "scripts", "sample-report-versions.mjs")))
+    };
     assert.deepEqual(Object.keys(definition.datasetReference), ["byPath"]);
     assert.equal(inside(reportRoot, definition.datasetReference.byPath.path), modelRoot);
     const report = await json(path.join(reportRoot, "definition", "report.json"));

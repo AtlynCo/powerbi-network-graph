@@ -2,7 +2,7 @@
 
 **Prepared 2026-09-09. Draft text only; nothing entered into Partner Center.**
 
-**Owner decision:** all eight new visuals, including Network, will be paid through existing Atlyn subscriptions. This quality candidate intentionally contains no entitlement enforcement. The coordinator is resolving the shared licensing/storefront contract. It is **not** a final paid/submission build; no certification-ref movement, merge, or submission is authorized while that contract is pending.
+**Owner approval, 2026-09-10:** use existing Atlyn storefront subscriptions for acquisition and **ungated visuals with free shared viewing**. The current offline runtime is intended; it does not enforce paid-author status. No license keys, new signer, AAD/API integration, feature gates or runtime requests are to be added. Licensing integration is no longer a blocker. Main/certification refs, merging and submission remain held for the parent's final native/assets/legal/release gate. The additional Microsoft Power BI visual certification badge is required, not yet achieved.
 
 “Verified metadata” below means values already confirmed in the repository/coordinator's v1 baseline, not verification of publisher authority, legal adequacy, name reservation or a support SLA. **UNRESOLVED** fields are intentional release gates, not blanks to fill with guessed values.
 
@@ -16,8 +16,8 @@ Exact field names and behavior: [Microsoft offer setup](https://learn.microsoft.
 | Offer ID | `atlyn-network` | Proposed only; owner must verify uniqueness/existing offer. Lowercase, ≤50 characters, no spaces; immutable after Create |
 | Offer alias | `Atlyn Network` | Proposed internal name |
 | Publisher | **UNRESOLVED — select authorized verified Atlyn legal publisher** | GitHub organization `AtlynCo` is not evidence of Partner Center publisher identity/enrollment |
-| Setup details | **Paid using existing Atlyn subscriptions** | Owner-approved commercial model; exact portal option and entitlement contract remain unresolved. Do not select a free/IAP/transactable option yet |
-| Power BI certification | Intended future request; **UNRESOLVED approval and eligibility** | Do not check/request before required gates and source access are ready |
+| Setup details | **External Atlyn storefront subscriptions; ungated runtime/free shared viewing** | Owner-approved model. Coordinator must reconcile exact portal classification/disclosures with Microsoft; this is not a runtime implementation blocker |
+| Power BI certification | **REQUIRED: additional Power BI visual certification/badge** | Owner requirement approved; eligibility, native evidence, source access and Microsoft's award remain pending. Do not submit before the final gate |
 | Customer leads / CRM | No connection proposed | Optional; any future connection requires owner/privacy approval |
 
 The exact documented setup choices are:
@@ -26,7 +26,7 @@ The exact documented setup choices are:
 2. **My offer requires purchase of a service or offers additional in-app purchase**.
 3. **My offer does not require purchase of a service and does not offer in app purchases**.
 
-The runtime currently has no license check or paid-feature gate. Paid distribution is now approved, but this package is only unlicensed quality evidence. The final listing must disclose the agreed paid behavior, and entitlement enforcement must be implemented/tested against the coordinator's single shared contract. Do not add ad hoc checks, WebAccess, or external runtime license calls. Resolve the general policy's free-plus-IAP wording against the agreed storefront option with Microsoft rather than assuming one overrides the other.
+The approved model is external subscription acquisition with no visual-runtime license checks or paid-feature gates, including free shared viewing. It is not Microsoft-managed runtime licensing and does not enforce paid-author status. Do not add enforcement, keys, a signer, AAD/API integrations, WebAccess or runtime requests. Confirm the exact portal option and accurate acquisition disclosures with the coordinator/Microsoft; an ungated runtime alone does not mean the storefront acquisition is free. Power BI's own licensing and report security still apply.
 
 ## Properties
 
@@ -44,6 +44,8 @@ Exact fields: [Microsoft properties](https://learn.microsoft.com/en-us/partner-c
 If legal chooses Microsoft's Power BI visuals default EULA rather than the Standard Contract or a custom EULA, Microsoft documents this candidate:
 `https://visuals.azureedge.net/app-store/Power%20BI%20-%20Default%20Custom%20Visual%20EULA.pdf`.
 Its mention here is **not acceptance, legal advice or a claim of an approved Atlyn contract**.
+
+**Existing first-party terms, unchanged:** `package.json` declares `license: "UNLICENSED"`. The root `LICENSE` is proprietary Copyright (c) 2026 Atlyn, all rights reserved; repository access grants no use/reproduction/modification/distribution/sublicensing/sale/public-disclosure rights without a separate written Atlyn agreement. It preserves third-party licenses and provides "AS IS" warranty/liability disclaimers. No open-source identifier or replacement terms are introduced. Approved ungated rendering does not itself amend these terms or select a Marketplace customer EULA.
 
 ## Offer listing — English
 
@@ -76,6 +78,8 @@ Keep exploration separate from report filtering. Local focus and saved local vie
 
 The visual includes English and Arabic interface resources, RTL layout, host high-contrast support, keyboard-accessible controls and paginated entity/relationship lists. The packaged visual uses no external runtime data requests, telemetry, sign-in or remote assets.
 
+Acquire the visual through existing Atlyn storefront subscriptions. Once acquired, the visual runs without license keys, paid-author enforcement or feature gates; shared-report viewing is free of additional visual runtime checks. Power BI licensing and report security still apply.
+
 Use the offline sample report to investigate cyclic services and reciprocal synthetic account relationships. Keep identifiers such as 0001 typed as text. Review diagnostics for missing identifiers, conflicting Edge IDs, incomplete weights and loaded-data limits.
 
 Atlyn Network is a bounded relationship explorer, not causal-impact prediction, fraud detection, process mining or whole-network analysis. It processes at most 5,000 delivered rows and displays at most 250 endpoint entities and 1,000 relationships. Host filtering and data reduction can further change the supplied network. A missing path means no path was found in the loaded topology, not proof that none exists in the underlying business data.
@@ -83,7 +87,7 @@ Atlyn Network is a bounded relationship explorer, not causal-impact prediction, 
 Support: https://www.atlynco.com/docs/faq
 ```
 
-Before using this draft, reconcile every feature statement with the **frozen final package** and native test outcomes. Add pricing/paid-feature disclosures only after the actual commercial decision is approved. Do not describe a PBIP-only deliverable as the required downloadable PBIX; supply the genuine converted/offline-tested PBIX first.
+Before using this draft, reconcile every feature statement with the **frozen final package** and native test outcomes. The approved acquisition/runtime distinction is included above; final portal wording and storefront terms still require coordinator confirmation. Do not invent paid-author enforcement or describe a PBIP-only deliverable as the required downloadable PBIX; supply the genuine converted/offline-tested PBIX first.
 
 **Search keywords** — three fields
 
@@ -148,6 +152,8 @@ The lowercase certification branch contains the matching single-visual source an
 
 The visual has no external runtime data/resource requests, telemetry, sign-in or licensing calls. Its capabilities privilege list is empty. It supports rendering lifecycle events. The sample uses only literal synthetic imported tables.
 
+Acquisition uses existing Atlyn storefront subscriptions. Runtime rendering and shared viewing are intentionally ungated; there is no paid-author enforcement. Additional Power BI visual certification and its badge are an explicit release requirement, not an award already received.
+
 Sample scenarios: cyclic service dependencies and reciprocal account relationships, including parallel edges, a self-loop, duplicate category aggregation, conflicting Edge IDs and incomplete weights. The sample contains hints and native slicer/detail-table interaction checks.
 
 Native and submission test evidence: [UNRESOLVED APPROVED EVIDENCE REFERENCE]
@@ -162,8 +168,10 @@ All items below remain unresolved unless the coordinator supplies dated authorit
 
 - [ ] Partner Center enrollment, legal publisher identity and authorized submission operator.
 - [ ] Offer ID/name reservation and trademark/content/media rights.
-- [x] Owner commercial decision: paid using existing Atlyn subscriptions.
-- [ ] Agreed entitlement architecture, exact storefront option, enforcement, and paid-feature disclosures.
+- [x] Owner-approved pattern: external Atlyn storefront subscriptions, ungated runtime/free shared viewing; no paid-author enforcement.
+- [x] Owner explicitly requires the additional Power BI visual certification badge.
+- [ ] Exact portal classification and storefront acquisition disclosures confirmed for the approved pattern.
+- [ ] Microsoft awards the additional Power BI visual certification/badge after review.
 - [ ] EULA/Standard Contract approval and any irrevocable acceptance.
 - [ ] Valid approved privacy-policy URL and legal review of actual processing/support practices.
 - [ ] Support owner, monitored address, escalation and service commitments.
