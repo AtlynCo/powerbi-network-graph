@@ -66,6 +66,14 @@ node .\scripts\sample-package.mjs --validate
 
 The source project passes public JSON schemas and strict authored-template/referential checks. The separate `scripts/validate-tmdl.ps1` preflight also successfully deserializes it using official Microsoft TOM and checks required PBIR version/structure. **No Power Query runtime, DAX engine or Desktop renderer has been invoked.** These gates establish model grammar and report structure, not private-visual native loading. The coordinator must record and resolve any native diagnostic before calling it release-ready.
 
+**Native-driven sample correction (2026-09-10):** preserve `definition.pbir`
+artifact version `"4.0"` but use `"2.0.0"` in `definition/version.json`.
+The earlier `"4.0.0"` report-definition value passed schema checks yet caused
+no pages to load in the coordinator's other-sample native A/B. The Network
+generator and both validators now distinguish these versions, with regression
+coverage. This corrects sample metadata only; the SDK-produced PBIVIZ stays
+byte-identical. Network native acceptance is still pending.
+
 ## Release decision
 
 Local code tests, a completed PBIP, a zero-error static preflight and an attractive image are each useful evidence, but do not replace the [complete native/submission matrix](testing-checklist.md), legal/commercial approvals, a same-version offline PBIX, or Microsoft's own review.

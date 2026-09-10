@@ -1,6 +1,6 @@
 {
   "status": "local-structure-only",
-  "assemblerSha256": "e7564f937e6e57d34ecae20fc08fe1cfd224f3b5ebdaaf5d9a6230947dfd9f4e",
+  "assemblerSha256": "5f4935cce5e4fed70d55ec28017af1340bd6143f648600b53de57d10257a8304",
   "visual": {
     "guid": "AtlynNetworkAB24C68297094C32AF64D50D92C01711",
     "version": "1.1.0.0",
@@ -57,6 +57,11 @@
     "Partner Center requires an offline PBIX with the same visual version/content; native conversion and offline retest remain release blockers.",
     "No certification, marketplace submission, publication, permission change or cloud execution is performed."
   ],
+  "reportVersions": {
+    "artifact": "4.0",
+    "definition": "2.0.0",
+    "validatorSha256": "12931cfa6e59b5cba66ad71e3eb7d1c0bc51f91fe3b7fffd78b876306746173f"
+  },
   "sourceFiles": [
     {
       "path": "Network.Report/definition.pbir",
@@ -136,7 +141,7 @@
     },
     {
       "path": "Network.Report/definition/version.json",
-      "sha256": "c761e768563bdd636679fc53a7acf2c973f02a8843ee7dcdfb0cc82616c28c38"
+      "sha256": "0f9f217a60981bf882d7b1963977fc72cc051078df8512b46caa607aff2e5220"
     },
     {
       "path": "Network.SemanticModel/definition.pbism",

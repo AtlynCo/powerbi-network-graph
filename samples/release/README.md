@@ -5,6 +5,30 @@
 
 This is a complete source project, not a placeholder or instructions to build an empty report. It contains two graph pages with real field projections, type slicers, relationship detail tables, explanatory text, and a third hints page. Both graphs reference the embedded private custom visual. Eight semantic-model tables, fourteen DAX measures and six single-direction relationships are authored. All data partitions use literal `#table` expressions; they read no CSV, workbook, URL, database or sibling directory.
 
+## Report version correction, 2026-09-10
+
+| File/property | Required value | Meaning |
+| --- | --- | --- |
+| `Network.Report\definition.pbir` → `version` | `"4.0"` | Report artifact format; preserved |
+| `Network.Report\definition\version.json` → `version` | `"2.0.0"` | Report/page-definition format; corrected from `"4.0.0"` |
+
+These are independent formats, not alternative spellings of one version.
+The coordinator's single-variable native A/B in Desktop 2.157 found that
+`4.0.0` in the second file passed JSON schema checks but silently loaded no
+report pages; `2.0.0` restored the other sample's pages. This Network source
+now uses the corrected value, but **Network native acceptance remains with
+the coordinator**. The public schema URI versions and `definition.pbism`
+are separate and unchanged.
+
+The generator uses distinct constants in `scripts\sample-report-versions.mjs`;
+both JavaScript and PowerShell validators reject the wrong format versions.
+`test\sample-versions.test.ts` covers the original mistake, swapped/invalid
+versions, and the actual generated files. The correction does not change the
+visual version or rebuild its PBIVIZ: the embedded SDK bytes still have SHA-256
+`a291552f2b459da622513ece4eec440226693de1fbd7f91020ac4f441e2c1514`.
+Earlier frozen handoffs remain intact and are superseded only for sample
+report metadata by the separately delivered corrected handoff.
+
 ## Open and use — manual native gate
 
 1. Open `Network.pbip` in a current Power BI Desktop. Enable PBIP, enhanced report format (PBIR) and TMDL preview features if your Desktop version requires them. Respect the organization's custom-visual policy; do not bypass it.
@@ -89,8 +113,9 @@ uses Microsoft's `TmdlSerializer.DeserializeDatabaseFromFolder`, without a
 server, Desktop UI, package restore or installation. Keep official companion
 DLLs together in the ignored `.tmp\tmdl-bin\net8.0` cache. The coordinated
 Microsoft.AnalysisServices 19.117.0 .NET 8 binaries were used successfully.
-The script also requires PBIR `definition\version.json` and the report/page
-structure. Results and exact model/assembly hashes are in
+The script also requires report artifact version `4.0`, report-definition
+version `2.0.0`, and the report/page structure. Results and exact
+model/report/assembly hashes are in
 `dist\tmdl-validation.json`. DLLs are not redistributed in the source.
 
 This additionally verifies actual TMDL grammar, not merely self-authored

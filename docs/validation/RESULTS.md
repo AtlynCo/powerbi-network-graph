@@ -122,6 +122,24 @@ all-label visibility, or best-in-class layout is made.
 
 ## Remaining gates
 
+### Sample metadata correction after the sealed runtime
+
+On 2026-09-10, the coordinator reported a native Desktop 2.157 single-variable
+A/B in another visual's sample: report-definition version `4.0.0` passed
+schema validation but silently loaded no report pages; `2.0.0` restored them.
+Network had the same incorrect value. Its live sample and generator now use
+`definition/version.json.version = "2.0.0"` while preserving the independent
+`definition.pbir.version = "4.0"`.
+
+Both updated validators rejected Network's old value before regeneration and
+accepted the corrected sample afterward; official TOM still parses eight
+tables, fourteen measures and six relationships. Eleven focused version
+regressions plus the 32 related topology/sample cases pass. These are local
+checks, **not Network native acceptance**. Runtime and embedded PBIVIZ bytes
+remain the sealed `a291552f...` package; no repackage/version bump occurred.
+Frozen evidence is not rewritten. A distinct corrected sample handoff replaces
+the earlier sample for native testing, not the original renderer evidence.
+
 The offline PBIP has three pages, two bound graph visuals, eight literal tables,
 fourteen measures and six relationships. Public schemas and strict references
 and official TOM deserialization are checked; M/DAX execution, Desktop refresh/render/save/reopen and a
