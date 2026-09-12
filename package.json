@@ -21,7 +21,8 @@
     "audit": "npm audit --omit=dev",
     "certification": "node scripts/certification.mjs",
     "notices": "node scripts/notices.mjs",
-    "assets": "node assets/generate.mjs"
+    "assets": "node assets/generate.mjs",
+    "postinstall": "node scripts/patch-loader.mjs"
   },
   "dependencies": {
     "powerbi-visuals-utils-formattingmodel": "7.1.0",
