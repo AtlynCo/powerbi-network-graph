@@ -47,9 +47,15 @@ describe("Power BI categorical data adapter", () => {
     it("explains missing bindings instead of using a fallback graph", () => {
         const { host } = mockHost();
         expect(readData(undefined, host).bindingMissing).toBe(true);
-        const data = readData(view([category("source", ["A"])]), host);
-        expect(data.bindingMissing).toBe(true);
-        expect(data.graph.edges).toHaveLength(0);
+        expect(readData(view([]), host).bindingMissing).toBe(true);
+        const sourceOnly = readData(view([category("source", ["A"])]), host);
+        expect(sourceOnly.bindingMissing).toBe(true);
+        expect(sourceOnly.graph.edges).toHaveLength(0);
+        expect(sourceOnly.graph.nodes).toHaveLength(0);
+        const targetOnly = readData(view([category("target", ["B"])]), host);
+        expect(targetOnly.bindingMissing).toBe(true);
+        expect(targetOnly.graph.edges).toHaveLength(0);
+        expect(targetOnly.graph.nodes).toHaveLength(0);
     });
     it("builds native identities from all grouping roles, never measure values", () => {
         const { host, calls } = mockHost();

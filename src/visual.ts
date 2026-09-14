@@ -150,6 +150,14 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         this.root.append(header, this.tools, this.status, this.notice, this.body);
         options.element.append(this.root);
         this.bindCamera();
+        this.root.addEventListener("contextmenu", event => {
+            event.preventDefault();
+            if (!this.interactionsAllowed()) return;
+            const clientX = "clientX" in event && typeof event.clientX === "number" ? event.clientX : 0;
+            const clientY = "clientY" in event && typeof event.clientY === "number" ? event.clientY : 0;
+            void this.hostAction(() => this.selection.showContextMenu({}, { x: clientX, y: clientY }))
+                .catch(() => { if (!this.destroyed) this.notice.textContent = this.t("ContextFailed"); });
+        });
         this.selection.registerOnSelectCallback(() => {
             void Promise.resolve().then(() => { if (!this.destroyed) this.syncSelection(); })
                 .catch(() => { if (!this.destroyed) this.notice.textContent = this.t("SelectionFailed"); });
@@ -751,11 +759,14 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         node.addEventListener("contextmenu", event => {
             event.preventDefault();
             event.stopPropagation();
-            if (event instanceof MouseEvent) show(event.clientX, event.clientY);
+            const clientX = "clientX" in event && typeof event.clientX === "number" ? event.clientX : 0;
+            const clientY = "clientY" in event && typeof event.clientY === "number" ? event.clientY : 0;
+            show(clientX, clientY);
         });
         node.addEventListener("keydown", event => {
             if (event instanceof KeyboardEvent && (event.key === "ContextMenu" || (event.shiftKey && event.key === "F10"))) {
                 event.preventDefault();
+                event.stopPropagation();
                 const rect = node.getBoundingClientRect();
                 show(rect.left, rect.bottom);
             }
