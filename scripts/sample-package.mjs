@@ -13,7 +13,10 @@ const reportName = "Network.Report";
 const modelName = "Network.SemanticModel";
 const reportRoot = path.join(sample, reportName);
 const modelRoot = path.join(sample, modelName);
-const guid = "AtlynNetworkAB24C68297094C32AF64D50D92C01711";
+const visualConfig = JSON.parse(await readFile(path.join(root, "pbiviz.json"), "utf8")).visual;
+assert.equal(typeof visualConfig.guid, "string", "pbiviz.json visual GUID is required");
+assert.equal(typeof visualConfig.version, "string", "pbiviz.json visual version is required");
+const guid = visualConfig.guid;
 const schemaRoot = "https://developer.microsoft.com/json-schemas/fabric/";
 const schemaCommit = "83ce11373faada0d01e76264a5cceb0ba70003e6";
 const schemas = {

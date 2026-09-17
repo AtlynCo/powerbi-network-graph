@@ -1,32 +1,32 @@
 {
   "status": "local-structure-only",
-  "assemblerSha256": "1694f1a2631e8fd056f1f00b72921faf8e7ebc7de3170e73db2031fdb72eb369",
+  "assemblerSha256": "61e802823eacf4ba5d673814e4e1133e59a915720f6f99499d5ea4f6d4d09418",
   "visual": {
     "guid": "AtlynNetworkAB24C68297094C32AF64D50D92C01711",
-    "version": "1.1.0.0",
+    "version": "1.1.1.0",
     "apiVersion": "5.11.0"
   },
   "archive": {
-    "source": "dist/AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.1.0.0.pbiviz",
-    "embeddedCopy": "package/AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.1.0.0.pbiviz",
-    "bytes": 149064,
-    "sourceSha256": "a291552f2b459da622513ece4eec440226693de1fbd7f91020ac4f441e2c1514",
-    "embeddedSha256": "a291552f2b459da622513ece4eec440226693de1fbd7f91020ac4f441e2c1514",
+    "source": "dist/AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.1.1.0.pbiviz",
+    "embeddedCopy": "package/AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.1.1.0.pbiviz",
+    "bytes": 149118,
+    "sourceSha256": "5f061f170273353326d8746791e3d98dadc6b191d28f4ef52b69984e1b074643",
+    "embeddedSha256": "5f061f170273353326d8746791e3d98dadc6b191d28f4ef52b69984e1b074643",
     "equal": true
   },
   "resources": [
     {
       "path": "package.json",
       "bytes": 735,
-      "sourceSha256": "5fcc6e71ec35ea31d8ade81505ab59b7772945778a640af4fc403f9c11c70160",
-      "embeddedSha256": "5fcc6e71ec35ea31d8ade81505ab59b7772945778a640af4fc403f9c11c70160",
+      "sourceSha256": "46ef4053f4842afdf0ee6d6faa90cb081e906ecb00084339a843ce88608e0462",
+      "embeddedSha256": "46ef4053f4842afdf0ee6d6faa90cb081e906ecb00084339a843ce88608e0462",
       "equal": true
     },
     {
       "path": "resources/AtlynNetworkAB24C68297094C32AF64D50D92C01711.pbiviz.json",
-      "bytes": 865016,
-      "sourceSha256": "ba79f009500d64424810b04180f3a34672278d991a1eb7d244cc6b170f962734",
-      "embeddedSha256": "ba79f009500d64424810b04180f3a34672278d991a1eb7d244cc6b170f962734",
+      "bytes": 865551,
+      "sourceSha256": "c4b1b2dc5b8a876533eb068aa3136977b153af52287a8fb86eca84c0c89d5be7",
+      "embeddedSha256": "c4b1b2dc5b8a876533eb068aa3136977b153af52287a8fb86eca84c0c89d5be7",
       "equal": true
     }
   ],

@@ -1,6 +1,6 @@
 # Atlyn Network — authored offline sample
 
-**Target:** `1.1.0.0`, GUID `AtlynNetworkAB24C68297094C32AF64D50D92C01711`, API `5.11.0`.
+**Target:** `1.1.1.0`, GUID `AtlynNetworkAB24C68297094C32AF64D50D92C01711`, API `5.11.0`.
 **Evidence status:** the coordinator reports **bounded PASS on Desktop 2.157.1354.0** for corrected sample commit `cbd21bee3de4f62ffaa93eb49a2e7881814913e5`: three pages rendered, Public PBIX saved and cold-reopened without refresh. The first refresh left manual-refresh/incomplete-data banners; the second observed refresh completed without a dialog. This is not full interaction, Service, export or certification acceptance.
 
 This is a complete source project, not a placeholder or instructions to build an empty report. It contains two graph pages with real field projections, type slicers, relationship detail tables, explanatory text, and a third hints page. Both graphs reference the embedded private custom visual. Eight semantic-model tables, fourteen DAX measures and six single-direction relationships are authored. All data partitions use literal `#table` expressions; they read no CSV, workbook, URL, database or sibling directory.
