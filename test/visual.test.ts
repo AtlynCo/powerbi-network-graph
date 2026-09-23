@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import powerbi from "powerbi-visuals-api";
 
@@ -141,5 +143,111 @@ describe("Visual context menu and empty state", () => {
         expect(edges).toHaveLength(0);
 
         visual.destroy();
+    });
+
+    it("safely handles individual role drag (source only, target only, weight only)", () => {
+        const { host } = mockVisualHost();
+        const element = document.createElement("div");
+        const visual = new Visual({ element, host });
+
+        // Source only
+        const sourceCol: powerbi.DataViewCategoryColumn = {
+            source: { displayName: "Source ID", queryName: "source", roles: { source: true }, type: { text: true } },
+            values: ["S1", "S2"],
+            identity: [{ key: "s1" } as unknown as powerbi.DataViewScopeIdentity, { key: "s2" } as unknown as powerbi.DataViewScopeIdentity]
+        };
+        visual.update({
+            viewport: { width: 800, height: 600 },
+            viewMode: powerbi.ViewMode.View,
+            type: powerbi.VisualUpdateType.Data,
+            dataViews: [{
+                metadata: { columns: [sourceCol.source] },
+                categorical: { categories: [sourceCol] }
+            }]
+        });
+        const status = element.querySelector<HTMLDivElement>(".network-status");
+        expect(status?.textContent).toContain("Add Source ID and Target ID");
+        expect(element.querySelectorAll(".network-node")).toHaveLength(0);
+
+        // Target only
+        const targetCol: powerbi.DataViewCategoryColumn = {
+            source: { displayName: "Target ID", queryName: "target", roles: { target: true }, type: { text: true } },
+            values: ["T1", "T2"],
+            identity: [{ key: "t1" } as unknown as powerbi.DataViewScopeIdentity, { key: "t2" } as unknown as powerbi.DataViewScopeIdentity]
+        };
+        visual.update({
+            viewport: { width: 800, height: 600 },
+            viewMode: powerbi.ViewMode.View,
+            type: powerbi.VisualUpdateType.Data,
+            dataViews: [{
+                metadata: { columns: [targetCol.source] },
+                categorical: { categories: [targetCol] }
+            }]
+        });
+        expect(status?.textContent).toContain("Add Source ID and Target ID");
+        expect(element.querySelectorAll(".network-node")).toHaveLength(0);
+
+        // Weight only
+        const weightCol: powerbi.DataViewValueColumn = {
+            source: { displayName: "Weight", queryName: "weight", roles: { weight: true }, type: { numeric: true } },
+            values: [10, 20]
+        };
+        visual.update({
+            viewport: { width: 800, height: 600 },
+            viewMode: powerbi.ViewMode.View,
+            type: powerbi.VisualUpdateType.Data,
+            dataViews: [{
+                metadata: { columns: [weightCol.source] },
+                categorical: { values: [weightCol] as unknown as powerbi.DataViewValueColumns }
+            }]
+        });
+        expect(status?.textContent).toContain("Add Source ID and Target ID");
+        expect(element.querySelectorAll(".network-node")).toHaveLength(0);
+
+        visual.destroy();
+    });
+
+    it("proves capabilities.json conditions accept individual role drags from a blank visual", () => {
+        const capabilities = JSON.parse(readFileSync(path.join(process.cwd(), "capabilities.json"), "utf8"));
+        const condition = capabilities.dataViewMappings[0].conditions[0];
+
+        // Power BI condition evaluator:
+        // An assignment { role: count } is accepted if all assigned counts <= max (and >= min if set),
+        // and unassigned roles (count 0) have no min > 0.
+        function isConditionMet(cond: Record<string, { min?: number; max?: number }>, assigned: Record<string, number>): boolean {
+            for (const [role, rule] of Object.entries(cond)) {
+                const count = assigned[role] ?? 0;
+                if (rule.min !== undefined && count < rule.min) return false;
+                if (rule.max !== undefined && count > rule.max) return false;
+            }
+            return true;
+        }
+
+        // Current capabilities: individual field drag from blank visual is accepted
+        expect(isConditionMet(condition, { source: 1 })).toBe(true);
+        expect(isConditionMet(condition, { target: 1 })).toBe(true);
+        expect(isConditionMet(condition, { weight: 1 })).toBe(true);
+        expect(isConditionMet(condition, { relationshipType: 1 })).toBe(true);
+        expect(isConditionMet(condition, { edgeId: 1 })).toBe(true);
+        expect(isConditionMet(condition, { tooltips: 1 })).toBe(true);
+
+        // Incremental combinations are accepted
+        expect(isConditionMet(condition, { source: 1, target: 1 })).toBe(true);
+        expect(isConditionMet(condition, { source: 1, target: 1, weight: 1 })).toBe(true);
+
+        // Exceeding max is rejected
+        expect(isConditionMet(condition, { source: 2 })).toBe(false);
+        expect(isConditionMet(condition, { target: 2 })).toBe(false);
+        expect(isConditionMet(condition, { weight: 2 })).toBe(false);
+
+        // Contrast: old 1.1.0.0 condition with min: 1 on source AND target rejected individual drags
+        const oldCondition = {
+            source: { min: 1, max: 1 },
+            target: { min: 1, max: 1 },
+            weight: { max: 1 }
+        };
+        expect(isConditionMet(oldCondition, { source: 1 })).toBe(false); // target min: 1 failed
+        expect(isConditionMet(oldCondition, { target: 1 })).toBe(false); // source min: 1 failed
+        expect(isConditionMet(oldCondition, { weight: 1 })).toBe(false); // both source and target min: 1 failed
     });
 });
