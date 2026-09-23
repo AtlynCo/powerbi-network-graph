@@ -21,7 +21,7 @@ This directory separates Microsoft requirements, repository evidence, proposed l
 | Sample PBIX | **Required**, works offline with no external connections; visual version and content match PBIVIZ | Coordinator saved `AtlynNetwork-1.1.0.0-native.pbix` and cold-reopened without refresh; exact embedded package/resource equality confirmed. Explicit offline refresh and full sample interactions remain separate gates |
 | Logo | PNG, **exactly 300×300** | Coordinator owns final asset and approval; 20×20 package icon is not a substitute |
 | Screenshots | **1–5 PNGs**, **exactly 1366×768**, each **≤1024 KB**; sharp, inclusive, accurate | Coordinator owns final images; use comfortably below 1,024,000 bytes to avoid ambiguous KB interpretation |
-| Support | Public HTTPS support link | Existing metadata: `https://www.atlynco.com/docs/faq`; operational support commitment unresolved |
+| Support | Public HTTPS support link | Existing metadata: `https://atlynco.github.io/atlyn-powerbi-support/docs/faq/`; operational support commitment unresolved |
 | Privacy | Valid public HTTPS organization privacy-policy URL | **Unresolved owner/legal approval and verified URL** |
 | Terms | Accepted standard contract or own/Power BI visuals EULA, according to Partner Center options | **Unresolved legal choice and acceptance** |
 | Source | Single visual; reviewable source; lowercase **`certification`** branch matching submitted package | **Coordinator Git action after final baseline; no branch created here** |

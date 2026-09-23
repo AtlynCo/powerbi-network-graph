@@ -246,6 +246,6 @@ Runtime third-party notices are bundled as offline text inside the visual, avail
 
 For dependency upgrades, use `npm run build` to obtain fresh bundle statistics, then `npm run notices`, then `npm run package`. The final inspection refuses a package whose embedded notices differ from the generated source. The checked-in notices permit a fresh checkout to run `npm run package` directly.
 
-The existing publisher metadata identifies **Atlyn**, author/support email `atlyn.help@gmail.com`, and support URL `https://www.atlynco.com/docs/faq`; the coordinator has confirmed this metadata and verified the support page content. Repository and issue/PR URLs under `https://github.com/AtlynCo/powerbi-network-graph` are **private and require access**.
+The existing publisher metadata identifies **Atlyn**, author/support email `atlyn.help@gmail.com`, and support URL `https://atlynco.github.io/atlyn-powerbi-support/docs/faq/`; the coordinator has confirmed this metadata and verified the support page content. Repository and issue/PR URLs under `https://github.com/AtlynCo/powerbi-network-graph` are **private and require access**.
 
 Verify support responsiveness and suitability for the intended audience as a manual gate before any publication or external distribution. Confirmed metadata and available support content do **not** constitute publication approval. Do not send report/customer data or credentials in a support request.

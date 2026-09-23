@@ -39,7 +39,7 @@ Exact fields: [Microsoft properties](https://learn.microsoft.com/en-us/partner-c
 | Use the Standard Contract | **UNRESOLVED legal decision** | Acceptance is not authorized here. Microsoft warns that a published Standard Contract offer cannot switch to custom terms |
 | EULA | **UNRESOLVED approved public URL/contract choice** | No guessed URL. Repository LICENSE does not alone establish the Marketplace customer contract |
 | Privacy policy link | **UNRESOLVED approved HTTPS URL** | A valid organization privacy policy is required, even with no visual telemetry |
-| Support document link | `https://www.atlynco.com/docs/faq` | Existing verified metadata; owner must approve content coverage/maintenance |
+| Support document link | `https://atlynco.github.io/atlyn-powerbi-support/docs/faq/` | Existing verified metadata; owner must approve content coverage/maintenance |
 
 If legal chooses Microsoft's Power BI visuals default EULA rather than the Standard Contract or a custom EULA, Microsoft documents this candidate:
 `https://visuals.azureedge.net/app-store/Power%20BI%20-%20Default%20Custom%20Visual%20EULA.pdf`.
@@ -84,7 +84,7 @@ Use the offline sample report to investigate cyclic services and reciprocal synt
 
 Atlyn Network is a bounded relationship explorer, not causal-impact prediction, fraud detection, process mining or whole-network analysis. It processes at most 5,000 delivered rows and displays at most 250 endpoint entities and 1,000 relationships. Host filtering and data reduction can further change the supplied network. A missing path means no path was found in the loaded topology, not proof that none exists in the underlying business data.
 
-Support: https://www.atlynco.com/docs/faq
+Support: https://atlynco.github.io/atlyn-powerbi-support/docs/faq/
 ```
 
 Before using this draft, reconcile every feature statement with the **frozen final package** and native test outcomes. The approved acquisition/runtime distinction is included above; final portal wording and storefront terms still require coordinator confirmation. Do not invent paid-author enforcement or describe a PBIP-only deliverable as the required downloadable PBIX; supply the genuine converted/offline-tested PBIX first.
@@ -129,7 +129,7 @@ Exact requirements: [Microsoft technical configuration](https://learn.microsoft.
 | Internal identity | Stable GUID above; four-part version `1.1.0.0`; API `5.11.0` | Never change GUID to bypass AppSource update behavior |
 | Author | `Atlyn` | Existing verified metadata |
 | Author email | `atlyn.help@gmail.com` | Existing verified metadata; monitoring/support authority unresolved |
-| Support URL | `https://www.atlynco.com/docs/faq` | Existing verified metadata |
+| Support URL | `https://atlynco.github.io/atlyn-powerbi-support/docs/faq/` | Existing verified metadata |
 | Source repository | `https://github.com/AtlynCo/powerbi-network-graph` | Private; reviewer access unresolved |
 
 Native PBIX conversion must use the PBIP **after** `node .\scripts\sample-package.mjs` embeds the final package. Attach final PBIVIZ SHA-256 and verify PBIX embedded visual version/content independently. Do not upload a source ZIP renamed `.pbix`.

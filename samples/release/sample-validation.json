@@ -9,24 +9,24 @@
   "archive": {
     "source": "dist/AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.1.1.0.pbiviz",
     "embeddedCopy": "package/AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.1.1.0.pbiviz",
-    "bytes": 149118,
-    "sourceSha256": "5f061f170273353326d8746791e3d98dadc6b191d28f4ef52b69984e1b074643",
-    "embeddedSha256": "5f061f170273353326d8746791e3d98dadc6b191d28f4ef52b69984e1b074643",
+    "bytes": 149135,
+    "sourceSha256": "ff42b66ea48bc525cfca2e7164361920d5dd211582a1db0a319c9be91b164b86",
+    "embeddedSha256": "ff42b66ea48bc525cfca2e7164361920d5dd211582a1db0a319c9be91b164b86",
     "equal": true
   },
   "resources": [
     {
       "path": "package.json",
-      "bytes": 735,
-      "sourceSha256": "46ef4053f4842afdf0ee6d6faa90cb081e906ecb00084339a843ce88608e0462",
-      "embeddedSha256": "46ef4053f4842afdf0ee6d6faa90cb081e906ecb00084339a843ce88608e0462",
+      "bytes": 760,
+      "sourceSha256": "72ea0dd33f50f636db3a284913f7a8feba467138ea94de2fc55feac0f3cf8a93",
+      "embeddedSha256": "72ea0dd33f50f636db3a284913f7a8feba467138ea94de2fc55feac0f3cf8a93",
       "equal": true
     },
     {
       "path": "resources/AtlynNetworkAB24C68297094C32AF64D50D92C01711.pbiviz.json",
-      "bytes": 865551,
-      "sourceSha256": "c4b1b2dc5b8a876533eb068aa3136977b153af52287a8fb86eca84c0c89d5be7",
-      "embeddedSha256": "c4b1b2dc5b8a876533eb068aa3136977b153af52287a8fb86eca84c0c89d5be7",
+      "bytes": 865576,
+      "sourceSha256": "30561d319e1110779321d9a9e6557f1c6099d0604fcce9bfbaf38dd7f493ed5e",
+      "embeddedSha256": "30561d319e1110779321d9a9e6557f1c6099d0604fcce9bfbaf38dd7f493ed5e",
       "equal": true
     }
   ],
