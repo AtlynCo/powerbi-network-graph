@@ -24,6 +24,7 @@ No publication, AppSource submission, public GitHub release, screenshot upload, 
 - [ ] Confirm Node.js 24+ and a clean lockfile-based dependency installation (`npm ci`).
 - [ ] Run `npm run assets` with the project-required Node.js version and review regenerated icon/localization output; do not rely on a lower upstream tool minimum.
 - [ ] Run `npm run typecheck`, `npm run lint`, and `npm test`; retain actual outcomes.
+- [ ] Run the certification-named `npm run eslint` entry point as well; it preserves Microsoft's documented command separately from the focused lint script.
 - [ ] Run `npm run build` and `npm run package`; retain inspection and packaging logs.
 - [ ] Run all gates locally; do not run GitHub Actions, hosted CI/CD, cloud coding or Codespaces. Use the isolated `scripts/package.mjs` wrapper with PowerShell 7 (`pwsh`) on Windows or OpenSSL on a local Unix host. Do not require `pbiviz install-cert` or mutate a user's certificate store/trust settings.
 - [ ] Verify ignored `.tool-home` isolation, cleanup of local short-lived certificate/key/PFX/passphrase material, and exclusion of that private material from Git, the final package, logs, and release evidence. Check cleanup explicitly if packaging was interrupted.
@@ -138,7 +139,7 @@ and does not authorize merging, certification-reference changes or submission.
 - [ ] Obtain the required additional Power BI visual certification/badge through Microsoft's review; do not infer it from local preflight or Marketplace listing approval.
 - [ ] Verify support responsiveness and suitability for the distribution audience before publication/external distribution. Existing metadata is Atlyn / `atlyn.help@gmail.com` / `https://atlynco.github.io/atlyn-powerbi-support/docs/faq/`; the coordinator has confirmed it and verified support-page content. This confirmation does not close the responsiveness gate or authorize publication.
 - [ ] Explain that private GitHub source/issues/PR URLs require authorized access; provide a verified support route appropriate to any eventual distribution audience.
-- [ ] Ensure all examples are synthetic and no report, dataset, credentials, screenshots, or customer identifiers are unintentionally distributed.
+- [ ] Ensure Atlyn examples are synthetic, third-party test rows are attributed, and no report, dataset, credentials, screenshots, or customer identifiers are unintentionally distributed.
 - [ ] Review product wording: relationship exploration only; no causal prediction, fraud-detection, complete-network, or full process-mining claims.
 - [ ] Obtain separate owner authorization for any distribution or publishing action. This project is currently private only.
 

@@ -22,7 +22,8 @@
     "certification": "node scripts/certification.mjs",
     "notices": "node scripts/notices.mjs",
     "assets": "node assets/generate.mjs",
-    "postinstall": "node scripts/patch-loader.mjs"
+    "postinstall": "node scripts/patch-loader.mjs",
+    "eslint": "npx eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
     "powerbi-visuals-utils-formattingmodel": "7.1.0",

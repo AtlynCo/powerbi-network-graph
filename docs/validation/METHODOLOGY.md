@@ -68,7 +68,7 @@ final PBIVIZ filename/SHA and require `passed: true`:
 | File under `dist` | Producer | Additional checks |
 |---|---|---|
 | `browser-test-results.json` | `node scripts\browser-test.mjs` | Existing 17 groups; zero errors/requests |
-| `release-browser-results.json` | `npm run test:release` | 37 groups in 1.2; `preliminary: false`; current source/build provenance |
+| `release-browser-results.json` | `npm run test:release` | 38 groups in 1.2; `preliminary: false`; current source/build provenance |
 | `release-benchmark-final.json` | `npm run benchmark` | 24 layout/fixture/operation groups in 1.2; ≥30 samples each; current source/build provenance; all p95 budgets |
 | `release-profile.json` | `node scripts\release-profile.mjs` | DevTools CPU sampling, actual-package provenance, zero requests/errors |
 | `rebuild-verification.json` | `node scripts\rebuild-check.mjs` | Two unchanged-source SDK builds, every decompressed member identical; final archive SHA |
@@ -115,6 +115,15 @@ operation's final visible node/edge counts are also checked against explicit
 expected values, including the full graph before native-selection mock timing.
 
 ## Independent functional oracles
+
+The attributed `test/fixtures/microsoft-sankey.json` contains only the exact
+nine relationship rows from the Microsoft-linked workbook's Sankey Chart
+sheet, with pinned revision/blob/workbook hash and coordinator-verification
+scope. `test/microsoft-sample.test.ts` checks exact records, eight endpoints,
+nine edges, 6,975 total weight, row identity and independently specified radial
+levels. The release browser uses that same fixture in all three layouts and
+checks actual row selections. Its report includes the fixture hash and source
+provenance. This is not native workbook ingestion or full workbook coverage.
 
 The 1.2 candidate adds `test/polar-layout.test.ts` and `test/navigation.test.ts`.
 Four pre-change c19276b Force fingerprints pin positions/routes/bounds/signature.

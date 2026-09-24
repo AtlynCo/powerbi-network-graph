@@ -1,0 +1,25 @@
+{
+  "provenance": {
+    "source": "Microsoft certification page linked PowerBi-Projects/PowerBI-visuals assets",
+    "url": "https://github.com/PowerBi-Projects/PowerBI-visuals/blob/21c5f65b4ee4f9d0a755175b0884c20be949bcb4/assets/excel/workbook/test-visuals-data.xlsx",
+    "commit": "21c5f65b4ee4f9d0a755175b0884c20be949bcb4",
+    "gitBlob": "d37eb67af678c8cf5f006e9cd5ed5784052c82f1",
+    "workbookBytes": 236914,
+    "workbookSha256": "c17157c21cb99e1946dedca29e47a8f877fd0aaeadb57d2ba6ee8bcaec2b70e1",
+    "sheet": "Sankey Chart",
+    "checkedOn": "2026-09-24",
+    "scope": "Nine relationship rows transcribed from the coordinator-verified workbook; full workbook not vendored. Offline source and mock-host tests only, not native workbook import or Microsoft certification."
+  },
+  "columns": ["Origin City", "Destination City", "Passenger Volume"],
+  "rows": [
+    ["Seattle", "Chicago", 360],
+    ["San Francisco", "Chicago", 765],
+    ["Los Angeles", "Chicago", 1200],
+    ["Seattle", "Houston", 420],
+    ["San Francisco", "Houston", 390],
+    ["Los Angeles", "New York", 240],
+    ["Seattle", "New York", 1275],
+    ["San Francisco", "Newark", 1470],
+    ["Los Angeles", "Miami", 855]
+  ]
+}

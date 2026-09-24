@@ -13,6 +13,16 @@ Sources:
 
 Record **package SHA-256, source commit, tool/Desktop/browser/OS version, input dataset, steps, expected/actual result, capture/log location and operator/date** for each executed case. A test is unexecuted until that evidence exists. Existing unit/mock-host tests can be linked as partial evidence, not substituted for native checks.
 
+## 2026-09-24 local 1.2 command and dataset follow-up
+
+- [x] Named `npm run eslint` executes the documented `npx eslint . --ext .js,.jsx,.ts,.tsx`; it and retained `npm run lint` passed.
+- [x] Microsoft's linked workbook **Sankey Chart worksheet relationship path**, limited to its exact nine rows, exercised in source and actual-package offline browser tests in Force/Circular/Radial. Provenance: `test/fixtures/microsoft-sankey.json`; [pinned workbook](https://github.com/PowerBi-Projects/PowerBI-visuals/blob/21c5f65b4ee4f9d0a755175b0884c20be949bcb4/assets/excel/workbook/test-visuals-data.xlsx), SHA-256 `c17157c21cb99e1946dedca29e47a8f877fd0aaeadb57d2ba6ee8bcaec2b70e1`. The full workbook is not vendored.
+- [ ] Native workbook import/model evaluation and any further Microsoft-required dataset/host coverage remain unverified. The two limited local passes above do not close the native matrix, source-branch alignment, reviewer access or Microsoft approval.
+
+Current candidate hashes, **168 unit cases** and **38 release-browser groups**
+are in [RESULTS-1.2](../validation/RESULTS-1.2.md). Historical observations below
+remain dated 1.1 evidence and do not attest the 1.2 package.
+
 ## Host-version control
 
 - [ ] Test the actual new package with the **unchanged GUID**. Microsoft warns that AppSource's version may override a locally imported one.
@@ -89,7 +99,7 @@ Policy §1180.2 explicitly names **string values, empty values, negative values,
 - [ ] Rendering started/finished/failed API correctly reports lifecycle, including exceptional/empty/invalid inputs.
 - [ ] Safe DOM/user-data handling; no `innerHTML`/D3 HTML with data, unsafe dynamic code, eval/Function, prohibited network APIs/resources, unhandled browser errors or minified authored source.
 - [ ] Empty/omitted WebAccess privilege; no outgoing HTTP(S)/WebSockets, external resources, telemetry or remote fonts/assets.
-- [ ] Use Microsoft's linked [certification test sample dataset](https://github.com/PowerBi-Projects/PowerBI-visuals/tree/gh-pages/assets) as requested, in addition to Atlyn's synthetic graph sample. The official link currently exposes asset subdirectories rather than an obvious standalone sample PBIX; document the exact dataset used or request clarification from Microsoft. Do not quietly substitute our sample and mark this gate complete.
+- [ ] Confirm Microsoft's required [sample-dataset](https://github.com/PowerBi-Projects/PowerBI-visuals/tree/gh-pages/assets) and native-host coverage is sufficient. The exact Sankey Chart relationship worksheet path is exercised locally as recorded above; do not substitute this limited pass for full workbook/native/Microsoft acceptance.
 - [ ] Lowercase `certification` branch, frozen exact commit and secure Microsoft reviewer access including dependencies. Owner action only.
 - [ ] If an already certified visual is updated, obtain certification for the update too; certification does not automatically carry over.
 - [ ] Confirm source/property changes preserve previous reports; test v1 report upgrade without changing GUID.

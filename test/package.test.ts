@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import { assertBundledNoticeText, assertNoPrivateKeyMaterial } from "../scripts/artifact.mjs";
+
+describe("certification command contract", () => {
+    it("provides Microsoft's named eslint command without removing the focused lint command", () => {
+        const metadata = JSON.parse(readFileSync("package.json", "utf8")) as { scripts: Record<string, string> };
+        expect(metadata.scripts.eslint).toBe("npx eslint . --ext .js,.jsx,.ts,.tsx");
+        expect(metadata.scripts.lint).toBe("eslint src test scripts");
+    });
+});
 
 describe("packaged private-key exclusion", () => {
     it.each(["developer.pfx", "nested/localhost.P12", "private.key", "server.pem", "certificate.der"])("rejects certificate/key container %s", filename => {

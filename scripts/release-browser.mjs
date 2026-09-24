@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { mkdir, rm } from "node:fs/promises";
 import path from "node:path";
-import { createBrowserHarness, HOST_DISCLAIMER, releaseFixtures, releaseSampleFixtures, TILES } from "./browser-harness.mjs";
+import { createBrowserHarness, HOST_DISCLAIMER, microsoftSankeyFixture, releaseFixtures, releaseSampleFixtures, TILES } from "./browser-harness.mjs";
 import { root, writeReport } from "./artifact.mjs";
 
 const preliminary = process.argv.includes("--preliminary");
@@ -17,6 +17,7 @@ try {
 const { page, context, artifact, mount, update, settle } = harness;
 const fixtures = releaseFixtures();
 let samples;
+let microsoftSample;
 const checks = [];
 const geometry = [];
 const screenshots = [];
@@ -102,6 +103,7 @@ async function capture(name, label, { width = 1366, height = 724, inputProvenanc
 }
 try {
     samples = await releaseSampleFixtures();
+    microsoftSample = await microsoftSankeyFixture();
     if (!preliminary) assert(!artifact.historical, "Final release checks require strict current artifact/source validation");
     if (finalScreenshots) {
         assert.equal(process.env.RELEASE_FINAL_READY_SHA, artifact.sha256, "Final screenshots require parent's final package-ready SHA in RELEASE_FINAL_READY_SHA");
@@ -610,6 +612,23 @@ try {
         assert.deepEqual((await geometrySnapshot("rtl-high-contrast")).overlaps, []);
         await page.emulateMedia({ reducedMotion: "no-preference" });
     });
+    await check("Microsoft-linked Sankey Chart workbook path: nine weighted pairs, all layouts and exact selection rows", async () => {
+        for (const layout of ["force", "circular", "radial"]) {
+            await mount();
+            await update(microsoftSample.rows, { ...microsoftSample.options, objects: { exploration: { layout } } });
+            assert.deepEqual(await ids(".network-node"), ["s:Chicago", "s:Houston", "s:Los Angeles", "s:Miami", "s:New York", "s:Newark", "s:San Francisco", "s:Seattle"]);
+            assert.equal(await page.locator(".network-edge").count(), 9);
+            assert.equal((await geometrySnapshot(`microsoft-sankey-${layout}`)).distinctPaths, 9);
+            if (layout === "radial") assert.equal(await page.locator(".atlyn-network").getAttribute("data-layout-center"), "s:Chicago");
+            await page.locator('[data-action="select-node"][data-node-id="s:Seattle"]').click();
+            const selected = (await calls()).select.at(-1).keys.map(key => Number(JSON.parse(key)[0][1].split(":").at(-1))).sort((a, b) => a - b);
+            assert.deepEqual(selected, [0, 3, 6]);
+            await act("relationships").click();
+            assert.equal(await page.locator(".network-list-content button[data-edge-id]").count(), 9);
+            assert.match(await page.locator(".network-list-content").innerText(), /1,?470/);
+            assert.equal((await calls()).persist.length, 0);
+        }
+    });
     for (const layout of ["circular", "radial"]) {
         await check(`${layout}: mode/center changes, transformed picking, exact identity and stable local coordinates`, async () => {
             await mount();
@@ -777,7 +796,7 @@ try {
     await writeReport(reportName, {
         artifact: artifact.filename, sha256: artifact.sha256, version: artifact.config.visual.version, currentSourceValidated: !artifact.historical, buildInputSha256: artifact.buildInputSha256,
         browser: await harness.browser.version(), host: HOST_DISCLAIMER, preliminary, passed,
-        checks, geometry, screenshots, sampleContract: samples?.provenance, fatalError, errors: harness.errors, errorDetails: harness.errorDetails, runtimeRequests: harness.requests,
+        checks, geometry, screenshots, sampleContract: samples?.provenance, microsoftSample: microsoftSample?.provenance, fatalError, errors: harness.errors, errorDetails: harness.errorDetails, runtimeRequests: harness.requests,
         measurementLimits: "Synthetic fixture data. CDP touch produces real Chromium input, not physical hardware validation. Programmatic focus plus keyboard activation tests list reachability; no screen-reader certification. Native bookmark/filter/export behavior remains a manual host gate."
     });
     await harness.close();

@@ -11,14 +11,18 @@ Atlyn Network **1.2.0.0**, unchanged GUID
 `AtlynNetworkAB24C68297094C32AF64D50D92C01711`; **153,889 bytes**.
 The package in `samples/release/package/` and `dist/` has SHA-256:
 
-`cf6d0ed1dad87d8cbd0d27b47f6190fce014bea70a96a79170f7725f8cbc280f`
+`6136c82c28ecf597634cbb90685f9cb1fbc3c435ce64613a8be180e8ff0f00ff`
 
-[Current evidence](../validation/RESULTS-1.2.md) records 162 passing tests,
-typecheck/lint, official package audit/inspection, zero dependency
-vulnerabilities, 17 standard and 37 extended actual-package browser checks,
+[Current evidence](../validation/RESULTS-1.2.md) records 168 passing tests,
+typecheck, named `eslint` plus existing `lint`, official package
+audit/inspection, zero dependency vulnerabilities, 17 standard and 38 extended actual-package browser checks,
 five labeled mock-host images, 24 benchmark groups with 30 measured samples
 each, sample schema/byte equality and official TOM preflight. All are
 **local checks**, not native Power BI or Microsoft's certification.
+The earlier cf6d archive and evidence are retained in
+`dist/candidate-history/f5d0cf21a94e579336af985ad7516f049cf94309/`.
+The refreshed build includes the named ESLint script; all shipped package
+member bytes remain identical to cf6d, while SDK ZIP timestamps changed its SHA.
 
 The five-page/four-graph PBIP is current; a same-version native PBIX is not.
 Keep all 1.1 archives, evidence and images unchanged. Use the current
@@ -47,10 +51,18 @@ owner action, not a step to execute under this runbook's preparation scope.
 | Legal/support | Owner must approve and verify HTTPS support/privacy links and an EULA/contract choice. The repository `LICENSE` is not an approved customer EULA. No terms, URLs or customer permissions are decided here. |
 | Account/reviewer readiness | Owner confirms Marketplace enrollment, publisher authority, offer identity, secure reviewer access and the final release hold. Do not put credentials or recovery codes in Git, receipts or chat. |
 
-Also reconcile the current certification page's exact command/file wording
-(including its named `eslint` script example; this repository exposes
-`npm run lint`) and Microsoft's required sample-dataset coverage. Do not mark
-those formal submission checks complete solely from local command passes.
+**Closed locally on 2026-09-24:** `npm run eslint` now executes the documented
+`npx eslint . --ext .js,.jsx,.ts,.tsx`; both it and the retained `npm run lint`
+passed. An attributed fixture exercises the nine exact **Sankey Chart** rows
+from Microsoft's linked `assets/excel/workbook/test-visuals-data.xlsx`, public
+revision `21c5f65b4ee4f9d0a755175b0884c20be949bcb4`, workbook SHA-256
+`c17157c21cb99e1946dedca29e47a8f877fd0aaeadb57d2ba6ee8bcaec2b70e1`.
+Source and packaged-browser checks preserve eight nodes, nine weighted pairs
+and exact native row selections in all three layouts. Only this
+**offline-transcribed worksheet path** is exercised: no native workbook
+import, full-workbook coverage or Microsoft certification is inferred.
+See the [current evidence and provenance](../validation/RESULTS-1.2.md#microsoft-linked-dataset-path-exercised-locally).
+Recheck remaining formal submission requirements with the owner/Microsoft.
 If a source/tool change is required, prepare and revalidate a new candidate
 rather than altering the frozen package or claiming the old evidence covers it.
 

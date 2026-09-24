@@ -245,6 +245,21 @@ export function releaseFixtures() {
     return { typical, maximum, accounts };
 }
 
+export async function microsoftSankeyFixture() {
+    const filename = path.join("test", "fixtures", "microsoft-sankey.json");
+    const bytes = await readFile(path.join(root, filename));
+    const fixture = JSON.parse(bytes);
+    assert.deepEqual(fixture.columns, ["Origin City", "Destination City", "Passenger Volume"]);
+    assert.equal(fixture.rows.length, 9);
+    assert.equal(fixture.provenance.sheet, "Sankey Chart");
+    const rows = fixture.rows.map(([source, target, weight]) => ({ source, target, weight }));
+    assert.equal(rows.reduce((sum, row) => sum + row.weight, 0), 6975);
+    return {
+        rows, options: { types: false, edgeIds: false, tooltipFields: [] },
+        provenance: { ...fixture.provenance, fixtureFile: filename, fixtureSha256: digest(bytes) }
+    };
+}
+
 export async function releaseSampleFixtures() {
     const filename = path.join("samples", "release", "sample-contract.json");
     const bytes = await readFile(path.join(root, filename));
@@ -264,6 +279,7 @@ export async function releaseSampleFixtures() {
             return { source, target, type, edgeId, weight, durationMs, eventCount };
         });
     }
+
     return {
         domains,
         provenance: {
