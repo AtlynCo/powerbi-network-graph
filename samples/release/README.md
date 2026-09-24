@@ -1,9 +1,18 @@
 # Atlyn Network — authored offline sample
 
-**Target:** `1.1.1.0`, GUID `AtlynNetworkAB24C68297094C32AF64D50D92C01711`, API `5.11.0`.
-**Evidence status:** the coordinator reports **bounded PASS on Desktop 2.157.1354.0** for corrected sample commit `cbd21bee3de4f62ffaa93eb49a2e7881814913e5`: three pages rendered, Public PBIX saved and cold-reopened without refresh. The first refresh left manual-refresh/incomplete-data banners; the second observed refresh completed without a dialog. This is not full interaction, Service, export or certification acceptance.
+**Target:** `1.2.0.0`, GUID `AtlynNetworkAB24C68297094C32AF64D50D92C01711`, API `5.11.0`.
+**Current candidate:** five pages and four bound graph visuals, including the original Force Services/Accounts examples and new Circular/Radial service pages. Schema/embedded-byte validation is local only. A genuine 1.2.0.0 PBIX and current native acceptance remain owner gates.
+**Historical evidence only:** the coordinator reports **bounded PASS on Desktop 2.157.1354.0** for corrected 1.1.0.0 sample commit `cbd21bee3de4f62ffaa93eb49a2e7881814913e5`: three pages rendered, Public PBIX saved and cold-reopened without refresh. The first refresh left manual-refresh/incomplete-data banners; the second observed refresh completed without a dialog. This does not cover 1.2 layouts or full interaction, Service, export or certification acceptance.
 
-This is a complete source project, not a placeholder or instructions to build an empty report. It contains two graph pages with real field projections, type slicers, relationship detail tables, explanatory text, and a third hints page. Both graphs reference the embedded private custom visual. Eight semantic-model tables, fourteen DAX measures and six single-direction relationships are authored. All data partitions use literal `#table` expressions; they read no CSV, workbook, URL, database or sibling directory.
+This is a complete source project, not a placeholder or instructions to build an empty report. It contains two Force pages with real field projections, type slicers and detail tables, a hints page, and Circular/Radial graph pages using the same synthetic Services data. All four graphs reference the embedded private custom visual. Eight semantic-model tables, fourteen DAX measures and six single-direction relationships are authored. All data partitions use literal `#table` expressions; they read no CSV, workbook, URL, database or sibling directory.
+
+On **4. Circular relationships**, verify one ring and unchanged directed edges.
+On **5. Radial relationships**, verify Orders is the automatic center, hop rings
+ignore direction/weights, and Archive/Backup has a separate real center.
+Change the radial center, compare local focus with report selection, filter out
+and restore a requested center, and explicitly save/replay the local view.
+Do not interpret automatic center choice as centrality or causal importance.
+Dense lanes may overlap one another; the relationship list retains every edge.
 
 ## Report version correction, 2026-09-10
 
@@ -136,12 +145,12 @@ Official schemas are vendored at a pinned Microsoft commit with their MIT licens
 ## Files and evidence boundaries
 
 - `Network.pbip`: report shortcut.
-- `Network.Report\definition.pbir`: local semantic-model link; `definition\`: three authored pages and thirteen visual containers.
+- `Network.Report\definition.pbir`: local semantic-model link; `definition\`: five authored pages and nineteen visual containers.
 - `Network.Report\CustomVisuals\`: exact private package resources, not remote URLs.
 - `Network.SemanticModel\definition\`: eight TMDL tables, fourteen measures, six relationships.
 - `sample-contract.json`: original synthetic rows and authored-model expectations.
 - `schemas\`: official schema cache and license, needed only by local validation.
-- `package\`: the unchanged release archive that proves embedding provenance.
+- `package\`: the new 1.2.0.0 archive proving current embedding provenance, plus the unchanged historical 1.1.1.0 archive (not embedded).
 - `sample-validation.json`: local evidence only. No TOM parser execution, DAX/M evaluation, render correctness, native host behavior, certification or submission is inferred.
 
 The public-format basis and remaining submission gates are documented in [`docs/marketplace/README.md`](../../docs/marketplace/README.md).

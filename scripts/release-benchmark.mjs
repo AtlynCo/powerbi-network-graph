@@ -38,12 +38,12 @@ const budgets = {
 };
 const report = {
     artifact: null, sha256: null,
-    protocolVersion: 2, host: HOST_DISCLAIMER, started: new Date().toISOString(), tag, samples, warmup,
+    protocolVersion: 3, host: HOST_DISCLAIMER, started: new Date().toISOString(), tag, samples, warmup,
     clock: "Browser performance.now(): synchronous action plus mock-host completion and two requestAnimationFrame opportunities; no Node/Playwright transport included",
     methodology: {
         serial: "One browser/page and one operation at a time; exclusive worktree benchmark lock. Does not claim machine-wide process isolation.",
         fixtureConstruction: "Categorical DataView construction and reset/clear excluded from timed region; cold-render uses an empty topology first, not a cold browser/JIT",
-        localNavigation: "Entity change followed by explicit neighbors-mode change, supported identically in v1.0 and v1.1; not the new incident-only mode.",
+        localNavigation: "Entity change followed by explicit neighbors-mode change in each of Force, Circular and Radial. Layout always uses whole retained topology; radial center is automatic.",
         selection: "DOM click dispatch enters the packaged event handler; awaits actual mock API promise settlement and two frames. This is NOT native Power BI selection latency.",
         paint: "Two rAF callbacks provide a browser paint opportunity, not proof of native host export readiness or completed GPU presentation.",
         percentile: "Nearest rank ceil(p*n), raw samples retained; no outlier removal",
@@ -66,7 +66,7 @@ try {
     report.processesBefore = processSnapshot();
     const cpuBefore = cpu();
     const fixtures = releaseFixtures();
-    for (const fixtureName of ["typical", "maximum"]) {
+    for (const layout of ["force", "circular", "radial"]) for (const fixtureName of ["typical", "maximum"]) {
         let seed = 0xA71A2026;
         const rows = [...fixtures[fixtureName]];
         for (let i = rows.length - 1; i > 0; i--) {
@@ -75,11 +75,11 @@ try {
             [rows[i], rows[j]] = [rows[j], rows[i]];
         }
         await harness.mount({ width: 1366, height: 768 });
-        await harness.update(rows, { edgeIds: true });
-        await page.evaluate(({ rows, focus }) => {
-            window.benchmarkView = window.fixture.createView(rows, { edgeIds: true });
+        await harness.update(rows, { edgeIds: true, objects: { exploration: { layout } } });
+        await page.evaluate(({ rows, focus, layout }) => {
+            window.benchmarkView = window.fixture.createView(rows, { edgeIds: true, objects: { exploration: { layout } } });
             window.benchmarkFocus = focus;
-        }, { rows, focus: fixtureName === "maximum" ? "s:N000" : "s:Review" });
+        }, { rows, layout, focus: fixtureName === "maximum" ? "s:N000" : "s:Review" });
         for (const operation of ["cold-render", "data-update", "local-neighborhood-focus", "relationship-selection-hostmock"]) {
             await page.locator('[data-action="reset-focus"]').click();
             const values = await page.evaluate(async ({ operation, samples, warmup }) => {
@@ -133,14 +133,14 @@ try {
                 (fixtureName === "maximum" ? { nodes: 250, edges: 1000 } : { nodes: 7, edges: 10 });
             assert.deepEqual(visibleTopology, expectedTopology, "Timed operation ended on the wrong topology");
             const result = {
-                fixture: fixtureName, rows: rows.length, fixtureSha256: digest(JSON.stringify(rows)), operation, visibleTopology,
+                layout, fixture: fixtureName, rows: rows.length, fixtureSha256: digest(JSON.stringify(rows)), operation, visibleTopology,
                 synchronousMs: summarize(values.map(value => value.synchronousMs)),
                 endToEndMs: summarize(values.map(value => value.endToEndMs)),
                 budgetP95Ms: budgets[fixtureName][operation], values
             };
             result.withinBudget = result.endToEndMs.p95 <= result.budgetP95Ms;
             report.results.push(result);
-            console.log(`${fixtureName} ${operation}: p50 ${result.endToEndMs.p50.toFixed(1)} / p95 ${result.endToEndMs.p95.toFixed(1)} / max ${result.endToEndMs.max.toFixed(1)} ms (${samples} samples, ${result.withinBudget ? "within" : "OVER"} budget)`);
+            console.log(`${layout} ${fixtureName} ${operation}: p50 ${result.endToEndMs.p50.toFixed(1)} / p95 ${result.endToEndMs.p95.toFixed(1)} / max ${result.endToEndMs.max.toFixed(1)} ms (${samples} samples, ${result.withinBudget ? "within" : "OVER"} budget)`);
             await writeReport(`release-benchmark-${tag}.json`, report);
         }
     }
@@ -164,9 +164,9 @@ try {
             sha256: baseline.sha256 ?? baseline.artifact.sha256,
             warning: "Local observations on a shared machine, not controlled native-host or competitive measurements",
             results: report.results.map(result => {
-                const previous = baseline.results.find(item => item.fixture === result.fixture && item.operation === result.operation);
+                const previous = baseline.results.find(item => item.layout === result.layout && item.fixture === result.fixture && item.operation === result.operation);
                 assert(previous?.fixtureSha256 === result.fixtureSha256, "Baseline fixture differs");
-                return { fixture: result.fixture, operation: result.operation, p95BeforeMs: previous.endToEndMs.p95, p95AfterMs: result.endToEndMs.p95, ratio: result.endToEndMs.p95 / previous.endToEndMs.p95 };
+                return { layout: result.layout, fixture: result.fixture, operation: result.operation, p95BeforeMs: previous.endToEndMs.p95, p95AfterMs: result.endToEndMs.p95, ratio: result.endToEndMs.p95 / previous.endToEndMs.p95 };
             })
         };
     }

@@ -25,12 +25,12 @@ These are documented product capabilities, not claims that all are free, certifi
 
 ## Capability comparison
 
-Atlyn's column describes this repository's **1.1 release design and documentation**, with local tests/package checks where available. Native behavior remains subject to the submission matrix.
+Atlyn's column describes this repository's **1.2 candidate** (updated 2026-09-24), with local tests/package checks where available. The vendor documentation research remains dated 2026-09-09. Native behavior remains subject to the submission matrix.
 
-| Investigation need | ZoomCharts Graph PRO: documented | Powerviz Network Graph: documented | Atlyn 1.1: current implementation and gap |
+| Investigation need | ZoomCharts Graph PRO: documented | Powerviz Network Graph: documented | Atlyn 1.2 candidate: implementation and gap |
 | --- | --- | --- | --- |
 | Reduce an overwhelming overview | Focus-node fields; configurable expansion levels/radius/direction and explore mode | Clustering, relationship highlighting and top/bottom-N ranking | Local search, neighborhood, incident view, upstream/downstream and one shortest loaded path. **Missing** model-defined focus-node role, configurable multilevel expand/collapse and cluster aggregation |
-| Choose a layout for the question | Dynamic, Hierarchy, Radial | This source does not establish equivalent layout choices | Deterministic bounded component-aware layout. **Missing** a choice among force/hierarchical/radial layouts and manual node pinning |
+| Choose a layout for the question | Dynamic, Hierarchy, Radial | This source does not establish equivalent layout choices | Force (preserved default), Circular (one stable-ID ring), Radial (minimum undirected loaded hops, separate component centers). Author and local selectors; missing requested centers visibly fall back and are retained. **Missing** directed hierarchy, chord/bundled-edge modes and manual node pinning |
 | Read dense relationships | Configurable links/nodes are linked from product page; not fully benchmarked here | Line customization, directional arrows, inside/outside labels | Curved parallel/reciprocal links, separate self-loop petals, zoom/fit, collision-aware labels, accessible lists. **No claim** that this outperforms vendor layouts |
 | Filter the rest of a report | Documented bidirectional cross-chart filtering | One-click relationship highlighting; exact host-filter semantics not established by reviewed page | Native **relationship** identities; an entity action selects loaded incident relationships. This is not a true entity-dimension selection layer; native behavior needs verification |
 | Save an investigation | Power BI bookmark support | Theme import/export, which is not the same as investigation-state replay | Explicit saved local view includes focus/search/path/view/camera; metadata can be replayed. **Native bookmark replay unverified**, no bookmark created automatically |

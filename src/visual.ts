@@ -2,8 +2,8 @@ import powerbi from "powerbi-visuals-api";
 import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 import { createFormatter, NetworkData, readData, tooltipValues } from "./data";
 import { FocusMode, GraphEdge, GraphIndex, indexGraph, reachable, shortestPath } from "./graph";
-import { Layout, layoutBounds, layoutGraph, topologySignature } from "./layout";
-import { parseSavedView, SavedView, ViewPreference } from "./navigation";
+import { isLayoutMode, Layout, layoutBounds, layoutGraph, LayoutMode, resolveLayout } from "./layout";
+import { encodeSavedView, geometryFingerprint, parseSavedView, SavedView, SavedViewV2, ViewPreference } from "./navigation";
 import { relationshipSelection } from "./selection";
 import { Settings } from "./settings";
 import { ar, en, MessageKey } from "./strings";
@@ -48,6 +48,8 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     private readonly entity = element("select");
     private readonly focusMode = element("select");
     private readonly pathTarget = element("select");
+    private readonly layoutChoice = element("select");
+    private readonly centerChoice = element("select");
     private readonly viewButton: HTMLButtonElement;
     private readonly selection: powerbi.extensibility.ISelectionManager;
     private readonly formatting: FormattingSettingsService;
@@ -71,6 +73,10 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     private targetId = "";
     private viewPreference: ViewPreference = "auto";
     private configuredView: ViewPreference = "auto";
+    private layoutMode: LayoutMode = "force";
+    private configuredLayout: LayoutMode = "force";
+    private requestedRoot = "";
+    private missingRoot = false;
     private savedViewValue: string | undefined;
     private compact: boolean | undefined;
     private toolsOpen = false;
@@ -186,6 +192,29 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     }
 
     private buildToolbar(): void {
+        this.layoutChoice.dataset.control = "layout";
+        this.layoutChoice.setAttribute("aria-label", this.t("LayoutChoice"));
+        for (const [value, key] of [["force", "LayoutForce"], ["circular", "LayoutCircular"], ["radial", "LayoutRadial"]] as const) {
+            const option = element("option");
+            option.value = value;
+            option.textContent = this.t(key);
+            this.layoutChoice.append(option);
+        }
+        this.layoutChoice.addEventListener("change", () => {
+            if (!isLayoutMode(this.layoutChoice.value)) {
+                this.notice.textContent = this.t("InvalidLayout");
+                return;
+            }
+            this.layoutMode = this.layoutChoice.value;
+            this.localLayoutChanged();
+        });
+        this.centerChoice.dataset.control = "layout-center";
+        this.centerChoice.setAttribute("aria-label", this.t("RadialCenter"));
+        this.centerChoice.hidden = true;
+        this.centerChoice.addEventListener("change", () => {
+            this.requestedRoot = this.centerChoice.value;
+            this.localLayoutChanged();
+        });
         this.search.type = "search";
         this.search.maxLength = 512;
         this.search.placeholder = this.t("Search");
@@ -226,7 +255,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             this.localFocusChanged();
         });
         this.toolbar.append(
-            this.search, this.entity, this.focusMode, this.pathTarget,
+            this.layoutChoice, this.centerChoice, this.search, this.entity, this.focusMode, this.pathTarget,
             this.button("ResetFocus", "reset-focus", () => {
                 this.mode = "all";
                 this.focusMode.value = "all";
@@ -277,15 +306,21 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             return;
         }
         const size = this.plotSize();
-        const state: SavedView = {
-            version: 1, focus: this.focusId, target: this.targetId, mode: this.mode,
+        const state: SavedViewV2 = {
+            version: 2, focus: this.focusId, target: this.targetId, mode: this.mode,
+            layout: this.layoutMode, root: this.requestedRoot, geometry: geometryFingerprint(this.layout.signature),
             search: this.search.value, view: this.viewPreference,
             centerX: (size.width / 2 - this.camera.x) / this.camera.scale,
             centerY: (size.height / 2 - this.camera.y) / this.camera.scale, scale: this.camera.scale
         };
+        const encoded = encodeSavedView(state);
+        if (encoded === null) {
+            this.notice.textContent = this.t("SaveTooLarge");
+            return;
+        }
         void Promise.resolve().then(() => {
             if (!this.destroyed) this.host.persistProperties({
-                merge: [{ objectName: "navigation", selector: {}, properties: { savedView: JSON.stringify(state) } }]
+                merge: [{ objectName: "navigation", selector: {}, properties: { savedView: encoded } }]
             });
         }).then(() => {
             if (!this.destroyed) this.notice.textContent = this.t("SavedView");
@@ -300,12 +335,23 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         if (value === this.savedViewValue) return undefined;
         const state = typeof value === "string" ? parseSavedView(value) : null;
         this.savedViewValue = typeof value === "string" ? value : undefined;
-        if (!state || (state.focus && !this.index.nodes.has(state.focus)) || (state.target && !this.index.nodes.has(state.target))) {
+        if (!state) {
             this.mode = "all";
             this.search.value = "";
             this.viewPreference = this.configuredView;
+            this.layoutMode = this.configuredLayout;
+            this.requestedRoot = "";
             this.autoFit = true;
             if (value !== undefined) this.notice.textContent = this.t("BadSavedView");
+            return undefined;
+        }
+        this.layoutMode = state.version === 1 ? "force" : state.layout;
+        this.requestedRoot = state.version === 1 ? "" : state.root;
+        this.autoFit = true;
+        if ((state.focus && !this.index.nodes.has(state.focus)) || (state.target && !this.index.nodes.has(state.target))) {
+            this.mode = "all";
+            this.search.value = "";
+            this.notice.textContent = this.t("BadSavedView");
             return undefined;
         }
         this.focusId = state.focus;
@@ -313,7 +359,6 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         this.mode = state.mode;
         this.search.value = state.search;
         this.viewPreference = state.view;
-        this.autoFit = false;
         return state;
     }
 
@@ -350,11 +395,12 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
                 this.configuredView = configured;
                 this.viewPreference = configured;
             }
-            const changed = topologySignature(this.data.graph) !== this.layout.signature;
-            if (changed) {
-                this.layout = layoutGraph(this.data.graph);
-                this.page = 0;
-                this.autoFit = true;
+            const configuredLayout = this.settings.exploration.layout.value.value;
+            const validLayout = isLayoutMode(configuredLayout) ? configuredLayout : "force";
+            if (!isLayoutMode(configuredLayout)) this.notice.textContent = this.t("InvalidLayout");
+            if (validLayout !== this.configuredLayout) {
+                this.configuredLayout = validLayout;
+                this.layoutMode = validLayout;
             }
             if (!this.data.graph.nodes.some(node => node.id === this.focusId)) {
                 this.focusId = this.data.graph.nodes[0]?.id ?? "";
@@ -363,6 +409,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             }
             if (!this.index.nodes.has(this.targetId)) this.targetId = this.data.graph.nodes[this.data.graph.nodes.length - 1]?.id ?? "";
             const restored = this.restoreView(view);
+            this.refreshLayout();
             this.applyResponsive();
             this.populateEntities();
             this.applyTheme();
@@ -370,12 +417,16 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             this.renderList();
             this.syncSelection();
             this.renderStatus();
-            if (restored) {
+            if (restored?.version === 2 && restored.geometry === geometryFingerprint(this.layout.signature)) {
                 const size = this.plotSize();
                 this.camera = { scale: restored.scale, x: size.width / 2 - restored.centerX * restored.scale, y: size.height / 2 - restored.centerY * restored.scale };
+                this.autoFit = false;
                 this.transform();
-            } else if (this.autoFit) this.fit();
-            else this.transform();
+            } else {
+                if (restored) this.notice.textContent = this.t(restored.version === 1 ? "LegacyView" : "CameraReset");
+                if (this.autoFit) this.fit();
+                else this.transform();
+            }
             if (focusKey && !active?.isConnected) {
                 const controls = [...this.list.querySelectorAll<HTMLButtonElement>("button")];
                 const restored = controls.find(control => control.dataset.action === focusKey.action && control.dataset.focusKey === focusKey.key);
@@ -416,13 +467,28 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     private populateEntities(): void {
         this.entity.replaceChildren();
         this.pathTarget.replaceChildren();
+        this.centerChoice.replaceChildren();
+        const automatic = element("option");
+        automatic.value = "";
+        automatic.textContent = this.t("AutomaticCenter");
+        this.centerChoice.append(automatic);
         for (const node of this.data.graph.nodes) {
             const option = element("option");
             option.value = node.id;
             option.textContent = this.nodeLabel(node.id);
             this.entity.append(option);
             this.pathTarget.append(option.cloneNode(true));
+            this.centerChoice.append(option.cloneNode(true));
         }
+        if (this.requestedRoot && !this.index.nodes.has(this.requestedRoot)) {
+            const missing = element("option");
+            missing.value = this.requestedRoot;
+            missing.textContent = `${this.t("Missing")}: ${this.requestedRoot}`;
+            this.centerChoice.append(missing);
+        }
+        this.centerChoice.value = this.requestedRoot;
+        this.centerChoice.hidden = this.layoutMode !== "radial";
+        this.layoutChoice.value = this.layoutMode;
         this.entity.value = this.focusId;
         this.pathTarget.value = this.targetId;
         this.focusMode.value = this.mode;
@@ -565,6 +631,13 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         if (this.mode === "path" && !this.visible.size) messages.push(this.t("NoPath"));
         if (!this.interactionsAllowed()) messages.push(this.t("InteractionsDisabled"));
         if (this.viewport.width < 180 || this.viewport.height < 150) messages.push(this.t("MicroHelp"));
+        if (this.layoutMode === "circular") messages.push(this.t("CircularHelp"));
+        if (this.layoutMode === "radial") {
+            messages.push(this.t("RadialHelp"));
+            if (this.layout.root) messages.push(`${this.t("EffectiveCenter")}: ${this.nodeLabel(this.layout.root)}. ${this.t("ComponentCenters")}: ${this.layout.roots?.length ?? 0}.`);
+            if (!this.requestedRoot || this.missingRoot) messages.push(this.t("AutomaticCenterHelp"));
+            if (this.missingRoot) messages.push(this.t("MissingCenter"));
+        }
         this.status.textContent = messages.join(" ");
         this.status.title = this.status.textContent;
     }
@@ -635,6 +708,15 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
                     select.title = this.t(native.reason === "limit" ? "SelectionLimit" : "SelectionMissing");
                 }
                 actions.append(focus, inspect, select);
+                if (this.layoutMode === "radial") {
+                    const center = this.button("CenterNode", "center-node", () => {
+                        this.requestedRoot = node.id;
+                        this.localLayoutChanged();
+                        this.centerChoice.focus();
+                    });
+                    center.dataset.focusKey = node.id;
+                    actions.append(center);
+                }
                 row.append(name, counts, actions);
                 items.append(row);
             }
@@ -901,6 +983,14 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
                 { x: center.x - radius - width, y: center.y - height / 2, width, height },
                 { x: center.x - width / 2, y: center.y - radius - height, width, height }
             ];
+            const polar = this.layout.polar?.get(id);
+            if (polar?.radius) {
+                const offset = radius + Math.max(width, height) / 2;
+                candidates.unshift({
+                    x: center.x + Math.cos(polar.angle) * offset - width / 2,
+                    y: center.y + Math.sin(polar.angle) * offset - height / 2, width, height
+                });
+            }
             const candidate = this.settings.appearance.avoidLabelOverlap.value ? candidates.find(rect =>
                 rect.x >= 3 && rect.y >= 3 && rect.x + rect.width <= size.width - 3 && rect.y + rect.height <= size.height - 3 &&
                 !circles.some(circle => overlaps(rect, circle)) && !placed.some(other => overlaps(rect, other))) : candidates[0];
@@ -929,6 +1019,30 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         this.styleSelection();
         this.renderStatus();
         this.fit();
+    }
+
+    private refreshLayout(): void {
+        const resolved = resolveLayout(this.data.graph, this.layoutMode, this.requestedRoot);
+        this.missingRoot = resolved.missingRoot;
+        if (resolved.key !== this.layout.signature) {
+            this.layout = layoutGraph(this.data.graph, resolved.mode, resolved.root);
+            this.autoFit = true;
+        }
+        this.root.dataset.layout = this.layoutMode;
+        this.root.dataset.layoutCenter = resolved.root;
+    }
+
+    private localLayoutChanged(): void {
+        this.hideTooltip();
+        this.notice.textContent = "";
+        this.refreshLayout();
+        this.populateEntities();
+        this.renderGraph();
+        this.renderList();
+        this.styleSelection();
+        this.renderStatus();
+        if (this.autoFit) this.fit();
+        else this.transform();
     }
 
     private plotSize(): { width: number; height: number } {

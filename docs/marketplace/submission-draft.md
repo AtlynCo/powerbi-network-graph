@@ -2,6 +2,13 @@
 
 **Prepared 2026-09-09. Draft text only; nothing entered into Partner Center.**
 
+**Candidate update, 2026-09-24:** the new source/package target is **1.2.0.0**,
+adding Force/Circular/Radial selection. Asset/reviewer text below is the
+historical 1.1 draft, not approved current submission content. A new matching
+offline PBIX, owner-approved privacy/EULA, current listing media and native
+acceptance are still required. See `docs/RELEASE.md` for candidate gates; do
+not upload the historical package/PBIX named below for this version.
+
 **Owner approval, 2026-09-10:** use existing Atlyn storefront subscriptions for acquisition and **ungated visuals with free shared viewing**. The current offline runtime is intended; it does not enforce paid-author status. No license keys, new signer, AAD/API integration, feature gates or runtime requests are to be added. Licensing integration is no longer a blocker. Main/certification refs, merging and submission remain held for the parent's final native/assets/legal/release gate. The additional Microsoft Power BI visual certification badge is required, not yet achieved.
 
 “Verified metadata” below means values already confirmed in the repository/coordinator's v1 baseline, not verification of publisher authority, legal adequacy, name reservation or a support SLA. **UNRESOLVED** fields are intentional release gates, not blanks to fill with guessed values.

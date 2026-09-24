@@ -1,6 +1,6 @@
 # Marketplace and certification preparation
 
-**Research checked: 2026-09-09. Release target: 1.1.0.0. Status: preparation, not submission or certification.**
+**Research checked: 2026-09-09; candidate updated 2026-09-24. Release target: 1.2.0.0. Status: preparation, not submission or certification.** Historical native/media evidence below remains version 1.1.0.0 and must not be relabeled as current. See the [1.2 readiness boundaries](../RELEASE.md#12-candidate-readiness-boundaries-2026-09-24).
 
 **Owner-approved pattern (2026-09-10):** external storefront subscriptions govern acquisition; visuals run ungated, with free shared viewing and no paid-author enforcement. The existing offline renderer is intended, following the coordinator's assessment of existing Distribution/Scatter source. No keys, new signer, AAD/API integration, feature gates or runtime requests are to be added. Runtime licensing is no longer a blocker.
 
@@ -17,8 +17,8 @@ This directory separates Microsoft requirements, repository evidence, proposed l
 
 | Item | Requirement verified in Microsoft documentation | Preparation status |
 | --- | --- | --- |
-| PBIVIZ | Real compiled package; complete metadata; four-part version; same GUID on updates | Target `AtlynNetworkAB24C68297094C32AF64D50D92C01711`, `1.1.0.0`, API `5.11.0`; coordinator must freeze final artifact |
-| Sample PBIX | **Required**, works offline with no external connections; visual version and content match PBIVIZ | Coordinator saved `AtlynNetwork-1.1.0.0-native.pbix` and cold-reopened without refresh; exact embedded package/resource equality confirmed. Explicit offline refresh and full sample interactions remain separate gates |
+| PBIVIZ | Real compiled package; complete metadata; four-part version; same GUID on updates | Target `AtlynNetworkAB24C68297094C32AF64D50D92C01711`, `1.2.0.0`, API `5.11.0`; coordinator must approve final artifact |
+| Sample PBIX | **Required**, works offline with no external connections; visual version and content match PBIVIZ | **Missing for 1.2.0.0.** Coordinator's older `AtlynNetwork-1.1.0.0-native.pbix` is historical evidence only. Current native conversion/refresh/interactions/save/reopen remain owner gates |
 | Logo | PNG, **exactly 300×300** | Coordinator owns final asset and approval; 20×20 package icon is not a substitute |
 | Screenshots | **1–5 PNGs**, **exactly 1366×768**, each **≤1024 KB**; sharp, inclusive, accurate | Coordinator owns final images; use comfortably below 1,024,000 bytes to avoid ambiguous KB interpretation |
 | Support | Public HTTPS support link | Existing metadata: `https://atlynco.github.io/atlyn-powerbi-support/docs/faq/`; operational support commitment unresolved |

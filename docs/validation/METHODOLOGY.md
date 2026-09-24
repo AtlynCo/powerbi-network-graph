@@ -68,9 +68,17 @@ final PBIVIZ filename/SHA and require `passed: true`:
 | File under `dist` | Producer | Additional checks |
 |---|---|---|
 | `browser-test-results.json` | `node scripts\browser-test.mjs` | Existing 17 groups; zero errors/requests |
-| `release-browser-results.json` | `npm run test:release` | 22 groups; `preliminary: false`; current source/build provenance |
-| `release-benchmark-final.json` | `npm run benchmark` | 8 fixture/operation groups; ≥30 samples; current source/build provenance; all p95 budgets |
+| `release-browser-results.json` | `npm run test:release` | 37 groups in 1.2; `preliminary: false`; current source/build provenance |
+| `release-benchmark-final.json` | `npm run benchmark` | 24 layout/fixture/operation groups in 1.2; ≥30 samples each; current source/build provenance; all p95 budgets |
 | `release-profile.json` | `node scripts\release-profile.mjs` | DevTools CPU sampling, actual-package provenance, zero requests/errors |
+| `rebuild-verification.json` | `node scripts\rebuild-check.mjs` | Two unchanged-source SDK builds, every decompressed member identical; final archive SHA |
+
+Run `rebuild-check.mjs` **before** final inspection, notices, sample assembly
+and browser/benchmark capture. The official SDK writes wall-clock ZIP entry
+timestamps: member content is reproducible but ZIP bytes/SHA can differ.
+Do not normalize/rewrite an SDK archive to imply a stronger reproducibility
+claim. Every final gate must reference the exact last archive, not an earlier
+rebuild's hash. The pinned `1.1.1.0` archive stays unchanged.
 
 For final screenshots, run `node scripts\release-browser.mjs --screenshots` with
 the owner's `RELEASE_FINAL_READY_SHA`. Its same `release-browser-results.json`
@@ -97,16 +105,29 @@ node scripts\release-benchmark.mjs --tag=cached-candidate
 Remove-Item Env:BROWSER_ARTIFACT
 ```
 
-The frozen v1.0 package is available at
+Historical protocol-2 procedure (not a protocol-3 comparison): the frozen v1.0 package was retained at
 `.tmp\baseline-v1\AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.0.0.0.pbiviz`.
-Set `BROWSER_ARTIFACT` to that path and run the benchmark with
-`--tag=baseline-v1` before measuring the candidate. Benchmark protocol version 2
-uses the common **neighborhood** action, not v1.1's new incident-only mode;
-reports from different protocol versions are rejected for comparison. Each
+Protocol 2 used the common **neighborhood** action, not v1.1's new incident-only mode.
+The current 1.2 protocol **3** measures all three layouts serially; older
+packages without those controls are not valid comparison baselines.
+Reports from different protocol versions are rejected for comparison. Each
 operation's final visible node/edge counts are also checked against explicit
 expected values, including the full graph before native-selection mock timing.
 
 ## Independent functional oracles
+
+The 1.2 candidate adds `test/polar-layout.test.ts` and `test/navigation.test.ts`.
+Four pre-change c19276b Force fingerprints pin positions/routes/bounds/signature.
+Three seeded independent undirected Floyd-Warshall matrices check all centers,
+including disconnected graphs. Tests cover shortcut re-layering (retained
+edges cannot span more than one BFS level), 72-unit center spacing, 96-unit
+radial gaps, separate component centers, typed-ID ties, unchanged row identities,
+missing/returning centers, and 1,000 loop/parallel/reciprocal paths in both modes.
+An independent SVG endpoint-arc converter flattens the actual path strings;
+sampled geometry checks bounds and a 27.9-unit unrelated-center clearance,
+covering the 18-radius search glyph, selected stroke and transparent hit path.
+Camera state tests check v1 migration, v2 layout/root fingerprint compatibility
+and the exact 4,096-character encoded boundary, including escaping expansion.
 
 `test/release-topology.test.ts` checks a hand-audited directed fixture with
 explicit expected IDs, endpoints, contributing row indices, sums, and paths.
@@ -143,6 +164,13 @@ cover explicit valid, malformed, oversized, and out-of-range representations.
 
 `release-browser.mjs` adds:
 
+* 1.2 Circular/Radial author/local controls, root action, missing/returning roots,
+  same-topology layout changes, unchanged selection/native identities and
+  transformed mouse picking, all five maximum-topology tiles, keyboard lists,
+  Arabic/high contrast/reduced motion and per-instance layout isolation.
+  Actual browser SVG `getPointAtLength` sampling independently checks polar
+  glyph clearance. Save/replay tests cover v2 cameras, v1 Force migration,
+  incompatible geometry, and visible oversized-encoding refusal.
 * Exact 80×80, 258×198, 398×298, 1280×620, and 1366×768 visual tiles;
   root dimensions, horizontal reachability, scrollable controls, graph/list
   recovery, actual SVG label/mark bounds, and label/label intersections.
@@ -192,8 +220,13 @@ not be described as “no overlap” without qualification.
 
 `release-benchmark.mjs` takes a worktree-local exclusive lock, opens one browser
 and one page, then measures operations in a fixed serial order. Five warmups are
-discarded, followed by at least 30 retained samples **per fixture/operation**.
+discarded, followed by at least 30 retained samples **per layout/fixture/operation**.
 No outliers are removed. Raw values and nearest-rank p50/p95/max are retained.
+
+Protocol 3 covers Force, Circular and Radial using the same typical/maximum
+fixtures and four operations: 24 groups, 720 measured samples by default.
+All layouts use the predeclared fixture budgets; mode is included in comparison
+keys. Do not run concurrent build/test commands during measurement.
 
 The typical fixture has 7 entities / 10 IDs / 10 rows and includes loops,
 reciprocity, parallel types, cycles, and a disconnected component. The maximum

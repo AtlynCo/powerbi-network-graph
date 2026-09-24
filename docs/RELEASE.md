@@ -5,7 +5,7 @@
 - Publisher: Atlyn; private `AtlynCo/powerbi-network-graph` repository.
 - Visual: Atlyn Network.
 - Stable GUID: `AtlynNetworkAB24C68297094C32AF64D50D92C01711`.
-- Visual version: `1.1.0.0`; npm version: `1.1.0`.
+- Current candidate visual version: `1.2.0.0`; npm version: `1.2.0`.
 - Intended artifact: the audited `.pbiviz` package, not source renamed as `.pbix`.
 - Certification-oriented engineering **does not mean Microsoft certified**.
 
@@ -39,7 +39,7 @@ No publication, AppSource submission, public GitHub release, screenshot upload, 
 Example hash command after packaging:
 
 ```powershell
-Get-FileHash -Algorithm SHA256 .\dist\AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.1.0.0.pbiviz
+Get-FileHash -Algorithm SHA256 .\dist\AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.2.0.0.pbiviz
 ```
 
 Do not silently convert a warning into a passing gate. Keep verification artifacts private and exclude report/customer data and credentials.
@@ -86,6 +86,11 @@ The current context-menu SDK surface accepts a single identity. Do not pass an a
 
 ## 4. Rendering, accessibility, and responsiveness
 
+- [ ] Verify Force is the absent-property/v1 default and has unchanged positions/routes. Test Circular typed-ID ordering and Radial minimum undirected hops with an independent distance oracle.
+- [ ] Verify automatic/explicit center, separately packed components, missing-center disclosure and reappearance. Self/parallel edges and weights must not distort root scoring or distance.
+- [ ] Verify >=72-unit center spacing, >=96-unit radial ring gaps, complete edge/row preservation, glyph-safe polar routes, arc/loop bounds, outward horizontal labels and dense disclosure.
+- [ ] Verify local layout/root actions never select/filter/persist; only Save local view writes a snapshot. Test v1 migration, mode/root-aware camera compatibility and 4,096-character encode/decode refusal.
+- [ ] Verify the author layout property and local selectors in every tile/locale/contrast mode, transformed picking, multiple instances, saved state and complete keyboard lists.
 - [ ] Verify bounded deterministic synchronous layout with no simulation/timer, external assets, or animations; repeated highlight/selection updates must not restart layout.
 - [ ] Verify readable directed arrows and nonoverlapping paths for representative reciprocal/parallel groups and multiple loops.
 - [ ] Verify Fit includes curves, loop extents, and labels; test zoom extremes, pan, resize, and empty data transitions.
@@ -142,3 +147,27 @@ and does not authorize merging, certification-reference changes or submission.
 The release must include a fully authored offline PBIP source with useful bound report pages, semantic-model tables, literal synthetic data, and the exact tested embedded visual. Validate schema/reference/field bindings and retain its asset hashes. Authored source validation is **not** evidence that Desktop has opened, rendered, saved, or reopened it.
 
 The coordinator owns native Desktop opening and conversion to a real PBIX, service/export evidence, genuine legal/pricing approvals, and live Partner Center actions. Do not fabricate PBIX, native screenshots, successful import, certification, or publication approval. Freeze a lowercase certification source baseline only after final source is committed, and never overwrite an existing submitted baseline.
+
+## 1.2 candidate readiness boundaries (2026-09-24)
+
+Current local outcomes and hashes belong in the separate
+`docs/validation/RESULTS-1.2.md` and the worktree's `dist` reports, not the frozen
+1.1 evidence. Preserve the `1.1.1.0` sample archive and all existing marketplace
+media/provenance. The 1.2 sample has five pages and four bound graph visuals;
+only its new versioned package is embedded.
+
+| Gate | Current evidence boundary / owner action |
+| --- | --- |
+| Source, package, API/tools | Stable GUID/data roles; API 5.11.0 from SDK 5.11.1, tools 7.2.1. Run local schema, unit, type, ESLint, `package --certification-audit`, audit and compiled-code preflight. Recheck latest SDK/tools before submission. |
+| Sample | Offline literal PBIP with Force, Circular and Radial pages; schema/model preflight is not native loading. A **new 1.2.0.0 PBIX** must be genuinely opened/refreshed/saved/cold-reopened in Desktop and its embedded bytes matched to the final package. The old 1.1.0.0 PBIX cannot satisfy this. |
+| Native host | Desktop 2.157.1354.0 is reported installed by the coordinator, but this work does not operate the shared native UI. Desktop/Service selection, bookmark replay, format painter, reading/edit modes, tooltips, interactions, multi-page/multi-instance, saves and actual exports require owner verification. |
+| Events | `renderingStarted` begins updates; exactly one finished/failed terminal event is exercised with the compiled mock host, including error states. This is not native export proof. |
+| Images | Existing 300x300 logo remains a candidate asset. New 1.2 screenshots may be generated only under `dist/release-screenshots` with the exact package SHA, explanatory callouts and explicit mock-host labels; 1–5 PNGs, 1366x768, <=1,024,000 bytes. Owner must approve final listing media. |
+| Support/privacy | Manifest uses the public HTTPS support FAQ. Accessibility/content of that page is not a support SLA. A verified owner-approved HTTPS privacy-policy URL remains unresolved. |
+| Terms | Repository `LICENSE` is a proprietary rights notice requiring a separate agreement; it is **not an approved customer EULA or Partner Center contract choice**. Owner/legal approval is required; do not generate substitute legal terms. |
+| External review | Partner Center publisher/access/terms/submission and Microsoft's certification review remain unsatisfied external gates. No credentials, publication, certification-ref movement or release action is authorized by local passes. |
+
+The API 5.11.1 capability schema supports `filterState` and
+`suppressFormatPainterCopy` on `navigation.savedView`; both are set. This
+aligns local saved properties with Microsoft's bookmark guidance without
+issuing report filters. Native bookmark/painter behavior is still unchecked.

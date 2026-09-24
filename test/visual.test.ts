@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import powerbi from "powerbi-visuals-api";
 
 vi.mock("powerbi-visuals-api", async (importOriginal) => {
@@ -20,6 +20,90 @@ vi.mock("powerbi-visuals-api", async (importOriginal) => {
 });
 
 import { Visual } from "../src/visual";
+
+function graphView(visual: Visual, objects: powerbi.DataViewObjects = {}, pairs = [["A", "B"], ["B", "C"], ["C", "A"], ["A", "A"], ["X", "Y"]]): void {
+    const categories = ["source", "target"].map((role, i) => ({
+        source: { displayName: role, roles: { [role]: true }, type: { text: true } },
+        values: pairs.map(pair => pair[i])
+    }));
+    visual.update({
+        dataViews: [{ metadata: { columns: categories.map(column => column.source), objects }, categorical: { categories } }],
+        viewport: { width: 1280, height: 620 }, type: powerbi.VisualUpdateType.Data
+    });
+}
+
+describe("layout UI and snapshot ordering", () => {
+    beforeEach(() => {
+        Object.defineProperty(SVGElement.prototype, "getComputedTextLength", { configurable: true, value: () => 60 });
+    });
+    const positions = (element: HTMLElement) => [...element.querySelectorAll(".network-node")].map(node => [node.getAttribute("data-node-id"), node.getAttribute("transform")]);
+    const choose = (element: HTMLElement, control: string, value: string) => {
+        const select = element.querySelector<HTMLSelectElement>(`[data-control="${control}"]`)!;
+        select.value = value;
+        select.dispatchEvent(new Event("change"));
+    };
+    it("renders all three modes without selection/persistence; focus/search/resize never change whole-graph coordinates", () => {
+        const { host, selectionManager } = mockVisualHost();
+        const element = document.createElement("div");
+        const visual = new Visual({ element, host });
+        graphView(visual);
+        const force = positions(element);
+        choose(element, "layout", "circular");
+        expect(positions(element)).not.toEqual(force);
+        choose(element, "layout", "radial");
+        choose(element, "layout-center", "s:B");
+        const radial = positions(element);
+        choose(element, "entity", "s:B");
+        expect(positions(element).every(pair => radial.some(original => JSON.stringify(original) === JSON.stringify(pair)))).toBe(true);
+        element.querySelector<HTMLButtonElement>('[data-action="reset-focus"]')!.click();
+        visual.update({ viewport: { width: 80, height: 80 }, type: powerbi.VisualUpdateType.Resize });
+        expect(positions(element)).toEqual(radial);
+        expect(selectionManager.select).not.toHaveBeenCalled();
+        expect(host.persistProperties).not.toHaveBeenCalled();
+        choose(element, "layout", "force");
+        expect(positions(element)).toEqual(force);
+        expect(host.eventService.renderingFailed).not.toHaveBeenCalled();
+        visual.destroy();
+    });
+    it("retains a missing requested center and restores it when it reappears, without host writes", () => {
+        const { host } = mockVisualHost();
+        const element = document.createElement("div");
+        const visual = new Visual({ element, host });
+        graphView(visual, { exploration: { layout: "radial" } });
+        choose(element, "layout-center", "s:C");
+        graphView(visual, { exploration: { layout: "radial" } }, [["A", "B"]]);
+        expect(element.querySelector<HTMLSelectElement>('[data-control="layout-center"]')!.value).toBe("s:C");
+        expect(element.querySelector(".network-status")!.textContent).toContain("Requested center is not loaded");
+        expect(element.querySelector<HTMLElement>(".atlyn-network")!.dataset.layoutCenter).toBe("s:A");
+        graphView(visual, { exploration: { layout: "radial" } });
+        expect(element.querySelector<HTMLElement>(".atlyn-network")!.dataset.layoutCenter).toBe("s:C");
+        expect(host.persistProperties).not.toHaveBeenCalled();
+        visual.destroy();
+    });
+    it("resolves saved layout/root before geometry and camera; migrates v1 and rejects stale camera geometry", async () => {
+        const { host } = mockVisualHost();
+        const element = document.createElement("div");
+        const visual = new Visual({ element, host });
+        graphView(visual);
+        choose(element, "layout", "radial");
+        choose(element, "layout-center", "s:C");
+        const savedPositions = positions(element);
+        element.querySelector<HTMLButtonElement>('[data-action="save-view"]')!.click();
+        await vi.waitFor(() => expect(host.persistProperties).toHaveBeenCalledOnce());
+        const savedView = vi.mocked(host.persistProperties).mock.calls[0][0].merge![0].properties.savedView;
+        expect(typeof savedView).toBe("string");
+        choose(element, "layout", "circular");
+        graphView(visual, { navigation: { savedView } });
+        expect(positions(element)).toEqual(savedPositions);
+        graphView(visual, { navigation: { savedView: JSON.stringify({ ...JSON.parse(String(savedView)), geometry: "0".repeat(32) }) } });
+        expect(element.querySelector(".network-notice")!.textContent).toContain("Saved geometry differs");
+        graphView(visual, { navigation: { savedView: JSON.stringify({ version: 1, focus: "", target: "", mode: "all", search: "", view: "auto", centerX: 999, centerY: 999, scale: 1 }) } });
+        expect(element.querySelector<HTMLElement>(".atlyn-network")!.dataset.layout).toBe("force");
+        expect(element.querySelector(".network-notice")!.textContent).toContain("Version 1");
+        expect(host.eventService.renderingFailed).not.toHaveBeenCalled();
+        visual.destroy();
+    });
+});
 
 function mockVisualHost() {
     const contextCalls: { id: unknown; position: { x: number; y: number } }[] = [];

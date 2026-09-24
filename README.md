@@ -2,7 +2,7 @@
 
 An offline custom visual for exploring **directed relationships supplied by a Power BI report**. Display cycles, reciprocal links, parallel relationships, and self-links without forcing the data into a tree. Explore the loaded graph with local search, neighborhood and directional traversal, or use accessible entity and relationship lists.
 
-**Status:** private Atlyn release candidate; version `1.1.0.0`. Certification-oriented, **not Microsoft certified**. Packaging and browser checks are not evidence of native Desktop, service, or export compatibility. See the [release gates](docs/RELEASE.md) before distribution.
+**Status:** private Atlyn release candidate; version `1.2.0.0`. Certification-oriented, **not Microsoft certified**. Packaging and browser checks are not evidence of native Desktop, service, or export compatibility. See the [release gates](docs/RELEASE.md) before distribution. Historical `1.1.0.0` Desktop evidence and `1.1.1.0` packages do not validate this candidate.
 
 **Approved commercial/runtime model (2026-09-10):** acquisition is through existing Atlyn storefront subscriptions; the visual runtime is intentionally ungated, including free shared-report viewing. It does not enforce paid-author status. No license keys, new signer, AAD/API integration, feature gates, WebAccess, or runtime license requests are required or authorized. The existing offline renderer is the intended runtime; licensing integration is no longer a blocker.
 
@@ -13,6 +13,7 @@ An offline custom visual for exploring **directed relationships supplied by a Po
 - Nodes come only from relationship endpoints. Standalone isolated entities are not supported.
 - Source-to-target direction is preserved, including cycles and reciprocal relationships.
 - Deterministic, bounded component-aware layout; no ongoing simulation, timers, or animation.
+- Selectable **Force** (unchanged default), **Circular**, and rooted **Radial** layouts.
 - Curved parallel/reciprocal links and distinct arrowed loop petals; collision-aware labels, pan, pinch/wheel zoom, and fit.
 - Local entity search, incident relationships, neighborhood, upstream/downstream traversal, and one shortest directed path.
 - Explicit graph/list/split views and saved local exploration state, separate from report selection.
@@ -36,7 +37,59 @@ Native opening, saving/reopening, and PBIX conversion must be performed in Deskt
 
 The [complete offline PBIP](samples/release/README.md) contains two bound graph pages, native slicers/detail tables, a hints page, eight literal model tables, fourteen measures, and the exact embedded visual. [Marketplace preparation](docs/marketplace/README.md) supplies draft fields and the remaining native/legal gates. The [competitor workflow comparison](docs/marketplace/workflow-benchmark.md) credits verified Graph PRO/Powerviz capabilities and identifies Atlyn's missing features without claiming superiority.
 
-See [sealed quality results](docs/validation/RESULTS.md) for measured improvements, package identity, actual-package media, and remaining limitations.
+See [current 1.2 candidate results](docs/validation/RESULTS-1.2.md) for the exact
+package, local checks, layout benchmarks and owner gates. The [sealed 1.1
+quality results](docs/validation/RESULTS.md) remain historical evidence only.
+
+## Choosing a layout
+
+Use **Format visual > Exploration > Initial layout** to set the author's default.
+The accessible **Layout (local only)** selector changes the current exploration
+without selecting, filtering, or writing report properties. **Initial view**
+(Automatic / Graph and list / Graph / List) remains a separate setting.
+Absent layout properties and old reports use **Force**.
+
+| Layout | Meaning |
+| --- | --- |
+| Force | The original fixed-iteration, component-packed layout. Existing coordinates and edge routes are preserved. |
+| Circular | Every loaded endpoint is on one circle in exact typed-ID order, even across disconnected components. A singleton occupies the center. Angles/proximity do not encode hops, hierarchy or importance. |
+| Radial | Each weak component has a real center and concentric rings by minimum **undirected** hop distance in the whole retained graph. Weights, edge direction, self-loops and duplicate/parallel edges do not increase distance. Arrows still retain the original directed relationships. |
+
+In Radial, choose **Radial center (local only)** or **Use as radial center** in an
+entity's list row. Automatic chooses the largest component, then the highest
+distinct non-self neighbor count, then stable typed-ID order. Other components
+choose their own centers and are separately packed. This is a layout
+convenience, **not a centrality score, causal root, or business-importance
+ranking**. There is no cross-component distance. If a requested center is
+filtered out, a visible automatic fallback is used without a host write; the
+requested ID is retained and used again when it returns.
+
+All modes retain every bounded directed, reciprocal, parallel, cyclic and
+self relationship and its native row identities. Search, local neighborhood/
+path focus, selection, highlights and resize never recalculate positions from
+a subset. A changed loaded topology, layout, or effective radial center can
+change geometry. New undirected shortcuts recompute hop levels; consequently
+every retained non-self edge joins the same or adjacent radial rings.
+
+Circular centers are at least 72 world units apart. Radial rings have at least
+72 units within each ring and at least 96 units between radii. Polar routing
+uses bounded empty annular lanes and clipped radial ports, not straight
+diametral chords through other nodes. Parallel lanes and short loop petals
+remain distinct even at the 1,000-edge cap, but dense paths can still overlap
+one another or labels. This is **not edge bundling or chord ribbons**; use the
+complete relationship list, local focus and zoom for exact inspection.
+Outward-preferred labels remain horizontal; hidden-label counts are visible.
+
+**Save local view** explicitly stores version-2 focus/search/view/camera plus
+layout and requested center. Geometry-compatible cameras are restored only
+after resolving the layout and center. Incompatible geometry is visibly
+refitted. Version-1 snapshots migrate to Force and refit their unversioned
+camera. Both encoding and decoding enforce 4,096 characters; oversized state
+is refused visibly, never truncated. `navigation.savedView` is marked
+`filterState: true` and `suppressFormatPainterCopy: true` according to the
+installed API schema and Microsoft's [bookmark guidance](https://learn.microsoft.com/en-us/power-bi/developer/visuals/bookmarks-support).
+Host metadata replay is locally exercised; actual Desktop/Service bookmarks,
+format-painter behavior, report save/reopen and exports remain native gates.
 
 ## Data contract
 
@@ -158,7 +211,7 @@ Relationship tooltips use Power BI's tooltip service; the relationship list also
 - Automatic view uses an accessible list below 180px width or 150px height, graph-only below 700px width or 320px height, and split graph/list otherwise. Controls collapse in compact tiles; the view button can switch representations. Scrolling preserves access in tiny tiles, but no dense graph is claimed readable at 80×80.
 - Labels keep a readable screen size and, by default, hide when overlapping or out of view. The caption reports how many labels are shown. Zoom/focus or use the entity list to read hidden labels; hiding a label never removes its entity or relationships.
 
-The **Appearance** formatting card controls entity color, relationship color, label visibility, label size (8–24), and overlapping-label avoidance. **Exploration** controls the initial view (automatic/split/graph/list). High contrast can override custom colors for legibility. Validate with your actual assistive technology and report layout; structural accessibility support is not a claim of completed accessibility certification.
+The **Appearance** formatting card controls entity color, relationship color, label visibility, label size (8–24), and overlapping-label avoidance. **Exploration** controls initial view (automatic/split/graph/list) and initial layout (Force/Circular/Radial). High contrast can override custom colors for legibility. Validate with your actual assistive technology and report layout; structural accessibility support is not a claim of completed accessibility certification.
 
 ## Development and validation
 

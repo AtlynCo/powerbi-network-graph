@@ -610,6 +610,142 @@ try {
         assert.deepEqual((await geometrySnapshot("rtl-high-contrast")).overlaps, []);
         await page.emulateMedia({ reducedMotion: "no-preference" });
     });
+    for (const layout of ["circular", "radial"]) {
+        await check(`${layout}: mode/center changes, transformed picking, exact identity and stable local coordinates`, async () => {
+            await mount();
+            await update(fixtures.typical, { edgeIds: true });
+            const positions = () => page.locator(".network-node").evaluateAll(nodes => nodes.map(node => [node.dataset.nodeId, node.getAttribute("transform")]));
+            const force = await positions();
+            await page.locator('[data-control="layout"]').selectOption(layout);
+            if (layout === "radial") await page.locator('[data-control="layout-center"]').selectOption("s:Review");
+            const polar = await positions();
+            assert.notDeepEqual(polar, force);
+            assert.equal((await calls()).select.length, 0);
+            assert.equal((await calls()).persist.length, 0);
+            const snapshot = await geometrySnapshot(`${layout}-fit`);
+            assert.deepEqual(snapshot.outside, []);
+            assert.deepEqual(snapshot.overlaps, []);
+            await page.locator('[data-control="entity"]').selectOption("s:Review");
+            assert((await positions()).every(pair => polar.some(original => JSON.stringify(original) === JSON.stringify(pair))));
+            await act("reset-focus").click();
+            await page.locator('input[type="search"]').fill("Review");
+            assert.deepEqual(await positions(), polar);
+            await page.locator('input[type="search"]').fill("");
+            await update(fixtures.typical.map(row => ({ ...row, weight: 999, highlight: 0 })), { edgeIds: true, highlights: true });
+            assert.deepEqual(await positions(), polar);
+            await show("graph");
+            await act("fit").click();
+            const target = page.locator('.network-node[data-node-id="s:Review"] circle');
+            const bounds = await target.boundingBox();
+            await page.mouse.click(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+            const expected = fixtures.typical.flatMap((row, index) => row.source === "Review" || row.target === "Review" ? [index] : []);
+            const selected = (await calls()).select.at(-1).keys.map(key => Number(JSON.parse(key)[0][1].split(":").at(-1))).sort((a, b) => a - b);
+            assert.deepEqual(selected, expected);
+            await page.locator('[data-control="layout"]').selectOption("force");
+            assert.deepEqual(await positions(), force);
+            assert.equal((await calls()).select.length, 1);
+        });
+        for (const [width, height] of TILES) await check(`${layout}: ${width}x${height}, complete maximum topology, fit and keyboard list recovery`, async () => {
+            await mount({ width, height });
+            await update(fixtures.maximum, { edgeIds: true, objects: { exploration: { layout } } });
+            assert.equal(await page.locator(".network-node").count(), 250);
+            assert.equal(await page.locator(".network-edge").count(), 1000);
+            await show("graph");
+            await tools();
+            await act("fit").click();
+            const snapshot = await geometrySnapshot(`${layout}-${width}x${height}-maximum`);
+            assert(snapshot.finite);
+            assert.equal(snapshot.distinctPaths, 1000);
+            assert.deepEqual(snapshot.hiddenPaths, []);
+            assert.deepEqual(snapshot.outside, []);
+            assert.deepEqual(snapshot.overlaps, []);
+            await show("list");
+            await act("relationships").focus();
+            await page.keyboard.press("Enter");
+            assert.equal(await page.locator(".network-list-content button[data-edge-id]").count(), 25);
+            await act("next").focus();
+            await page.keyboard.press("Enter");
+            assert.match(await page.locator(".network-pager").innerText(), /2 \/ 40/);
+        });
+    }
+    await check("polar actual SVG arcs avoid expanded unrelated glyphs, including diametral and skip-one chords", async () => {
+        const rows = [
+            ...Array.from({ length: 12 }, (_, i) => ({ source: "center", target: `N${i}`, edgeId: `spoke${i}` })),
+            ...Array.from({ length: 24 }, (_, i) => ({ source: `N${i % 12}`, target: `N${(i + (i < 12 ? 2 : 6)) % 12}`, edgeId: `arc${i}` }))
+        ];
+        for (const layout of ["circular", "radial"]) {
+            await mount();
+            await update(rows, { edgeIds: true, objects: { exploration: { layout } } });
+            if (layout === "radial") await page.locator('[data-control="layout-center"]').selectOption("s:center");
+            const minimum = await page.locator(".network-svg").evaluate((svg, rows) => {
+                const nodes = [...svg.querySelectorAll(".network-node")].map(node => {
+                    const transform = node.transform.baseVal.getItem(0).matrix;
+                    return { id: node.dataset.nodeId, x: transform.e, y: transform.f };
+                });
+                let minimum = Infinity;
+                for (const path of svg.querySelectorAll(".network-edge > path:first-of-type")) {
+                    const row = rows.find(row => `s:${row.edgeId}` === path.parentElement.dataset.edgeId);
+                    const length = path.getTotalLength(), steps = Math.ceil(length / 3);
+                    for (let i = 0; i <= steps; i++) {
+                        const point = path.getPointAtLength(length * i / steps);
+                        for (const node of nodes) if (node.id !== `s:${row.source}` && node.id !== `s:${row.target}`) minimum = Math.min(minimum, Math.hypot(point.x - node.x, point.y - node.y));
+                    }
+                }
+                return minimum;
+            }, rows);
+            assert(minimum > 27.5, `Unrelated glyph intersection: ${minimum}`);
+        }
+    });
+    await check("polar v2 bookmark geometry, v1 migration, retained missing center, encode refusal and per-instance isolation", async () => {
+        await mount();
+        await update(fixtures.typical, { edgeIds: true });
+        await page.locator('[data-control="layout"]').selectOption("radial");
+        await page.locator('[data-control="layout-center"]').selectOption("s:Review");
+        await act("zoom-in").click();
+        const savedCamera = await camera();
+        await act("save-view").click();
+        const savedView = (await calls()).persist.at(-1).merge[0].properties.savedView;
+        assert.equal(JSON.parse(savedView).version, 2);
+        assert.equal(JSON.parse(savedView).layout, "radial");
+        await page.locator('[data-control="layout"]').selectOption("circular");
+        await update(fixtures.typical, { edgeIds: true, objects: { navigation: { savedView } } });
+        const coordinates = value => value.match(/-?\d+(?:\.\d+)?(?:e[+-]?\d+)?/gi).map(Number);
+        const restoredCamera = coordinates(await camera());
+        coordinates(savedCamera).forEach((value, index) => assert(Math.abs(value - restoredCamera[index]) < 1e-9, "Camera round-trip differs beyond floating-point precision"));
+        await update([{ source: "A", target: "B", edgeId: "different" }], { edgeIds: true, objects: { navigation: { savedView } } });
+        assert.equal(await page.locator('[data-control="layout-center"]').inputValue(), "s:Review");
+        assert.match(await page.locator(".network-status").innerText(), /Requested center is not loaded/);
+        await update(fixtures.typical, { edgeIds: true, objects: { navigation: { savedView } } });
+        assert.equal(await page.locator(".atlyn-network").getAttribute("data-layout-center"), "s:Review");
+        const legacy = { version: 1, focus: "", target: "", mode: "all", search: "", view: "auto", centerX: 0, centerY: 0, scale: 1 };
+        await update(fixtures.typical, { edgeIds: true, objects: { navigation: { savedView: JSON.stringify(legacy) } } });
+        assert.equal(await page.locator(".atlyn-network").getAttribute("data-layout"), "force");
+        assert.match(await page.locator(".network-notice").innerText(), /Version 1/);
+        await update(fixtures.typical, { edgeIds: true, objects: { navigation: { savedView: JSON.stringify({ ...JSON.parse(savedView), geometry: "0".repeat(32) }) } } });
+        assert.match(await page.locator(".network-notice").innerText(), /geometry differs/);
+        await mount({ append: true, name: "second" });
+        await update(fixtures.typical, { edgeIds: true, objects: { exploration: { layout: "circular" } } }, "second");
+        assert.deepEqual(await page.locator(".atlyn-network").evaluateAll(nodes => nodes.map(node => node.dataset.layout)), ["radial", "circular"]);
+        await mount();
+        await update([{ source: "\u0001".repeat(512), target: "\u0002".repeat(512), edgeId: "long" }], { edgeIds: true });
+        await act("save-view").click();
+        assert.equal((await calls()).persist.length, 0);
+        assert.match(await page.locator(".network-notice").innerText(), /4,096/);
+    });
+    await check("polar Arabic/high-contrast/reduced-motion controls and root list action remain keyboard accessible", async () => {
+        await page.emulateMedia({ reducedMotion: "reduce" });
+        await mount({ locale: "ar-SA", highContrast: true });
+        await update(fixtures.typical, { edgeIds: true, objects: { exploration: { layout: "radial" } } });
+        assert.equal(await page.locator(".atlyn-network").getAttribute("dir"), "rtl");
+        assert.match(await page.locator('[data-control="layout"]').getAttribute("aria-label"), /[\u0600-\u06ff]/);
+        await act("center-node").first().focus();
+        await page.keyboard.press("Enter");
+        assert.equal((await calls()).select.length, 0);
+        assert.equal((await calls()).persist.length, 0);
+        assert.equal(await page.locator('[data-control="layout-center"]').evaluate(element => element === document.activeElement), true);
+        assert.deepEqual((await geometrySnapshot("polar-rtl")).outside, []);
+        await page.emulateMedia({ reducedMotion: "no-preference" });
+    });
     if (preliminary || finalScreenshots) {
         if (finalScreenshots) assert(checks.every(check => check.passed) && !harness.errors.length && !harness.requests.length, "Final screenshots require a passing full browser suite");
         for (const obsolete of ["cyclic-workflow.png", "reciprocal-accounts.png"]) {
@@ -618,18 +754,18 @@ try {
         for (const [name, rows, label, options, inputProvenance] of [
             ["services", samples.domains.Services, "Services literal sample — 8 entities / 14 relationships; cycles, reciprocal calls and retries", samples.options, samples.provenance],
             ["accounts", samples.domains.Accounts, "Accounts literal sample — 16 rows; 6 entities / 13 retained relationships; diagnostics preserved", samples.options, samples.provenance],
-            ["dense-overview", fixtures.maximum, "Dense overview — all 250 entities, 1000 relationships, 5000 rows; labels selectively placed"],
-            ["dense-neighborhood", fixtures.maximum, "Dense graph — 250 entities, 1000 relationships, 5000 rows; local neighborhood focus"]
+            ["circular", samples.domains.Services, "Circular — all loaded endpoints on one ring; arrows retain direction; angle is not distance", { ...samples.options, objects: { exploration: { layout: "circular" } } }, samples.provenance],
+            ["radial", samples.domains.Services, "Radial — loaded undirected hop rings; separate component centers; no centrality claim", { ...samples.options, objects: { exploration: { layout: "radial" } } }, samples.provenance],
+            ["dense-overview", fixtures.maximum, "Dense overview — all 250 entities, 1000 relationships, 5000 rows; labels selectively placed"]
         ]) {
             await mount({ width: 1366, height: 724 });
             await update(rows, options ?? { edgeIds: true });
-            if (name === "dense-neighborhood") await page.locator('[data-control="entity"]').selectOption("s:N000");
             if (name === "accounts") {
                 await act("relationships").click();
                 await page.locator('button[data-edge-id="s:T12"]').scrollIntoViewIfNeeded();
                 assert.match(await page.locator('[role="status"]').innerText(), /conflicting.*missing\/invalid/i);
             }
-            await capture(name, `${preliminary ? "PRELIMINARY CANDIDATE" : "SEALED UNLICENSED QUALITY CANDIDATE"}: ${label}`, { inputProvenance });
+            await capture(name, `${preliminary ? "PRELIMINARY CANDIDATE" : "LOCAL QUALITY CANDIDATE"}: ${label}`, { inputProvenance });
         }
         assert(screenshots.length >= 1 && screenshots.length <= 5, "Screenshot set must contain 1–5 images");
     }

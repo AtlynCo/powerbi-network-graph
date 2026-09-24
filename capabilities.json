@@ -36,12 +36,17 @@
           { "value": "split", "displayName": "Graph and list" },
           { "value": "graph", "displayName": "Graph" },
           { "value": "list", "displayName": "List" }
+        ] } },
+        "layout": { "type": { "enumeration": [
+          { "value": "force", "displayName": "Force" },
+          { "value": "circular", "displayName": "Circular" },
+          { "value": "radial", "displayName": "Radial" }
         ] } }
       }
     },
     "navigation": {
       "displayName": "Saved local view",
-      "properties": { "savedView": { "type": { "text": true } } }
+      "properties": { "savedView": { "type": { "text": true }, "filterState": true, "suppressFormatPainterCopy": true } }
     }
   },
   "privileges": [],

@@ -10,7 +10,7 @@ await verifyBundledNotices(artifact);
 const build = JSON.parse(await readFile(path.join(root, "dist", "build-inputs.json"), "utf8"));
 assert.equal(build.sha256, artifact.sha256, "Build provenance belongs to another package");
 assert.deepEqual(await buildInputs(), build.inputs, "Committed source differs from packaged build inputs");
-for (const filename of ["package-inspection.json", "browser-test-results.json", "release-browser-results.json", "release-benchmark-final.json", "release-profile.json", "certification-preflight.json", "runtime-dependencies.json"]) {
+for (const filename of ["package-inspection.json", "browser-test-results.json", "release-browser-results.json", "release-benchmark-final.json", "release-profile.json", "certification-preflight.json", "runtime-dependencies.json", "rebuild-verification.json"]) {
     const report = JSON.parse(await readFile(path.join(root, "dist", filename), "utf8"));
     assert.equal(report.sha256, artifact.sha256, `${filename} belongs to another package`);
     if ("passed" in report) assert.equal(report.passed, true, `${filename} did not pass`);
@@ -44,9 +44,9 @@ const report = {
     artifact: { file: artifact.filename, sha256: artifact.sha256, bytes: artifact.bytes.length },
     guid: artifact.visual.visual.guid, version: artifact.visual.visual.version, apiVersion: artifact.visual.apiVersion,
     build, sourceAssets, evidence,
-    scope: "Unlicensed rendering/quality candidate: offline package, source, assets and local browser/mock evidence. Not the final paid/submission build, native Desktop/service/export/PBIX or Microsoft certification evidence.",
-    commercialDecision: "Paid using existing Atlyn subscriptions. Shared entitlement/storefront contract pending with coordinator; no ad hoc runtime licensing. Certification-ref movement, merging and submission on hold.",
-    nativeAndApprovalGates: ["Agreed subscription entitlement implementation and final paid-package validation", "Desktop PBIP open/save/reopen and PBIX conversion", "Native identity propagation/bookmarks/tooltips/context menus", "Service and actual export", "Assistive technology in native hosts", "Owner legal/privacy/support approval", "Partner Center submission and Microsoft review"]
+    scope: "Private layout quality candidate: offline package, source, sample and local browser/mock evidence. Not native Desktop/service/export/PBIX acceptance, Marketplace submission or Microsoft certification.",
+    commercialDecision: "Owner-approved existing Atlyn storefront subscription acquisition; intentionally ungated runtime and free shared viewing. No runtime entitlement integration required. Certification-ref movement, merging and submission remain owner gates.",
+    nativeAndApprovalGates: ["Version-matched Desktop PBIP refresh/open/save/cold-reopen and genuine PBIX conversion", "Native identity propagation/bookmarks/format painter/tooltips/context menus", "Service and actual export", "Assistive technology in native hosts", "Owner-approved privacy URL, EULA, support and listing media", "Authorized reviewer access, Partner Center submission and Microsoft review"]
 };
 const manifest = Buffer.from(`${JSON.stringify(report, null, 2)}\n`);
 await writeFile(path.join(root, "dist", "release-manifest.json"), manifest, { flag: "wx" });

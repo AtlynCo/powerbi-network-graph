@@ -36,7 +36,15 @@ class Exploration extends formattingSettings.SimpleCard {
             { value: "graph", displayNameKey: "ViewGraph" }, { value: "list", displayNameKey: "ViewList" }
         ]
     });
-    public override slices = [this.view];
+    public layout = new formattingSettings.ItemDropdown({
+        name: "layout", displayNameKey: "InitialLayout", value: { value: "force", displayName: "Force" },
+        items: [
+            { value: "force", displayNameKey: "LayoutForce" },
+            { value: "circular", displayNameKey: "LayoutCircular" },
+            { value: "radial", displayNameKey: "LayoutRadial" }
+        ]
+    });
+    public override slices = [this.view, this.layout];
 }
 
 export class Settings extends formattingSettings.Model {

@@ -139,6 +139,14 @@ function textBox(name, text, x, y, width, height, fontSize = "12pt") {
     return result;
 }
 const role = (...projections) => ({ projections });
+const graphQuery = table => ({
+    source: role(projection(table, "SourceID")),
+    target: role(projection(table, "TargetID")),
+    relationshipType: role(projection(table, "RelationshipType")),
+    edgeId: role(projection(table, "EdgeID")),
+    weight: role(projection(table, "Total Weight", true)),
+    tooltips: role(projection(table, "Average Duration ms", true), projection(table, "Events", true), projection(table, "Input Rows", true))
+});
 const tasks = {
     Services: [
         "INVESTIGATE A DEPENDENCY",
@@ -186,15 +194,8 @@ async function author() {
         const pageName = `Page${domain.table}`;
         pages.push(pageName);
         const pageRoot = path.join(reportRoot, "definition", "pages", pageName);
-        const graph = visual(`${domain.prefix}Graph`, guid, 24, 128, 960, 418, {
-            source: role(projection(domain.table, "SourceID")),
-            target: role(projection(domain.table, "TargetID")),
-            relationshipType: role(projection(domain.table, "RelationshipType")),
-            edgeId: role(projection(domain.table, "EdgeID")),
-            weight: role(projection(domain.table, "Total Weight", true)),
-            tooltips: role(projection(domain.table, "Average Duration ms", true), projection(domain.table, "Events", true), projection(domain.table, "Input Rows", true))
-        }, `${domain.label}: select a relationship to investigate`);
-        graph.visual.objects = { exploration: [{ properties: { view: literal("split") } }] };
+        const graph = visual(`${domain.prefix}Graph`, guid, 24, 128, 960, 418, graphQuery(domain.table), `${domain.label}: select a relationship to investigate`);
+        graph.visual.objects = { exploration: [{ properties: { view: literal("split"), layout: literal("force") } }] };
         const table = visual(`${domain.prefix}Details`, "tableEx", 24, 566, 960, 178, {
             Values: role(...["SourceID", "TargetID", "RelationshipType", "EdgeID"].map(name => projection(domain.table, name)),
                 ...["Total Weight", "Events", "Input Rows", "Average Duration ms"].map(name => projection(domain.table, name, true)))
@@ -237,6 +238,38 @@ async function author() {
     ];
     await put(path.join(reportRoot, "definition", "pages", "PageHints", "visuals", "Hints", "visual.json"),
         textBox("Hints", hints.join("\n\n"), 32, 24, 1290, 712, "14pt"));
+    for (const [index, mode] of ["circular", "radial"].entries()) {
+        const label = mode === "circular" ? "Circular" : "Radial";
+        const pageName = `Page${label}`;
+        pages.push(pageName);
+        const pageRoot = path.join(reportRoot, "definition", "pages", pageName);
+        const graph = visual(`${label}Graph`, guid, 24, 100, 960, 644, graphQuery("Services"), `${label}: the same directed service relationships`);
+        graph.visual.objects = { exploration: [{ properties: { view: literal("split"), layout: literal(mode) } }] };
+        const guide = mode === "circular" ? [
+            "ONE CIRCLE, ALL LOADED ENTITIES",
+            "The same 8 entities and 14 service relationships appear on one circle in stable typed-ID order, including Archive/Backup.",
+            "Angle and proximity have no distance, hierarchy or importance meaning. This is a node-link diagram, not chord ribbons or bundled edges.",
+            "Arrowheads preserve source-to-target direction, reciprocal and parallel links, cycles and real self-loops.",
+            "The outside arc lanes avoid unrelated node glyphs. Dense lanes may overlap: inspect exact edges using Relationships.",
+            "Change Layout locally without changing Power BI selection. Graph/List changes representation, not layout. Save local view is explicit."
+        ] : [
+            "LOADED UNDIRECTED HOP RINGS",
+            "Automatic center is Orders: largest component, most distinct non-self neighbors, then stable ID. This is a layout convenience, not centrality or business importance.",
+            "Use the Radial center selector or Use as radial center in the entity list. This does not change visible local focus, weights, report filters or selection.",
+            "Each ring is minimum UNDIRECTED hop distance over all loaded relationships. Arrows still preserve original direction. Parallel edges and loops do not add hops.",
+            "Archive/Backup is separately packed with its own real center; there is no distance between disconnected components.",
+            "A filtered-out requested center is retained, with a visible automatic fallback, and returns when loaded again.",
+            "Search, focus and highlights do not move nodes. Save local view stores mode/center; native bookmark and Desktop/Service replay still require owner verification."
+        ];
+        await put(path.join(pageRoot, "page.json"), {
+            $schema: schemas.page, name: pageName, displayName: `${index + 4}. ${label} relationships`,
+            displayOption: "FitToPage", width: 1366, height: 768
+        });
+        for (const item of [
+            textBox(`${label}Heading`, `${index + 4}. ${label} relationships`, 24, 16, 1290, 64, "24pt"),
+            graph, textBox(`${label}Guide`, guide.join("\n\n"), 1008, 100, 334, 644, "11pt")
+        ]) await put(path.join(pageRoot, "visuals", item.name, "visual.json"), item);
+    }
     await put(path.join(sample, "Network.pbip"), { $schema: schemas.pbip, version: "1.0", artifacts: [{ report: { path: reportName } }], settings: { enableAutoRecovery: true } });
     await put(path.join(reportRoot, "definition.pbir"), { $schema: schemas.pbir, version: PBIR_ARTIFACT_VERSION, datasetReference: { byPath: { path: `../${modelName}` } } });
     await put(path.join(modelRoot, "definition.pbism"), { $schema: schemas.pbism, version: "4.0", settings: {} });
@@ -247,7 +280,7 @@ async function author() {
     await put(path.join(reportRoot, "definition", "pages", "pages.json"), { $schema: schemas.pages, pageOrder: pages, activePageName: pages[0] });
     await put(path.join(reportRoot, "definition", "report.json"), { $schema: schemas.report, themeCollection: {}, resourcePackages: [] });
     await put(path.join(sample, "sample-contract.json"), contract);
-    console.log("Authored 3 PBIR pages, 2 bound graphs, 8 typed TMDL tables, 14 measures and 6 model relationships.");
+    console.log("Authored 5 PBIR pages, 4 bound graphs (Force/Circular/Radial), 8 typed TMDL tables, 14 measures and 6 model relationships.");
 }
 
 async function artifact() {
@@ -282,9 +315,7 @@ async function assemble(release) {
         await put(inside(path.join(customRoot, guid), entry.name), await entry.async("nodebuffer"));
     }
     await put(path.join(sample, "package", release.filename), release.bytes);
-    for (const name of await readdir(path.join(sample, "package"))) {
-        if (name !== release.filename) await rm(path.join(sample, "package", name), { force: true });
-    }
+    // Retain previous candidate archives as immutable history; only the current version is embedded.
     const reportFile = path.join(reportRoot, "definition", "report.json");
     const definition = await json(reportFile);
     definition.publicCustomVisuals = [];
@@ -408,7 +439,7 @@ async function validate(release) {
         assert(!/(?:Web\.|File\.|Folder\.|Sql\.|OData\.|SharePoint\.|AzureStorage\.|AnalysisServices\.|Extension\.|Value\.NativeQuery|dataSource\s|https?:\/\/|powerbi:\/\/)/i.test(text.replace(/"\$schema":\s*"[^"]+"/g, "")), `External data source forbidden: ${filename}`);
     }
     const pages = await json(path.join(reportRoot, "definition", "pages", "pages.json"));
-    assert.deepEqual(pages.pageOrder, ["PageServices", "PageAccounts", "PageHints"]);
+    assert.deepEqual(pages.pageOrder, ["PageServices", "PageAccounts", "PageHints", "PageCircular", "PageRadial"]);
     assert(pages.pageOrder.includes(pages.activePageName));
     let graphCount = 0;
     let bindings = 0;
@@ -427,12 +458,15 @@ async function validate(release) {
             assert(position.x >= 0 && position.y >= 0 && position.x + position.width <= page.width && position.y + position.height <= page.height, `Off-page visual: ${container.name}`);
             if (container.visual.visualType === guid) {
                 graphCount++;
+                const tableName = ["PageCircular", "PageRadial"].includes(pageName) ? "Services" : pageName.slice("Page".length);
+                const layout = pageName === "PageCircular" ? "circular" : pageName === "PageRadial" ? "radial" : "force";
+                assert.deepEqual(container.visual.objects.exploration[0].properties.layout, literal(layout), "Sample layout is not wired to the author property");
                 const state = container.visual.query.queryState;
                 assert.deepEqual(Object.keys(state).sort(), ["edgeId", "relationshipType", "source", "target", "tooltips", "weight"]);
                 const expectedRoleFields = {
                     source: ["SourceID"], target: ["TargetID"], relationshipType: ["RelationshipType"], edgeId: ["EdgeID"],
-                    weight: [measureName(pageName.slice("Page".length), "Total Weight")],
-                    tooltips: ["Average Duration ms", "Events", "Input Rows"].map(name => measureName(pageName.slice("Page".length), name))
+                    weight: [measureName(tableName, "Total Weight")],
+                    tooltips: ["Average Duration ms", "Events", "Input Rows"].map(name => measureName(tableName, name))
                 };
                 for (const [name, value] of Object.entries(state)) {
                     assert(roleNames.has(name), `Role absent from final visual: ${name}`);
@@ -441,7 +475,7 @@ async function validate(release) {
                     assert.deepEqual(value.projections.map(item => (item.field.Column || item.field.Measure)?.Property), expectedRoleFields[name], `Unexpected sample field mapping for ${name}`);
                     for (const item of value.projections) {
                         const reference = item.field.Column || item.field.Measure;
-                        assert.equal(reference?.Expression.SourceRef.Entity, pageName.slice("Page".length), `Cross-domain field mapping for ${name}`);
+                        assert.equal(reference?.Expression.SourceRef.Entity, tableName, `Cross-domain field mapping for ${name}`);
                         const type = expectedTables.get(reference?.Expression.SourceRef.Entity)?.get(reference?.Property);
                         assert.equal(type, ["weight", "tooltips"].includes(name) ? "measure" : "string", `Incorrect role binding type: ${name}`);
                     }
@@ -464,7 +498,7 @@ async function validate(release) {
         assert.equal(new Set(ids).size, ids.length);
         for (const interaction of page.visualInteractions || []) assert(ids.includes(interaction.source) && ids.includes(interaction.target), "Broken interaction link");
     }
-    assert.equal(graphCount, 2);
+    assert.equal(graphCount, 4);
     const accounts = contract.domains.find(domain => domain.table === "Accounts");
     assert(accounts.rows.every(row => /^000[1-8]$/.test(row[0]) && /^000[1-8]$/.test(row[1])), "Leading-zero text IDs must be preserved");
     assert.equal(accounts.rows.filter(row => row[3] === "T01").reduce((sum, row) => sum + row[4], 0), 120);
