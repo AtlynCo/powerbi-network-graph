@@ -9,6 +9,7 @@
 This directory separates Microsoft requirements, repository evidence, proposed listing copy, and decisions that only an authorized Atlyn owner can approve. No Partner Center account was accessed or changed by this work. No offer was created/submitted/published; no reviewer permissions or hosted workflow runs were created. Source changes are delivered separately through a private review branch/PR, with no certification-reference movement.
 
 - [Exact draft fields and owner approvals](submission-draft.md)
+- [October 2026 preflight and handoff](october-2026-handoff.md)
 - [Submission and certification test matrix](testing-checklist.md)
 - [Evidence-based competitor/workflow comparison](workflow-benchmark.md)
 - [Fully authored offline sample and assembly instructions](../../samples/release/README.md)
