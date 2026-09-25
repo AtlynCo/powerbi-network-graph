@@ -31,11 +31,17 @@ model-backed interaction checks: local exploration versus report filtering,
 native type slicer, requested-center return, exact edge/Ctrl selection,
 keyboard Enter/Escape, formatted values and explicit local-view request.
 These are partial evidence for G03/G08/G10/G11/G12/G22/G24, not full-matrix
-passes. Actual PBIX Save As is owner-operated after the automation format
-guard stopped; no cold-reopen or embedded-byte equality is yet asserted.
+passes. The owner subsequently saved a genuine `R:\Network.pbix`; read-only
+inspection proved exact 1.2 member bytes and final page order, and a new native
+process cold-reopened all five pages without refresh, restoring the saved
+Orders root/camera. The owner explicitly approved Non-Business (stored Personal)
+for the Marketplace sample, replacing Public, and exactly the two genuine
+native Circular/Radial listing PNGs. No relabeling/resave was performed.
 The owner approved privacy, existing terms as publisher EULA, support FAQ and
-monitored contact; source-branch update is authorized only after final native
-verification. No publishing/submission/certification request is authorized.
+monitored contact; fast-forward-only source-branch alignment is authorized
+after final checks. Publisher/account and Network offer IDs/authenticated draft
+configuration remain unverified. No publishing/submission/certification request
+is authorized.
 
 ## Host-version control
 

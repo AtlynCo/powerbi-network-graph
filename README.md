@@ -35,7 +35,14 @@ This is **relationship exploration**, not causal-impact prediction, fraud detect
 
 Native opening, saving/reopening, and PBIX conversion must be performed in Desktop. An authored PBIP source is not evidence of a successful native open. Never rename a JSON file, ZIP, or source folder to `.pbix`.
 
-The [complete offline PBIP](samples/release/README.md) contains two bound graph pages, native slicers/detail tables, a hints page, eight literal model tables, fourteen measures, and the exact embedded visual. [Marketplace preparation](docs/marketplace/README.md) supplies draft fields and the remaining native/legal gates. The [competitor workflow comparison](docs/marketplace/workflow-benchmark.md) credits verified Graph PRO/Powerviz capabilities and identifies Atlyn's missing features without claiming superiority.
+The [complete offline PBIP](samples/release/README.md) contains four bound graph pages (two Force examples, Circular and Radial), native slicers/detail tables, a final hints page, eight literal model tables, fourteen measures, and the exact embedded visual. [Marketplace preparation](docs/marketplace/README.md) supplies current draft fields and the remaining host/portal gates. The [competitor workflow comparison](docs/marketplace/workflow-benchmark.md) credits verified Graph PRO/Powerviz capabilities without claiming superiority.
+
+The [2026-09-25 native handoff](docs/validation/PREPUBLISH-1.2.md) records a
+genuine owner-saved 1.2 PBIX, exact visual-member equality and cold reopen of all
+five pages without refresh, including saved radial state. The owner approved
+Non-Business classification and exactly two native listing images. This is
+bounded native evidence, not the full native matrix or Microsoft certification;
+Partner Center publisher/offer identity and configuration remain unverified.
 
 See [current 1.2 candidate results](docs/validation/RESULTS-1.2.md) for the exact
 package, local checks, layout benchmarks and owner gates. The [sealed 1.1

@@ -1,0 +1,44 @@
+{
+  "decisionDate": "2026-09-25",
+  "authority": "Explicit owner decisions relayed by the coordinating session",
+  "visualVersion": "1.2.0.0",
+  "packageSha256": "6136c82c28ecf597634cbb90685f9cb1fbc3c435ce64613a8be180e8ff0f00ff",
+  "privacyUrl": "https://atlynco.github.io/atlyn-powerbi-support/legal/privacy/",
+  "publisherEulaUrl": "https://atlynco.github.io/atlyn-powerbi-support/legal/terms/",
+  "supportUrl": "https://atlynco.github.io/atlyn-powerbi-support/docs/faq/",
+  "monitoredSupportContact": "atlyn.help@gmail.com",
+  "nativePbix": {
+    "originalPath": "R:\\Network.pbix",
+    "file": "dist\\native-prepublish\\AtlynNetwork-1.2.0.0-native.pbix",
+    "bytes": 213864,
+    "sha256": "9248f79d195ec76fe61f278911a79cbb333f50a12bec17a3ab8130419e325ab7",
+    "approvedDisplayLabel": "Non-Business",
+    "observedStoredLabel": "Personal",
+    "classificationDecision": "Owner-approved for the synthetic Marketplace-bound PBIX; supersedes the earlier Public instruction. Preserve exact bytes; do not relabel or resave."
+  },
+  "approvedMedia": [
+    {
+      "file": "dist\\listing-native-1.2\\circular.png",
+      "bytes": 274853,
+      "width": 1366,
+      "height": 768,
+      "sha256": "c0019937ad83ae93882f2f26032ad8954f40b13f1fb496275e6ca680814bda7d"
+    },
+    {
+      "file": "dist\\listing-native-1.2\\radial.png",
+      "bytes": 272502,
+      "width": 1366,
+      "height": 768,
+      "sha256": "3b738e79e6c048a7c447ef39f96f1cc0019e6ae7e0676de789886576e185ed90"
+    }
+  ],
+  "mediaScope": "Exactly these two native images, reviewed by the owner. No approval of Services, Accounts or mock-host images is inferred.",
+  "certificationSourceUpdateAuthorized": true,
+  "certificationSourceUpdateCondition": "Final clean committed source/native/package verification, expected c19276b2 baseline, fast-forward-only non-force update; no main merge.",
+  "publisherAccountVerified": false,
+  "networkOfferDraftVerified": false,
+  "partnerCenterConfigured": false,
+  "submissionAuthorized": false,
+  "publicationAuthorized": false,
+  "microsoftCertificationClaimed": false
+}

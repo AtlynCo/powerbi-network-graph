@@ -151,6 +151,16 @@ The coordinator owns native Desktop opening and conversion to a real PBIX, servi
 
 ## 1.2 candidate readiness boundaries (2026-09-24)
 
+**2026-09-25 owner/native supplement:** `docs/validation/PREPUBLISH-1.2.md`
+records a genuine matching PBIX and cold reopen, bounded native interactions,
+approved Non-Business classification, approved privacy/publisher-EULA/support
+fields and exactly two native listing images. The local manifest now verifies
+the durable PBIX, cold-launch/read evidence and selected PNG hashes against
+`docs/marketplace/approved-handoff-1.2.json`. Remaining full native matrix and
+Partner Center publisher/offer/authenticated setup are not claimed complete.
+Owner-authorized certification alignment is fast-forward-only after final
+checks; no main merge, submission or publication is authorized.
+
 Current local outcomes and hashes belong in the separate
 `docs/validation/RESULTS-1.2.md` and the worktree's `dist` reports, not the frozen
 1.1 evidence. Preserve the `1.1.1.0` sample archive and all existing marketplace
@@ -160,13 +170,13 @@ only its new versioned package is embedded.
 | Gate | Current evidence boundary / owner action |
 | --- | --- |
 | Source, package, API/tools | Stable GUID/data roles; API 5.11.0 from SDK 5.11.1, tools 7.2.1. Run local schema, unit, type, ESLint, `package --certification-audit`, audit and compiled-code preflight. Recheck latest SDK/tools before submission. |
-| Sample | Offline literal PBIP with Force, Circular and Radial pages; schema/model preflight is not native loading. A **new 1.2.0.0 PBIX** must be genuinely opened/refreshed/saved/cold-reopened in Desktop and its embedded bytes matched to the final package. The old 1.1.0.0 PBIX cannot satisfy this. |
-| Native host | Desktop 2.157.1354.0 is reported installed by the coordinator, but this work does not operate the shared native UI. Desktop/Service selection, bookmark replay, format painter, reading/edit modes, tooltips, interactions, multi-page/multi-instance, saves and actual exports require owner verification. |
+| Sample | Final Hints-last literal PBIP and genuine owner-saved 1.2.0.0 PBIX are verified: exact package members, model-backed native rendering and new-process cold reopen without refresh. Durable PBIX/hash and bounded coverage are in `PREPUBLISH-1.2.md`; old 1.1 evidence is separate. |
+| Native host | Authorized isolated Desktop 2.157.1354.0 processes exercised the bounded cases recorded in the native report. Remaining full bookmark/format-painter/conversion/reading-edit/multi-instance/Service/export/assistive-technology matrix is not inferred from those passes. |
 | Events | `renderingStarted` begins updates; exactly one finished/failed terminal event is exercised with the compiled mock host, including error states. This is not native export proof. |
-| Images | Existing 300x300 logo remains a candidate asset. New 1.2 screenshots may be generated only under `dist/release-screenshots` with the exact package SHA, explanatory callouts and explicit mock-host labels; 1–5 PNGs, 1366x768, <=1,024,000 bytes. Owner must approve final listing media. |
-| Support/privacy | Manifest uses the public HTTPS support FAQ. Accessibility/content of that page is not a support SLA. A verified owner-approved HTTPS privacy-policy URL remains unresolved. |
-| Terms | Repository `LICENSE` is a proprietary rights notice requiring a separate agreement; it is **not an approved customer EULA or Partner Center contract choice**. Owner/legal approval is required; do not generate substitute legal terms. |
-| External review | Partner Center publisher/access/terms/submission and Microsoft's certification review remain unsatisfied external gates. No credentials, publication, certification-ref movement or release action is authorized by local passes. |
+| Images | Existing logo is 300x300. Owner approved exactly the two native Circular/Radial PNGs under `dist/listing-native-1.2`, each 1366x768 and <1,024,000 bytes. Older `dist/release-screenshots` captures remain explicitly mock-host and unselected. No frozen media is overwritten. |
+| Support/privacy | Owner approved the existing HTTPS support FAQ, product-specific privacy URL and monitored `atlyn.help@gmail.com` contact on 2026-09-25. No response-time SLA or portal configuration is invented. |
+| Terms | Owner selected the existing Atlyn terms HTTPS URL as publisher EULA. Repository `LICENSE` is still a separate proprietary rights notice, not replacement customer terms. No irreversible portal contract acceptance occurred. |
+| External review | Publisher/account and Network offer identity/authenticated draft configuration, full native matrix and Microsoft's review remain open. Local passes do not authorize submission/publication. The separate explicit owner authorization permits only guarded fast-forward certification-source alignment after final checks. |
 
 The API 5.11.1 capability schema supports `filterState` and
 `suppressFormatPainterCopy` on `navigation.savedView`; both are set. This

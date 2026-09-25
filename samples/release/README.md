@@ -1,7 +1,7 @@
 # Atlyn Network — authored offline sample
 
 **Target:** `1.2.0.0`, GUID `AtlynNetworkAB24C68297094C32AF64D50D92C01711`, API `5.11.0`.
-**Current candidate:** five pages and four bound graph visuals, including the original Force Services/Accounts examples and new Circular/Radial service pages. Schema/embedded-byte validation is local only. A genuine 1.2.0.0 PBIX and current native acceptance remain owner gates.
+**Current candidate:** five pages and four bound graph visuals, including the original Force Services/Accounts examples and new Circular/Radial service pages, with Hints last. Schema validation is local only; a separate genuine owner-saved 1.2.0.0 PBIX and bounded native cold-reopen/interaction evidence now exist in [PREPUBLISH-1.2](../../docs/validation/PREPUBLISH-1.2.md). Full native acceptance is not inferred.
 **Historical evidence only:** the coordinator reports **bounded PASS on Desktop 2.157.1354.0** for corrected 1.1.0.0 sample commit `cbd21bee3de4f62ffaa93eb49a2e7881814913e5`: three pages rendered, Public PBIX saved and cold-reopened without refresh. The first refresh left manual-refresh/incomplete-data banners; the second observed refresh completed without a dialog. This does not cover 1.2 layouts or full interaction, Service, export or certification acceptance.
 
 This is a complete source project, not a placeholder or instructions to build an empty report. It contains two Force pages with real field projections, type slicers and detail tables, a hints page, and Circular/Radial graph pages using the same synthetic Services data. All four graphs reference the embedded private custom visual. Eight semantic-model tables, fourteen DAX measures and six single-direction relationships are authored. All data partitions use literal `#table` expressions; they read no CSV, workbook, URL, database or sibling directory.
@@ -13,6 +13,15 @@ Change the radial center, compare local focus with report selection, filter out
 and restore a requested center, and explicitly save/replay the local view.
 Do not interpret automatic center choice as centrality or causal importance.
 Dense lanes may overlap one another; the relationship list retains every edge.
+
+The native handoff copy is
+`dist\native-prepublish\AtlynNetwork-1.2.0.0-native.pbix` (213,864 bytes,
+SHA-256 `9248f79d195ec76fe61f278911a79cbb333f50a12bec17a3ab8130419e325ab7`).
+It was genuinely saved by the owner as `R:\Network.pbix`, with the approved
+Non-Business label (stored Personal). Its compiled visual members equal the
+current PBIVIZ exactly; all five pages and the saved Orders center/camera
+cold-reopened without refresh. The native file is not fabricated, not checked
+into certification source, and not a Microsoft certification claim.
 
 ## Report version correction, 2026-09-10
 

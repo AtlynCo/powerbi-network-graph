@@ -1,8 +1,8 @@
 # Atlyn Network 1.2 prepublication evidence
 
 **2026-09-24 to 2026-09-25. In-progress native acceptance and preparation; not a
-Microsoft certification, submission or authorization to publish.** Limited
-owner privacy/EULA decisions are recorded explicitly below.
+Microsoft certification, submission or authorization to publish.** Explicit
+owner privacy/EULA/support, classification and two-image decisions are below.
 The visual archive is unchanged: `1.2.0.0`, 153,889 bytes, SHA-256
 `6136c82c28ecf597634cbb90685f9cb1fbc3c435ce64613a8be180e8ff0f00ff`.
 The [local source/package report](RESULTS-1.2.md) remains the record of the
@@ -40,7 +40,7 @@ status text. Native canvas-only PNGs are separate from mock-host listing
 candidates and exclude the account header. They are not a completed
 selection/bookmark/export/accessibility acceptance matrix.
 
-**Current native save boundary:** File > Save as > Browse this device opened
+**Initial native save boundary:** File > Save as > Browse this device opened
 the owned native dialog at the worktree copy. A foreground-PID guard prevented
 global keyboard input; no keys were sent. The coordinator subsequently
 authorized exact HWND-scoped standard filename/type/Save messages, with
@@ -65,8 +65,8 @@ start **2026-09-24T18:34:25.5679321Z**, session **2**, project modification
 **2026-09-25T15:15:43.5507801Z** (08:15:43 local), and project SHA-256
 `1fbc00f66fb6c6ccc2ca02d03a857d27b5049157c72322e5909f1caa2d75573c`.
 No writer audit or evidence identifying an intervening operator is available.
-A current PBIX, cold reopen and embedded-byte comparison are therefore
-**not yet claimed**. The separate safe retry and additional host checks follow.
+No current PBIX, cold reopen or embedded-byte comparison was claimed at that
+stage. The separate safe retry and subsequent owner save follow.
 
 ## Fresh isolated retry, 2026-09-25
 
@@ -108,18 +108,62 @@ DOM bounds, verified both hit targets and delivered only scoped WebView
 pointer input; no forced click, global input or mock API was used. The failed
 attempt is preserved separately, not reported as a pass.
 
-**Retry save is blocked, with the required stop condition honored.** The real
+**Automation retry stopped, with the required stop condition honored.** The real
 Save As dialog remained on **Power BI project files (*.pbip)**, selected index
 2, filename `Network.pbip`. The exact-owned-control action did not commit the
 PBIX option at index 0. The guard stopped **before changing the filename or
 invoking Save**; no PBIX or Public-label application is claimed. The actual
 observed state is in `retry-20260925/save-boundary.json`.
-An owner-operated true **Power BI file (*.pbix)** selection/save to
-`R:\AtlynNetwork-1.2.0.0-native.pbix`, with authorized **Public**, is needed
-before archive-member verification and a genuine cold reopen can continue.
-The owner has explicitly chosen to perform that Desktop save. The agent will
-leave PID45380, its Save As dialog and R: sample untouched until confirmation,
-then verify the actual format and bytes rather than infer success from its name.
+The owner then performed the save under the alternative actual filename below.
+No PBIP file was renamed or manufactured into a PBIX.
+
+## Owner-saved PBIX and genuine cold reopen, 2026-09-25
+
+| Item | Verified observation |
+| --- | --- |
+| Actual owner file | `R:\Network.pbix`, physically `.tmp/native-retry-20260925/candidate/Network.pbix` |
+| Durable handoff copy | `dist/native-prepublish/AtlynNetwork-1.2.0.0-native.pbix`; copied only after source-SHA guard; byte-identical, no relabel/resave |
+| Earlier preserved copy | `dist/native-prepublish/retry-20260925/owner-saved-Network.pbix` |
+| Bytes / SHA-256 | **213,864** / **`9248f79d195ec76fe61f278911a79cbb333f50a12bec17a3ab8130419e325ab7`** |
+| Native container | ZIP CRC checks passed; native DataModel is 36,292 bytes; report uses native PBIR entries rather than legacy `Report/Layout` |
+| Embedded visual | Both package manifest and compiled resource are byte-for-byte equal to the approved **1.2.0.0** PBIVIZ **6136c82c...f00ff** |
+| Page order | Services, Accounts, Circular, Radial, Hints; all titles correctly numbered 1-5 |
+| Saved local view | Native PBIX contains version-2 Radial state, explicit `s:Orders` root, geometry fingerprint and camera |
+| Classification | Desktop displays **Non-Business**; enabled stored label name is **Personal**, contentBits `0`. On 2026-09-25 the owner **expressly approved this as the Marketplace-bound synthetic PBIX label**, superseding Public. No relabeling or resave occurred. |
+
+The reusable read-only command is:
+
+```powershell
+node scripts\inspect-native-pbix.mjs --file=dist\native-prepublish\AtlynNetwork-1.2.0.0-native.pbix --expected-stored-label=Personal
+```
+
+`dist/native-pbix-inspection.json` records members, page order, saved state and
+stored label facts. It never constructs or rewrites an archive and explicitly
+does not assert submission readiness or native acceptance by itself.
+
+A graceful close of only writer PID45380 encountered an **Auto recovery**
+prompt whose default was "No, remove the files." No choice or OK was sent.
+The coordinator authorized "Yes, I want to view the files later", but the
+process exited before the helper was executed. The exit actor/recovery choice
+was not independently observed; this session neither opened nor removed
+recovery files. Receipt: `retry-20260925/pre-cold-exit.json`.
+
+After that process exit, a **new isolated reader PID56468**, separate WebView
+profile and local port9419 opened the actual PBIX. **No Refresh was invoked.**
+All five final-order pages rendered from the stored model: Services 8/14,
+Accounts 6/13, Circular 8/14, Radial 8/14 and Hints. The explicit Orders
+center and normalized camera restored exactly within the numerical oracle:
+center `(223.60000000000002, 354.00000000000006)`, scale
+`0.430600988700565`. The PBIX SHA remained unchanged after the check.
+
+`retry-20260925/cold-reopen-without-refresh.json` and canvas-only PNGs record
+this genuine cold reopen and saved-view restoration, with no report-WebView
+page errors captured during the checks. This closes that bounded native
+save/open/persistence slice, **not** Power BI bookmark replay, Service,
+exports, assistive-technology acceptance or all submission test cases.
+Prior PID46424 and its files remained untouched. The owner's classification
+decision is recorded in `dist/native-prepublish/classification-approval.json`
+and the committed `docs/marketplace/approved-handoff-1.2.json`.
 
 ## Sample-only preparation
 
@@ -132,8 +176,8 @@ sample tests (25 cases), the full **169-case** suite, typecheck, both lint
 entry points and official TOM preflight passed. The new unit receipt is
 `dist/unit-tests-prepublish.json`; the prior 168-case report is preserved.
 The initial native observations preceded this page-order correction. The
-fresh retry verified the final order and native rendering; final PBIX
-save/reopen acceptance remains blocked as described above.
+fresh retry and actual PBIX cold reopen verified the final order and native
+rendering. Classification is now approved; the wider native matrix remains open.
 
 ## Listing, public links and reviewer access
 
@@ -144,8 +188,21 @@ The historical 1.1 draft remains unchanged.
 
 `dist/native-prepublish/listing-assets.json` verifies the existing 300x300 PNG
 logo (4,392 bytes) and five current-PBIVIZ mock-host screenshots, each
-1366x768 and below 1,024,000 bytes. These are prepared candidates, not owner
-approval or proof of native screenshot requirements.
+1366x768 and below 1,024,000 bytes. Those five images remain mock-host
+candidates and were **not** approved by the later native-image decision.
+
+Four separately prepared genuine native candidates are under
+`dist/listing-native-1.2`; originals and composition are documented in
+`provenance.json`. The owner reviewed and explicitly approved **exactly**
+`circular.png` (274,853 bytes, SHA-256
+`c0019937ad83ae93882f2f26032ad8954f40b13f1fb496275e6ca680814bda7d`)
+and `radial.png` (272,502 bytes, SHA-256
+`3b738e79e6c048a7c447ef39f96f1cc0019e6ae7e0676de789886576e185ed90`).
+Both are 1366x768, below 1,024,000 bytes, use only the synthetic report canvas,
+and carry explanatory native-render/not-certified captions. Receipt:
+`dist/listing-native-1.2/owner-approval.json`. Services/Accounts and mock images
+are not approved. See the [media inventory](../marketplace/media-inventory-1.2.md)
+for presentation limitations and the precise two-image set.
 
 The following existing public pages returned **HTTP 200 over HTTPS** and
 explicitly covered Atlyn Network:
@@ -171,22 +228,47 @@ current secure-access requirements are satisfied. The live lowercase
 `certification` ref remains
 `c19276b2d53bc02853737377136973d6fc937242` (1.1.1.0), not the current source.
 Receipt: `dist/native-prepublish/reviewer-source-status.json`. No permission,
-main branch or certification ref was changed.
+main branch or certification ref was changed at that read-only preflight.
+The owner separately authorized a final fast-forward-only certification
+alignment; its executed result belongs in `dist/certification-source-alignment.json`
+and the live ref, not an assumption from permission or this preflight.
+
+## Partner Center account and offer boundary
+
+No verified Partner Center publisher/account ID or Network offer draft/ID
+was found in this repository's evidence. The old `atlyn-network` value is a
+proposal, not a reserved offer ID. A read-only request to the public Marketplace
+dashboard route redirected to Microsoft sign-in in the available unauthenticated
+web context. This does **not** prove that no account or draft exists elsewhere.
+GitHub admin access, reviewer read access and Power BI Desktop sign-in are not
+Marketplace enrollment evidence.
+
+The owner must confirm the exact enrolled legal publisher/account and publisher
+ID, then whether a Network offer already exists and its offer ID/overview link
+(or that a new draft is needed). A non-secret portal reference or suitably
+redacted account evidence is sufficient for identification; do not send
+passwords, tokens or recovery codes. Actual draft configuration needs an
+owner-authenticated session with the appropriate role and separate draft-only
+authority. Without it, only local input/artifact preparation can be completed;
+no enrollment, offer reservation, draft creation or portal configuration is
+claimed. Submission/publication remain excluded regardless.
 
 ## Remaining explicit gates
 
-- Genuine version-matched PBIX save/cold reopen and embedded package-byte
-  equality; complete native Desktop interactions, formatting, bookmarks,
-  conversions and host acceptance matrix.
+- Complete the remaining native Desktop formatting, bookmark replay,
+  conversions and full host acceptance matrix. A genuine version-matched PBIX,
+  exact embedded members and bounded cold-reopen/saved-view checks now exist.
 - Owner-authorized Service/mobile/export and assistive-technology coverage.
   Publication to enable Service testing is outside the current request.
-- Publisher/offer identity, branding and listing-media approvals, plus any
-  required approved EULA upload/file format. The privacy URL, existing-terms
-  publisher EULA option, support FAQ and monitored support contact are
-  explicitly owner-approved; no Partner Center entry or acceptance occurred.
+- Verified Partner Center publisher/account and Network offer identity, any
+  authenticated draft configuration, and the actual EULA upload/file-format
+  requirement. Privacy, existing-terms publisher EULA, support/contact,
+  Non-Business classification and exactly two native images are explicitly
+  owner-approved; no Partner Center entry or acceptance occurred.
 - The owner has now authorized updating the remote lowercase `certification`
   branch **only after final source/native/package verification**; that
-  prerequisite is not complete, so the ref is still untouched. Current secure
-  Microsoft reviewer-process confirmation remains separate.
+  prerequisite is satisfied for the bounded documented source/native/package
+  checks; use the explicit alignment receipt/live SHA for the actual result.
+  Current secure Microsoft reviewer-process confirmation remains separate.
 - Partner Center submission, certification request, publishing/go-live,
   Azure redemption and Microsoft's outcomes are excluded, not performed.

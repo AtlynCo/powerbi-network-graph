@@ -8,9 +8,11 @@ Partner Center requirements **immediately before use in October**.
 **Owner/native update, 2026-09-25:** [prepublication evidence](../validation/PREPUBLISH-1.2.md)
 records approved privacy/EULA/support URLs and the monitored support contact,
 final Hints-last native rendering and eight bounded native interaction checks.
-The owner is performing the remaining true PBIX Save As step after scoped
-automation could not guarantee the file-type selection. No PBIX/cold-reopen
-success is inferred until the actual file and embedded bytes are verified.
+The owner saved a genuine PBIX under the alternate name `R:\Network.pbix`;
+exact embedded 1.2 member bytes, final page order and a new-process cold reopen
+without refresh are verified. The owner approved the deliberately selected
+Non-Business label (stored Personal), superseding Public, and exactly the
+native Circular/Radial PNG pair. Full native matrix coverage is not implied.
 The owner authorized remote `certification` alignment only after final
 native/source/package verification; no submission or publication is authorized.
 
@@ -33,7 +35,10 @@ The earlier cf6d archive and evidence are retained in
 The refreshed build includes the named ESLint script; all shipped package
 member bytes remain identical to cf6d, while SDK ZIP timestamps changed its SHA.
 
-The five-page/four-graph PBIP is current; a same-version native PBIX is not.
+The five-page/four-graph PBIP and a genuine same-version native PBIX are current.
+The durable PBIX is `dist/native-prepublish/AtlynNetwork-1.2.0.0-native.pbix`,
+213,864 bytes, SHA-256
+`9248f79d195ec76fe61f278911a79cbb333f50a12bec17a3ab8130419e325ab7`.
 Keep all 1.1 archives, evidence and images unchanged. Use the current
 `dist/release-manifest.json` and its sidecar for the handoff source commit.
 Docs-only commits do not require repackaging when build inputs are unchanged.
@@ -46,19 +51,21 @@ live GitHub `refs/heads/certification` both resolve to
 Implementation commit `f2b30c9e09e899e0cc16929af2167f3091921560` is one commit
 ahead, with no certification-only commits. Thus that branch **does not match
 the 1.2 candidate**. The subsequent handoff docs commit is identified by the
-new local manifest. No fetch, push or certification-ref movement was performed.
-Any eventual source-branch update/reviewer access is an explicitly authorized
-owner action, not a step to execute under this runbook's preparation scope.
+new local manifest. No ref change occurred during that read-only preflight.
+The owner later authorized a fast-forward-only update from the verified
+c19276b2 baseline after final checks; consult
+`dist/certification-source-alignment.json` and the live ref for its actual
+result. No main merge or Partner Center submission/publication is authorized.
 
 ## What can be prepared before October
 
 | Work | Status / next owner action |
 | --- | --- |
 | Technical dossier | Ready locally: retain the package, PBIP, exact source/manifest and [dated receipts](../validation/RESULTS-1.2.md). Recheck current API/tools and the [required tests][tests] before submission. |
-| Native sample and matrix | Real Desktop rendering and bounded model-backed selections/slicer/keyboard checks are recorded in the new evidence. Complete the owner-operated genuine **1.2.0.0 PBIX** save and verify embedded members/cold reopen, then the remaining native acceptance matrix. Hints is now last. Respect tenant/developer-mode policies; never change the GUID to force a local version. |
-| Listing media | Existing 300x300 PNG logo and five 1366x768 candidate PNGs are available; owner approval and accessible feature callouts remain required. Current images are explicitly mock-host, not native evidence. See the size discrepancy below. |
+| Native sample and matrix | Real Desktop rendering, bounded model-backed interactions, exact native PBIX members and cold reopen/saved-view restoration are verified; Non-Business is owner-approved. Complete the remaining native matrix. Hints is last. Respect tenant/developer-mode policies; never change the GUID. |
+| Listing media | Owner selected exactly `dist/listing-native-1.2/circular.png` and `radial.png`, genuine native 1366x768 PNGs with callouts. The five older mock-host candidates remain unselected. Existing logo is 300x300; see the media inventory and upload-validator discrepancy. |
 | Legal/support | Owner approved the product-specific privacy URL, existing Atlyn terms URL as publisher EULA, support FAQ and monitored `atlyn.help@gmail.com` contact on 2026-09-25; exact URLs are in the current listing draft. No new contract or portal acceptance is introduced; confirm any required upload format. |
-| Account/reviewer readiness | Owner confirms Marketplace enrollment, publisher authority, offer identity, secure reviewer access and the final release hold. Do not put credentials or recovery codes in Git, receipts or chat. |
+| Account/reviewer readiness | Publisher/account and Network offer IDs are still unverified; the available portal fetch redirects to sign-in. Owner must identify the enrolled publisher and existing/new offer, then supply an authorized authenticated context for any draft-only setup. GitHub reviewer `pbicvsupport` already has read access, which is not portal enrollment. Do not share credentials or recovery codes. |
 
 **Closed locally on 2026-09-24:** `npm run eslint` now executes the documented
 `npx eslint . --ext .js,.jsx,.ts,.tsx`; both it and the retained `npm run lint`

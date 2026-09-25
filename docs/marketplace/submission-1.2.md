@@ -74,12 +74,24 @@ selection; it does not revise the terms, accept irreversible portal terms, or
 turn the repository's proprietary `LICENSE` into a customer EULA. The support
 URL/contact approval is recorded separately from portal configuration.
 
-## Media prepared for owner review
+## Owner-selected listing media
 
-`assets/logo-300.png` is a 300x300 PNG, 4,392 bytes. The following current
+`assets/logo-300.png` is a 300x300 PNG, 4,392 bytes. The owner explicitly approved
+exactly the two genuine native images below on 2026-09-25 after review.
+Both are 1366x768 PNGs under 1,024,000 bytes; no mock/native ambiguity or
+Microsoft badge claim is introduced.
+
+| Approved native file | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `dist\listing-native-1.2\circular.png` | 274,853 | `c0019937ad83ae93882f2f26032ad8954f40b13f1fb496275e6ca680814bda7d` |
+| `dist\listing-native-1.2\radial.png` | 272,502 | `3b738e79e6c048a7c447ef39f96f1cc0019e6ae7e0676de789886576e185ed90` |
+
+Selection/provenance and unapproved alternatives are in the
+[media inventory](media-inventory-1.2.md). The following earlier
 package screenshots are 1366x768 PNGs under 1,024,000 bytes, with captions and
 explicit offline Chromium/mock-host labels. Preserve those labels; they are
-not native Power BI screenshots. Hash/dimension receipt:
+not native Power BI screenshots and **are not selected/approved** by the
+two-image decision. Hash/dimension receipt:
 `dist/native-prepublish/listing-assets.json`.
 
 | Candidate under `dist/release-screenshots` | Proposed caption |
@@ -90,7 +102,7 @@ not native Power BI screenshots. Hash/dimension receipt:
 | `radial.png` | Explore undirected loaded-hop rings around a chosen center, with separate disconnected components. |
 | `dense-overview.png` | Use visible density disclosures and complete lists for bounded dense networks. |
 
-Owner must approve branding, accessibility, copy and which 1-5 images to use.
+Do not substitute Services/Accounts or mock images for the approved pair.
 Confirm the live upload validator because Microsoft's broad overview and
 product-specific pages disagree on image dimensions. New native evidence
 captures, if present, are separate and must not be relabeled as these images.
@@ -103,11 +115,11 @@ captures, if present, are separate and must not be relabeled as these images.
 | GUID | `AtlynNetworkAB24C68297094C32AF64D50D92C01711` |
 | PBIVIZ | `AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.2.0.0.pbiviz`, 153,889 bytes |
 | PBIVIZ SHA-256 | `6136c82c28ecf597634cbb90685f9cb1fbc3c435ce64613a8be180e8ff0f00ff` |
-| Native PBIX | Use only the version-matched native artifact and comparison receipt identified by `PREPUBLISH-1.2.md`; do not substitute the old 1.1 PBIX or rename source files. |
+| Native PBIX | Genuine owner-saved `R:\Network.pbix`, 213,864 bytes, SHA-256 `9248f79d195ec76fe61f278911a79cbb333f50a12bec17a3ab8130419e325ab7`; durable handoff `dist/native-prepublish/AtlynNetwork-1.2.0.0-native.pbix`. Exact 1.2 members/cold reopen verified; Non-Business (stored Personal) explicitly owner-approved, superseding Public. |
 | Current source | Exact committed revision in `dist/release-manifest.json`; package build-input hashes must match. |
-| Remote certification source | Still `c19276b2d53bc02853737377136973d6fc937242` (1.1.1.0), not the 1.2 source. Owner authorized an update only after final source/native/package verification; the missing verified PBIX keeps that prerequisite open. No update is performed yet. |
+| Remote certification source | Preflight baseline `c19276b2d53bc02853737377136973d6fc937242` (1.1.1.0). Owner authorized fast-forward-only alignment after final checks; verify the resulting exact source commit with `dist/certification-source-alignment.json` and the live remote ref. |
 | Existing reviewer permission | GitHub API reports `pbicvsupport` has `read` permission on 2026-09-24. This is not proof Microsoft has accepted access or can complete its current secure review process. |
-| Publisher/offer | Owner must confirm enrollment, legal identity, existing/new offer ID and rights. The proposed name `atlyn-network` is not evidence of a reserved offer. |
+| Publisher/offer | **Not verified.** Owner must identify the exact enrolled legal publisher/account ID and existing Network offer ID/portal link, or confirm a new draft is needed. The proposed `atlyn-network` name is not a reserved offer. No authenticated portal session/configuration was performed. |
 
 The `certification` branch must match the eventual submitted package and stay
 frozen through that submission. Do not provide credentials or recovery codes

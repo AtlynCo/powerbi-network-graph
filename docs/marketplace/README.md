@@ -4,8 +4,11 @@
 
 **Prepublication update, 2026-09-25:** the owner approved the Network privacy
 URL, existing Atlyn terms as publisher EULA option, support FAQ and monitored
-support contact. A fresh real Desktop run verified the final five-page sample
-and bounded host interactions; genuine PBIX save/cold-reopen remains a gate.
+support contact. A fresh real Desktop run verified the final five-page sample,
+bounded host interactions and genuine owner-saved PBIX cold reopen with exact
+visual-member equality. The owner approved Non-Business classification and
+exactly the native Circular/Radial listing pair. Remaining native matrix and
+Partner Center account/offer configuration are still gates.
 See [current prepublication evidence](../validation/PREPUBLISH-1.2.md).
 Certification-ref alignment is now owner-authorized **only after final native,
 source and package verification**; publication/submission is not authorized.
@@ -18,6 +21,7 @@ This directory separates Microsoft requirements, repository evidence, proposed l
 
 - [Exact draft fields and owner approvals](submission-draft.md)
 - [Current 1.2 listing and technical draft](submission-1.2.md)
+- [Native versus mock listing-media inventory](media-inventory-1.2.md)
 - [Current prepublication/native evidence](../validation/PREPUBLISH-1.2.md)
 - [October 2026 preflight and handoff](october-2026-handoff.md)
 - [Submission and certification test matrix](testing-checklist.md)
@@ -29,9 +33,9 @@ This directory separates Microsoft requirements, repository evidence, proposed l
 | Item | Requirement verified in Microsoft documentation | Preparation status |
 | --- | --- | --- |
 | PBIVIZ | Real compiled package; complete metadata; four-part version; same GUID on updates | Target `AtlynNetworkAB24C68297094C32AF64D50D92C01711`, `1.2.0.0`, API `5.11.0`; coordinator must approve final artifact |
-| Sample PBIX | **Required**, works offline with no external connections; visual version and content match PBIVIZ | **Missing for 1.2.0.0.** Coordinator's older `AtlynNetwork-1.1.0.0-native.pbix` is historical evidence only. Current native conversion/refresh/interactions/save/reopen remain owner gates |
+| Sample PBIX | **Required**, works offline with no external connections; visual version and content match PBIVIZ | Genuine current PBIX with byte-identical 1.2 members/cold reopen verified; durable copy `dist/native-prepublish/AtlynNetwork-1.2.0.0-native.pbix`, approved Non-Business classification. Full native matrix remains open. Old 1.1 PBIX remains historical only. |
 | Logo | PNG, **exactly 300×300** | Coordinator owns final asset and approval; 20×20 package icon is not a substitute |
-| Screenshots | **1–5 PNGs**, **exactly 1366×768**, each **≤1024 KB**; sharp, inclusive, accurate | Coordinator owns final images; use comfortably below 1,024,000 bytes to avoid ambiguous KB interpretation |
+| Screenshots | **1–5 PNGs**, **exactly 1366×768**, each **≤1024 KB**; sharp, inclusive, accurate | Owner approved exactly the two genuine native Circular/Radial PNGs, 2026-09-25; paths, sizes and hashes in the current media inventory. Other native/mock images are not selected. |
 | Support | Public HTTPS support link | Owner approved `https://atlynco.github.io/atlyn-powerbi-support/docs/faq/` and confirmed `atlyn.help@gmail.com` is monitored, 2026-09-25; no response-time SLA invented |
 | Privacy | Valid public HTTPS organization privacy-policy URL | Owner approved `https://atlynco.github.io/atlyn-powerbi-support/legal/privacy/`, 2026-09-25; HTTPS/product coverage verified |
 | Terms | Accepted standard contract or own/Power BI visuals EULA, according to Partner Center options | Owner selected existing `https://atlynco.github.io/atlyn-powerbi-support/legal/terms/` as publisher EULA, 2026-09-25; no portal acceptance or publication performed |
