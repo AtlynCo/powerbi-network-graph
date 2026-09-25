@@ -5,6 +5,15 @@ This is a runbook, not permission to submit, publish, change refs or accept
 terms. Reopen the linked Microsoft documentation and confirm the actual
 Partner Center requirements **immediately before use in October**.
 
+**Owner/native update, 2026-09-25:** [prepublication evidence](../validation/PREPUBLISH-1.2.md)
+records approved privacy/EULA/support URLs and the monitored support contact,
+final Hints-last native rendering and eight bounded native interaction checks.
+The owner is performing the remaining true PBIX Save As step after scoped
+automation could not guarantee the file-type selection. No PBIX/cold-reopen
+success is inferred until the actual file and embedded bytes are verified.
+The owner authorized remote `certification` alignment only after final
+native/source/package verification; no submission or publication is authorized.
+
 ## Frozen candidate and completed local work
 
 Atlyn Network **1.2.0.0**, unchanged GUID
@@ -46,9 +55,9 @@ owner action, not a step to execute under this runbook's preparation scope.
 | Work | Status / next owner action |
 | --- | --- |
 | Technical dossier | Ready locally: retain the package, PBIP, exact source/manifest and [dated receipts](../validation/RESULTS-1.2.md). Recheck current API/tools and the [required tests][tests] before submission. |
-| Native sample and matrix | Schedule authorized Desktop/Service testing now. Produce a genuinely offline **1.2.0.0 PBIX**, verify embedded package members, all layouts/centers, field conversions, filters/selection, formatting, bookmarks, resize/view modes, multi-page/instance behavior and save/cold-reopen. Include a final hints page. Respect tenant/developer-mode policies; never change the GUID to force a local version. |
+| Native sample and matrix | Real Desktop rendering and bounded model-backed selections/slicer/keyboard checks are recorded in the new evidence. Complete the owner-operated genuine **1.2.0.0 PBIX** save and verify embedded members/cold reopen, then the remaining native acceptance matrix. Hints is now last. Respect tenant/developer-mode policies; never change the GUID to force a local version. |
 | Listing media | Existing 300x300 PNG logo and five 1366x768 candidate PNGs are available; owner approval and accessible feature callouts remain required. Current images are explicitly mock-host, not native evidence. See the size discrepancy below. |
-| Legal/support | Owner must approve and verify HTTPS support/privacy links and an EULA/contract choice. The repository `LICENSE` is not an approved customer EULA. No terms, URLs or customer permissions are decided here. |
+| Legal/support | Owner approved the product-specific privacy URL, existing Atlyn terms URL as publisher EULA, support FAQ and monitored `atlyn.help@gmail.com` contact on 2026-09-25; exact URLs are in the current listing draft. No new contract or portal acceptance is introduced; confirm any required upload format. |
 | Account/reviewer readiness | Owner confirms Marketplace enrollment, publisher authority, offer identity, secure reviewer access and the final release hold. Do not put credentials or recovery codes in Git, receipts or chat. |
 
 **Closed locally on 2026-09-24:** `npm run eslint` now executes the documented

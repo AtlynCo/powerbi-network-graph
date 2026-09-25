@@ -221,20 +221,19 @@ async function author() {
         });
         for (const item of visuals) await put(path.join(pageRoot, "visuals", item.name, "visual.json"), item);
     }
-    pages.push("PageHints");
     await put(path.join(reportRoot, "definition", "pages", "PageHints", "page.json"), {
-        $schema: schemas.page, name: "PageHints", displayName: "3. Hints and semantics",
+        $schema: schemas.page, name: "PageHints", displayName: "5. Hints and semantics",
         displayOption: "FitToPage", width: 1366, height: 768
     });
     const hints = [
-        "3. Hints and semantics",
+        "5. Hints and semantics",
         "START OFFLINE: open Network.pbip with current Power BI Desktop; enable PBIP/PBIR/TMDL preview features if required. Refresh loads only literal in-project tables; it needs no files, credentials or network data source.",
         "BINDING: Source ID and Target ID are text. Edge ID and relationship type are categories. Services Total Weight and Accounts Total Weight are SUM measures. Tooltip measures use the same table prefixes: e.g. Accounts Average Duration ms, Accounts Events and Accounts Input Rows. All 14 measure names are model-global unique. Two source rows for T01 become one Power BI category tuple with weight 120.",
         "INVESTIGATION: distinguish source → target direction, reciprocal pairs, parallel typed relationships, self-loops and disconnected components. Use search and local neighborhood controls for exploration; use host selections and slicers for model filtering.",
         "MODEL: separate source-node and target-node dimension tables avoid ambiguous bidirectional filter paths. Type dimensions filter edge facts through single-direction many-to-one relationships. Cycles in the drawn graph are not model relationship cycles.",
         "LIMITS: this is a bounded relationship explorer, not a DAG/process miner, causal inference engine, fraud detector, arbitrary large-graph engine, or raw-event deduplication service. Incomplete known weight is not a complete total or financial balance.",
         "RELEASE CHECK: the embedded private visual is assembled from the actual release PBIVIZ. sample-validation.json records archive and per-resource SHA-256 equality. This source project is not a PBIX and is not evidence of Microsoft certification.",
-        "NATIVE GATE: refresh, inspect both graphs and tooltips, test slicer/table cross-filtering, save and reopen, then Save As PBIX. Retest offline and verify the embedded version/content before submitting. No native validation is claimed by this authored source."
+        "NATIVE GATE: refresh, inspect all four graphs and tooltips, test slicer/table cross-filtering, save and reopen, then Save As PBIX. Retest offline and verify the embedded version/content before submitting. No native validation is claimed by this authored source."
     ];
     await put(path.join(reportRoot, "definition", "pages", "PageHints", "visuals", "Hints", "visual.json"),
         textBox("Hints", hints.join("\n\n"), 32, 24, 1290, 712, "14pt"));
@@ -262,14 +261,15 @@ async function author() {
             "Search, focus and highlights do not move nodes. Save local view stores mode/center; native bookmark and Desktop/Service replay still require owner verification."
         ];
         await put(path.join(pageRoot, "page.json"), {
-            $schema: schemas.page, name: pageName, displayName: `${index + 4}. ${label} relationships`,
+            $schema: schemas.page, name: pageName, displayName: `${index + 3}. ${label} relationships`,
             displayOption: "FitToPage", width: 1366, height: 768
         });
         for (const item of [
-            textBox(`${label}Heading`, `${index + 4}. ${label} relationships`, 24, 16, 1290, 64, "24pt"),
+            textBox(`${label}Heading`, `${index + 3}. ${label} relationships`, 24, 16, 1290, 64, "24pt"),
             graph, textBox(`${label}Guide`, guide.join("\n\n"), 1008, 100, 334, 644, "11pt")
         ]) await put(path.join(pageRoot, "visuals", item.name, "visual.json"), item);
     }
+    pages.push("PageHints");
     await put(path.join(sample, "Network.pbip"), { $schema: schemas.pbip, version: "1.0", artifacts: [{ report: { path: reportName } }], settings: { enableAutoRecovery: true } });
     await put(path.join(reportRoot, "definition.pbir"), { $schema: schemas.pbir, version: PBIR_ARTIFACT_VERSION, datasetReference: { byPath: { path: `../${modelName}` } } });
     await put(path.join(modelRoot, "definition.pbism"), { $schema: schemas.pbism, version: "4.0", settings: {} });
@@ -439,7 +439,7 @@ async function validate(release) {
         assert(!/(?:Web\.|File\.|Folder\.|Sql\.|OData\.|SharePoint\.|AzureStorage\.|AnalysisServices\.|Extension\.|Value\.NativeQuery|dataSource\s|https?:\/\/|powerbi:\/\/)/i.test(text.replace(/"\$schema":\s*"[^"]+"/g, "")), `External data source forbidden: ${filename}`);
     }
     const pages = await json(path.join(reportRoot, "definition", "pages", "pages.json"));
-    assert.deepEqual(pages.pageOrder, ["PageServices", "PageAccounts", "PageHints", "PageCircular", "PageRadial"]);
+    assert.deepEqual(pages.pageOrder, ["PageServices", "PageAccounts", "PageCircular", "PageRadial", "PageHints"]);
     assert(pages.pageOrder.includes(pages.activePageName));
     let graphCount = 0;
     let bindings = 0;

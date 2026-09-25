@@ -1,6 +1,6 @@
 {
   "status": "local-structure-only",
-  "assemblerSha256": "e1d0acd3dee30340e03bac698943d7bdc196c26d14976a40a8e217564c783ec6",
+  "assemblerSha256": "0f09e53b60fc3a94d7280542bd1eb72edbec26e701f5fd92f98ca7a646ddf62b",
   "visual": {
     "guid": "AtlynNetworkAB24C68297094C32AF64D50D92C01711",
     "version": "1.2.0.0",
@@ -149,7 +149,7 @@
     },
     {
       "path": "Network.Report/definition/pages/PageCircular/page.json",
-      "sha256": "394e3a1502abea9a0febdb2fd8bbf2fa5ca0f9a37ebcc8f507a2548cd822ca5e"
+      "sha256": "89de7ed5671bb69c561d823e5b3b94883eec2d25f3edd26622cc569d7186785d"
     },
     {
       "path": "Network.Report/definition/pages/PageCircular/visuals/CircularGraph/visual.json",
@@ -161,19 +161,19 @@
     },
     {
       "path": "Network.Report/definition/pages/PageCircular/visuals/CircularHeading/visual.json",
-      "sha256": "da8e4dddb61796a95206fed1302d7754dc3997b8a5e54a2eb7b3dc49a8ec9151"
+      "sha256": "18b518a61415539803978df13d82e124e3ad8003ea7f6f4bff88730679de7b2a"
     },
     {
       "path": "Network.Report/definition/pages/PageHints/page.json",
-      "sha256": "9b72fd9a45c3dbf88da6f3acd659e93dd77e083cc6ec5f3d481f35f172bb8edc"
+      "sha256": "597227be1af7c973737cf1d41e73ebfc689ba8730ca57a1720876174541aca9e"
     },
     {
       "path": "Network.Report/definition/pages/PageHints/visuals/Hints/visual.json",
-      "sha256": "6812e2f224732d2e8ed8d96d2a4ac36b81cb8e0d219676066076c610ad918084"
+      "sha256": "a6befa00f7cb15642bf79f9411bf4a8a5254a8a67cc48c713b735cebbcef91a3"
     },
     {
       "path": "Network.Report/definition/pages/PageRadial/page.json",
-      "sha256": "3b63f17d08f5c2f9ca7ca9bdc4eba3a73e7ec002c105cd0f9c31ae77c96a171c"
+      "sha256": "31b632405edc23a8488b7049c0177d32d172d4a8c9c874d6cabb7a8d008686a3"
     },
     {
       "path": "Network.Report/definition/pages/PageRadial/visuals/RadialGraph/visual.json",
@@ -185,7 +185,7 @@
     },
     {
       "path": "Network.Report/definition/pages/PageRadial/visuals/RadialHeading/visual.json",
-      "sha256": "395d030b052906cbcb89c13ee49923f280c724b19aa8133a892b2eb9c307b5fe"
+      "sha256": "d67118554cc92233e4b87fb7387ad30215e3f7e6951d1623ff92e2f4dd0600b3"
     },
     {
       "path": "Network.Report/definition/pages/PageServices/page.json",
@@ -217,7 +217,7 @@
     },
     {
       "path": "Network.Report/definition/pages/pages.json",
-      "sha256": "e7469a8b3730441ec84854af71195df178458a00000bfb54f9b185b8f5236810"
+      "sha256": "d3577ef9295f865bd7ce14350587cb0bb489d4b965b97cb48144b34e8864a231"
     },
     {
       "path": "Network.Report/definition/report.json",

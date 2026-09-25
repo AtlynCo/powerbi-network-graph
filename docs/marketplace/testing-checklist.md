@@ -23,6 +23,20 @@ Current candidate hashes, **168 unit cases** and **38 release-browser groups**
 are in [RESULTS-1.2](../validation/RESULTS-1.2.md). Historical observations below
 remain dated 1.1 evidence and do not attest the 1.2 package.
 
+## 2026-09-25 bounded native and owner update
+
+[PREPUBLISH-1.2](../validation/PREPUBLISH-1.2.md) records genuine Desktop
+2.157.1354.0 refresh/rendering of all five final-order pages and eight bounded
+model-backed interaction checks: local exploration versus report filtering,
+native type slicer, requested-center return, exact edge/Ctrl selection,
+keyboard Enter/Escape, formatted values and explicit local-view request.
+These are partial evidence for G03/G08/G10/G11/G12/G22/G24, not full-matrix
+passes. Actual PBIX Save As is owner-operated after the automation format
+guard stopped; no cold-reopen or embedded-byte equality is yet asserted.
+The owner approved privacy, existing terms as publisher EULA, support FAQ and
+monitored contact; source-branch update is authorized only after final native
+verification. No publishing/submission/certification request is authorized.
+
 ## Host-version control
 
 - [ ] Test the actual new package with the **unchanged GUID**. Microsoft warns that AppSource's version may override a locally imported one.

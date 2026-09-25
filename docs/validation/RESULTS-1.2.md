@@ -9,6 +9,12 @@ Microsoft-linked workbook sheet tests were added after the initial 1.2
 handoff. The prior cf6d package/report/receipts/images are preserved under
 `dist/candidate-history/f5d0cf21a94e579336af985ad7516f049cf94309/`
 and in the earlier committed source where applicable.
+**Subsequent prepublication work, 2026-09-25:** see
+[PREPUBLISH-1.2](PREPUBLISH-1.2.md) for bounded genuine Desktop observations,
+owner approvals and the Hints-last sample correction. The archive remains
+unchanged. This earlier 168-case/38-group record is not a claim that PBIX or
+all native acceptance gates are complete; its replaced model-preflight
+receipt is preserved at the history path listed below.
 
 ## Exact candidate
 
@@ -195,7 +201,7 @@ these and the committed source. It is not a GitHub Release or external action.
 | `release-profile.json` | `aa1b229e8227f39e091a693d135f3532636635925b44b7d01b0a4126c20ff115` |
 | `certification-preflight.json` | `a15e49aa07c016c12bc03ece804a0a2304717b4a40414df368bcf1712ad16e98` |
 | `dependency-audit.json` | `109407fdcf47ea5896ff1d9ffb2127eae64a75902d2a0166062edbac9f28fd19` |
-| `tmdl-validation.json` | `1ebc1181b116d5ae2a669a7dc5217252fd19798e335f35679fa6c6edfdb37948` |
+| `candidate-history/1d0a664259ce7bee2e11fec9534c8b8aed829567/tmdl-validation.json` | `1ebc1181b116d5ae2a669a7dc5217252fd19798e335f35679fa6c6edfdb37948` |
 
 ## Unsatisfied owner / external gates
 

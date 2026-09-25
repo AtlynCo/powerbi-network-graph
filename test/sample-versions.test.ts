@@ -26,4 +26,17 @@ describe("independent PBIR artifact and report-definition versions", () => {
         expect(definition.version).toBe("2.0.0");
         expect(() => assertReportVersions(artifact, definition)).not.toThrow();
     });
+
+    it("places consistently numbered hints last after the four graph examples", () => {
+        const pages = path.join(process.cwd(), "samples", "release", "Network.Report", "definition", "pages");
+        const metadata = JSON.parse(readFileSync(path.join(pages, "pages.json"), "utf8")) as { pageOrder: string[] };
+        expect(metadata.pageOrder).toEqual(["PageServices", "PageAccounts", "PageCircular", "PageRadial", "PageHints"]);
+        metadata.pageOrder.forEach((name, index) => {
+            const page = JSON.parse(readFileSync(path.join(pages, name, "page.json"), "utf8")) as { displayName: string };
+            expect(page.displayName.startsWith(`${index + 1}. `)).toBe(true);
+        });
+        const hints = readFileSync(path.join(pages, "PageHints", "visuals", "Hints", "visual.json"), "utf8");
+        expect(hints).toContain("5. Hints and semantics");
+        expect(hints).toContain("all four graphs");
+    });
 });

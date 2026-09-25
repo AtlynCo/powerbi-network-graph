@@ -3,9 +3,9 @@
   "pageOrder": [
     "PageServices",
     "PageAccounts",
-    "PageHints",
     "PageCircular",
-    "PageRadial"
+    "PageRadial",
+    "PageHints"
   ],
   "activePageName": "PageServices"
 }

@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/1.0.0/schema.json",
   "name": "PageCircular",
-  "displayName": "4. Circular relationships",
+  "displayName": "3. Circular relationships",
   "displayOption": "FitToPage",
   "width": 1366,
   "height": 768

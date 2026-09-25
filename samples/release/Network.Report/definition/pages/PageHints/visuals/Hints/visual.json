@@ -47,7 +47,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "3. Hints and semantics",
+                    "value": "5. Hints and semantics",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "14pt"
@@ -201,7 +201,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "NATIVE GATE: refresh, inspect both graphs and tooltips, test slicer/table cross-filtering, save and reopen, then Save As PBIX. Retest offline and verify the embedded version/content before submitting. No native validation is claimed by this authored source.",
+                    "value": "NATIVE GATE: refresh, inspect all four graphs and tooltips, test slicer/table cross-filtering, save and reopen, then Save As PBIX. Retest offline and verify the embedded version/content before submitting. No native validation is claimed by this authored source.",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "14pt"

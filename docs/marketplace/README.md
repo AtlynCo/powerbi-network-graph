@@ -2,6 +2,14 @@
 
 **Research checked: 2026-09-09; candidate updated 2026-09-24. Release target: 1.2.0.0. Status: preparation, not submission or certification.** Historical native/media evidence below remains version 1.1.0.0 and must not be relabeled as current. See the [1.2 readiness boundaries](../RELEASE.md#12-candidate-readiness-boundaries-2026-09-24).
 
+**Prepublication update, 2026-09-25:** the owner approved the Network privacy
+URL, existing Atlyn terms as publisher EULA option, support FAQ and monitored
+support contact. A fresh real Desktop run verified the final five-page sample
+and bounded host interactions; genuine PBIX save/cold-reopen remains a gate.
+See [current prepublication evidence](../validation/PREPUBLISH-1.2.md).
+Certification-ref alignment is now owner-authorized **only after final native,
+source and package verification**; publication/submission is not authorized.
+
 **Owner-approved pattern (2026-09-10):** external storefront subscriptions govern acquisition; visuals run ungated, with free shared viewing and no paid-author enforcement. The existing offline renderer is intended, following the coordinator's assessment of existing Distribution/Scatter source. No keys, new signer, AAD/API integration, feature gates or runtime requests are to be added. Runtime licensing is no longer a blocker.
 
 **Still held:** remaining native/submission coverage, final assets, legal/reviewer-access and the coordinator's final gate. A genuine PBIX and bounded Desktop render/save/cold-reopen evidence now exist; see the dated record below. The additional Microsoft Power BI visual certification badge is **required, not achieved**; general Marketplace approval is not a substitute. Do not move main/certification refs, merge, or submit before that gate. This decision does not repackage, bump the version, or modify frozen evidence.
@@ -9,6 +17,8 @@
 This directory separates Microsoft requirements, repository evidence, proposed listing copy, and decisions that only an authorized Atlyn owner can approve. No Partner Center account was accessed or changed by this work. No offer was created/submitted/published; no reviewer permissions or hosted workflow runs were created. Source changes are delivered separately through a private review branch/PR, with no certification-reference movement.
 
 - [Exact draft fields and owner approvals](submission-draft.md)
+- [Current 1.2 listing and technical draft](submission-1.2.md)
+- [Current prepublication/native evidence](../validation/PREPUBLISH-1.2.md)
 - [October 2026 preflight and handoff](october-2026-handoff.md)
 - [Submission and certification test matrix](testing-checklist.md)
 - [Evidence-based competitor/workflow comparison](workflow-benchmark.md)
@@ -22,9 +32,9 @@ This directory separates Microsoft requirements, repository evidence, proposed l
 | Sample PBIX | **Required**, works offline with no external connections; visual version and content match PBIVIZ | **Missing for 1.2.0.0.** Coordinator's older `AtlynNetwork-1.1.0.0-native.pbix` is historical evidence only. Current native conversion/refresh/interactions/save/reopen remain owner gates |
 | Logo | PNG, **exactly 300×300** | Coordinator owns final asset and approval; 20×20 package icon is not a substitute |
 | Screenshots | **1–5 PNGs**, **exactly 1366×768**, each **≤1024 KB**; sharp, inclusive, accurate | Coordinator owns final images; use comfortably below 1,024,000 bytes to avoid ambiguous KB interpretation |
-| Support | Public HTTPS support link | Existing metadata: `https://atlynco.github.io/atlyn-powerbi-support/docs/faq/`; operational support commitment unresolved |
-| Privacy | Valid public HTTPS organization privacy-policy URL | **Unresolved owner/legal approval and verified URL** |
-| Terms | Accepted standard contract or own/Power BI visuals EULA, according to Partner Center options | **Unresolved legal choice and acceptance** |
+| Support | Public HTTPS support link | Owner approved `https://atlynco.github.io/atlyn-powerbi-support/docs/faq/` and confirmed `atlyn.help@gmail.com` is monitored, 2026-09-25; no response-time SLA invented |
+| Privacy | Valid public HTTPS organization privacy-policy URL | Owner approved `https://atlynco.github.io/atlyn-powerbi-support/legal/privacy/`, 2026-09-25; HTTPS/product coverage verified |
+| Terms | Accepted standard contract or own/Power BI visuals EULA, according to Partner Center options | Owner selected existing `https://atlynco.github.io/atlyn-powerbi-support/legal/terms/` as publisher EULA, 2026-09-25; no portal acceptance or publication performed |
 | Source | Single visual; reviewable source; lowercase **`certification`** branch matching submitted package | **Coordinator Git action after final baseline; no branch created here** |
 | Additional Power BI visual certification badge | Separate Microsoft review beyond general listing approval | **Owner-required; not yet obtained** |
 

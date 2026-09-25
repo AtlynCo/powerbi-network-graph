@@ -6,8 +6,8 @@
 
 This is a complete source project, not a placeholder or instructions to build an empty report. It contains two Force pages with real field projections, type slicers and detail tables, a hints page, and Circular/Radial graph pages using the same synthetic Services data. All four graphs reference the embedded private custom visual. Eight semantic-model tables, fourteen DAX measures and six single-direction relationships are authored. All data partitions use literal `#table` expressions; they read no CSV, workbook, URL, database or sibling directory.
 
-On **4. Circular relationships**, verify one ring and unchanged directed edges.
-On **5. Radial relationships**, verify Orders is the automatic center, hop rings
+On **3. Circular relationships**, verify one ring and unchanged directed edges.
+On **4. Radial relationships**, verify Orders is the automatic center, hop rings
 ignore direction/weights, and Archive/Backup has a separate real center.
 Change the radial center, compare local focus with report selection, filter out
 and restore a requested center, and explicitly save/replay the local view.
@@ -84,7 +84,7 @@ review remain separate gates. See the [evidence record](../../docs/validation/RE
 2. **Refresh** the semantic model. Microsoft documents that a cache-free PBIP opens with model definitions but no imported rows until refresh. This project deliberately excludes `cache.abf`; its refresh evaluates only literal embedded data.
 3. On **1. Cyclic services**, inspect Orders, its self-loop, reciprocal calls/responses and the directed Orders → Payments → Ledger → Orders cycle. Compare relationship types with the slicer. Archive/Backup is a disconnected component. Graph/list selections should filter the detail table; the type slicer should filter both.
 4. On **2. Reciprocal accounts**, search `0001`, preserving the zero-prefixed text ID. Compare parallel T01/T05 transfers and the separate fee; inspect model-formatted tooltip measures.
-5. Read **3. Hints and semantics**. Test native selection, keyboard behavior, tooltips, local-view persistence, save/reopen and offline refresh. Record Desktop version, artifact hash, expected and actual outcomes.
+5. Read the final **5. Hints and semantics** page after both additional layout pages. Test native selection, keyboard behavior, tooltips, local-view persistence, save/reopen and offline refresh. Record Desktop version, artifact hash, expected and actual outcomes.
 6. Save As a real **PBIX**, reopen it offline, and verify that its custom visual version/content match the final PBIVIZ. This step belongs to the coordinator/operator. Do not rename this source project or its ZIP into a PBIX.
 
 If Power BI cannot load the private visual or reports a schema/model error, retain the exact diagnostic and repair the source before conversion. JSON-schema success alone does not prove custom-visual loading or query execution. The current worktree's longest generated path is close to Windows' documented 260-character PBIP limit; use an operator-approved shorter location if necessary. This script never copies outside the worktree.
