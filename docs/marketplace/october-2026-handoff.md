@@ -16,6 +16,17 @@ native Circular/Radial PNG pair. Full native matrix coverage is not implied.
 The owner authorized remote `certification` alignment only after final
 native/source/package verification; no submission or publication is authorized.
 
+**2026-09-29 reviewer supplement:** use the
+[dated 1.2 handoff](reviewer-handoff-1.2-20260929.md) before any future draft
+alignment. Read-only checks now confirm `certification` at **eefe619** and
+reviewer **OSDC1033** with GitHub read access; main remains historical 1.1.1.0.
+The existing `atlyn-network` offer/resource is identified, but its stored
+technical pair is still historical 1.1.1.0 and legal publisher/account identity
+is not independently established by **Atlyn Partner Admin**. Native empty-well
+guidance uses **Services Total Weight**, not raw Weight, in the approved PBIX.
+This supplement is not already saved in portal notes, an updated manifest or
+a new build. Earlier dated snapshots below remain historical.
+
 ## Frozen candidate and completed local work
 
 Atlyn Network **1.2.0.0**, unchanged GUID
@@ -65,7 +76,7 @@ result. No main merge or Partner Center submission/publication is authorized.
 | Native sample and matrix | Real Desktop rendering, bounded model-backed interactions, exact native PBIX members and cold reopen/saved-view restoration are verified; Non-Business is owner-approved. Complete the remaining native matrix. Hints is last. Respect tenant/developer-mode policies; never change the GUID. |
 | Listing media | Owner selected exactly `dist/listing-native-1.2/circular.png` and `radial.png`, genuine native 1366x768 PNGs with callouts. The five older mock-host candidates remain unselected. Existing logo is 300x300; see the media inventory and upload-validator discrepancy. |
 | Legal/support | Owner approved the product-specific privacy URL, existing Atlyn terms URL as publisher EULA, support FAQ and monitored `atlyn.help@gmail.com` contact on 2026-09-25; exact URLs are in the current listing draft. No new contract or portal acceptance is introduced; confirm any required upload format. |
-| Account/reviewer readiness | Publisher/account and Network offer IDs are still unverified; the available portal fetch redirects to sign-in. Owner must identify the enrolled publisher and existing/new offer, then supply an authorized authenticated context for any draft-only setup. GitHub reviewer `pbicvsupport` already has read access, which is not portal enrollment. Do not share credentials or recovery codes. |
+| Account/reviewer readiness | September 29 coordinator UI identifies the existing `atlyn-network` offer/resource; do not create a new offer because of the earlier unauthenticated preflight. Legal publisher/account ID and secure Microsoft reviewer-account/process arrangements remain outstanding. `OSDC1033` GitHub read access does not complete those gates. Stored technical files remain historical 1.1.1.0; use the [dated supplement](reviewer-handoff-1.2-20260929.md) for exact hashes and authorized future alignment boundaries. Do not share credentials or recovery codes. |
 
 **Closed locally on 2026-09-24:** `npm run eslint` now executes the documented
 `npx eslint . --ext .js,.jsx,.ts,.tsx`; both it and the retained `npm run lint`

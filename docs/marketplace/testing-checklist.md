@@ -43,6 +43,32 @@ after final checks. Publisher/account and Network offer IDs/authenticated draft
 configuration remain unverified. No publishing/submission/certification request
 is authorized.
 
+## 2026-09-29 reviewer supplement: native empty-well acceptance
+
+The [dated reviewer instructions](reviewer-handoff-1.2-20260929.md) bind
+September 25 native observations to **1.2.0.0**, source
+`eefe619e40b4fedf5e0efcebf42fa41e7b3fce39`, PBIVIZ **6136c82c...f00ff**
+and approved PBIX **9248f79d...25ab7**, not a later documentation commit.
+The historical prepublication record and approval JSON are unchanged.
+
+- [x] Initially empty native Source/Target/Weight wells accepted SourceID,
+  TargetID and the explicit **Services Total Weight** measure in source-first,
+  target-first and measure-first orders; Source removal/re-drag also passed.
+  Endpoint-only grouping rendered 8 entities/12 relationships; adding
+  RelationshipType produced 13, then EdgeID produced 14.
+- [ ] These bounded 1.2 cases are partial evidence for field acceptance/removal,
+  not full G04/G05 passes or clearance of report 1180.2.12. The existing
+  `atlyn-network` offer still identifies a historical 1.1.1.0 technical pair.
+  Legal publisher/account identity, secure reviewer arrangements, authorized
+  version-matched draft persistence and Microsoft's review remain separate gates.
+
+**Approved-sample restriction, not a missing raw-column test:** its model
+discourages implicit measures, and both Network and native Gauge refused raw
+Weight. Use **Services Total Weight**. A separate implicit-measure-enabled
+control accepted the column; that control is not the approved PBIX. Its first
+cache-free refresh failed before a later successful refresh; a clean first
+refresh is not claimed.
+
 ## Host-version control
 
 - [ ] Test the actual new package with the **unchanged GUID**. Microsoft warns that AppSource's version may override a locally imported one.

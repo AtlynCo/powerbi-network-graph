@@ -109,6 +109,22 @@ If Power BI cannot load the private visual or reports a schema/model error, reta
 | `weight` | `[Services Total Weight] = SUM('Services'[Weight])` or `[Accounts Total Weight] = SUM('Accounts'[Weight])` |
 | `tooltips` | `[Services Average Duration ms]`, `[Services Events]`, `[Services Input Rows]`; corresponding `Accounts`-prefixed measures on Accounts |
 
+**Approved 1.2 PBIX binding caveat, clarified 2026-09-29:** this semantic model
+enables `discourageImplicitMeasures`. For a new empty Services visual, drag
+**SourceID** to **Source ID**, **TargetID** to **Target ID**, and the explicit
+**Services Total Weight** measure to **Weight**, **not the raw Weight column**.
+Native Network and Gauge both refused that raw column in this model. Acceptance
+of raw Weight in a separate implicit-measure-enabled control is not acceptance
+in the approved PBIX and does not authorize changing it.
+
+The September 25 native empty-well cases used unchanged 1.2 bytes and source
+**eefe619**, not this later documentation commit. With only Source/Target and
+the explicit measure, expect **8 entities/12 endpoint-grouped relationships**;
+adding RelationshipType produces **13**, then EdgeID produces **14**.
+The [dated reviewer supplement](../../docs/marketplace/reviewer-handoff-1.2-20260929.md)
+gives the observed binding orders, Source removal/re-drag, artifact hashes,
+first-refresh limitation and the distinct historical portal draft.
+
 `Services` has 14 physical rows. `Accounts` has 16 physical rows. Source-node and target-node dimensions are separate role-playing dimensions, preventing an ambiguous bidirectional model cycle. Type dimensions drive the page slicers. A cyclic **drawn network** does not require cyclic semantic-model relationships.
 
 Additional measures `[Services Visible Nodes]`, `[Services Blank Weights]` and `[Services Nonpositive Weights]`, plus their `Accounts`-prefixed counterparts, support model investigation. Each prefixed `Nonpositive Weights` measure counts zero and negative facts; this is a quality-inspection measure, **not** the visual's invalid-weight rule: zero is valid.
