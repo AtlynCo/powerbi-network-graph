@@ -21,13 +21,47 @@ claim that the subsequently observed offer does not exist.
 | Historical main | `c19276b2d53bc02853737377136973d6fc937242`, version 1.1.1.0; read-only verified on September 29. It is not the native 1.2 evidence baseline. |
 | Native 1.2 candidate | The exact PBIVIZ/PBIX pair below, with unchanged GUID `AtlynNetworkAB24C68297094C32AF64D50D92C01711`. Native field-well results apply only to this candidate. |
 | Existing offer | The coordinator's authenticated September 29 browser observation identified **Atlyn Network**, alias **`atlyn-network`**, resource **`209c9cb9-96b2-4628-bba7-5b4f6d2a75ed`**. Do not create a new offer to resolve the older unknown-offer snapshot. |
-| Account identity | **Atlyn Partner Admin** is the observed signed-in display label, not independent evidence of the enrolled legal publisher/account ID. That legal/account confirmation remains outstanding. |
+| Earlier account-identity boundary | **Atlyn Partner Admin** was the observed signed-in display label, not independent evidence of the enrolled legal publisher/account ID. The subsequently established identifier mapping and verification concern are recorded in the [dated account addendum](#account-identity-and-verification-addendum-2026-09-29). |
 | Stored technical draft | Coordinator-reported September 29 readback still identifies the historical **1.1.1.0** PBIVIZ and historical sample PBIX. Their download/archive hashes were recorded on September 24; no current server bytes were downloaded by this documentation task. |
 | English listing copy | The September 29 summary, description and keywords were previously saved and reload-verified. This does not establish technical-file or screenshot replacement, nor save these reviewer instructions into portal notes. |
 | Reviewer access | A read-only GitHub API check on September 29 confirms **`OSDC1033` has `read` permission**. Repository access is not a completed secure Microsoft reviewer-account/process arrangement or review acceptance. |
 
 Existing technical page:
 <https://partner.microsoft.com/dashboard/v2/marketplace-offers/commercial-marketplace/offers/209c9cb9-96b2-4628-bba7-5b4f6d2a75ed/technicalconfiguration>
+
+### Account identity and verification addendum, 2026-09-29
+
+The coordinator's authenticated, read-only **Account settings** inspection
+subsequently established the missing publisher/account mapping. This is
+account-ID evidence, not an inference from the signed-in display label.
+It supersedes the earlier unknown mapping without changing the September 25
+historical receipts or the **eefe619 / 1.2.0.0** native-evidence baseline.
+
+The **Publisher** tab in [legacy Identifiers](https://partner.microsoft.com/en-us/dashboard/account/v3/organization/identity)
+contained exactly one row:
+
+| Seller ID | Publisher name | Publisher ID | Partner ID | Active programs |
+| --- | --- | --- | --- | --- |
+| `94898650` | Atlyn | `atlyn` | `7123574` | Commercial Marketplace |
+
+Developer Legal info and the current
+[Verification Summary](https://partner.microsoft.com/dashboard/v2/account-settings/organization/legalinfo/vetting/developer?sellerId=94898650)
+showed overall **Rejected**, with **Employment Verification: Failed /
+Pending Partner Action**. The displayed estimated date **6/11/2026** is an
+old portal value, not a new deadline. The business-verification icon was
+disabled/not-started; public publisher name was **Atlyn** and the business
+document indicator was **Provided**.
+
+The email indicators disagreed: a **Complete** image versus an **In Progress**
+accessibility group. **Independent email-verification success is not
+established.** This is an additional publisher-verification concern, not
+proof that it caused the prior visual-policy rejection or evidence against
+the coordinator's independently verified Profile Marketplace publication.
+
+For the official process, see Microsoft's
+[verification guidance](https://learn.microsoft.com/en-us/partner-center/enroll/understand-the-verification-process).
+No profile update, document upload, appeal submission, permission change or
+offer/portal mutation was performed for this addendum.
 
 ### Frozen native candidate files
 
@@ -132,8 +166,9 @@ binding results; no old-package or full-matrix acceptance is inferred.
   Preserve protected legal, licensing, contract, category, availability,
   pricing, CRM, reviewer-note and certification-checkbox settings. No
   replacement, submission, resubmission or publication is performed here.
-- Confirm the legal publisher/account identity and secure Microsoft
-  reviewer-account/process arrangement; GitHub read access alone is insufficient.
+- Address the [publisher-verification concern](#account-identity-and-verification-addendum-2026-09-29)
+  and complete the secure Microsoft reviewer-account/process arrangement.
+  Established account IDs and GitHub read access alone are insufficient.
 - Complete the remaining [native/submission matrix](testing-checklist.md),
   including applicable formatting, field-removal orders, bookmark replay,
   conversions, Service/mobile/export and assistive-technology coverage under
