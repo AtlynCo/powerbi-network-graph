@@ -5,6 +5,7 @@ import path from "node:path";
 import JSZip from "jszip";
 import { parse } from "acorn";
 import { simple } from "acorn-walk";
+import { assertCanonicalZipMetadata } from "./canonical-zip.mjs";
 
 export const root = process.cwd();
 export const digest = bytes => createHash("sha256").update(bytes).digest("hex");
@@ -53,13 +54,14 @@ export async function verifyBundledNotices(artifact) {
     return { bytes: Buffer.byteLength(noticeText), sha256: digest(noticeText) };
 }
 
-export async function readArtifact() {
+export async function readArtifact({ requireCanonical = true } = {}) {
     const config = await readJson("pbiviz.json");
     const filename = `${config.visual.guid}.${config.visual.version}.pbiviz`;
     const artifacts = (await readdir(path.join(root, "dist"))).filter(name => name.endsWith(".pbiviz"));
     assert.deepEqual(artifacts, [filename], "dist must contain exactly the expected, real PBIVIZ (remove stale packages)");
     const bytes = await readFile(path.join(root, "dist", filename));
     assert.equal(bytes.subarray(0, 2).toString(), "PK", "PBIVIZ must be a ZIP archive, not a renamed placeholder");
+    if (requireCanonical) assertCanonicalZipMetadata(bytes);
     const zip = await JSZip.loadAsync(bytes, { checkCRC32: true });
     for (const entry of Object.values(zip.files)) {
         assert(!entry.name.split(/[\\/]/).includes("..") && !/^(?:[\\/]|[A-Za-z]:)/.test(entry.name), "Unsafe ZIP path");

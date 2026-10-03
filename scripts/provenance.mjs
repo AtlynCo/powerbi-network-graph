@@ -17,7 +17,10 @@ export async function hashFiles(files) {
 }
 
 export async function buildInputs() {
-    const files = ["pbiviz.json", "capabilities.json", "package.json", "package-lock.json", "tsconfig.json"];
+    const files = [
+        "pbiviz.json", "capabilities.json", "package.json", "package-lock.json", "tsconfig.json",
+        "scripts/artifact.mjs", "scripts/canonical-zip.mjs", "scripts/package.mjs", "scripts/provenance.mjs"
+    ];
     const visit = async folder => {
         for (const item of await readdir(path.join(root, folder), { withFileTypes: true })) {
             const file = path.join(folder, item.name);

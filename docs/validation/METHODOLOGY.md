@@ -74,11 +74,27 @@ final PBIVIZ filename/SHA and require `passed: true`:
 | `rebuild-verification.json` | `node scripts\rebuild-check.mjs` | Two unchanged-source SDK builds, every decompressed member identical; final archive SHA |
 
 Run `rebuild-check.mjs` **before** final inspection, notices, sample assembly
-and browser/benchmark capture. The official SDK writes wall-clock ZIP entry
-timestamps: member content is reproducible but ZIP bytes/SHA can differ.
-Do not normalize/rewrite an SDK archive to imply a stronger reproducibility
-claim. Every final gate must reference the exact last archive, not an earlier
-rebuild's hash. The pinned `1.1.1.0` archive stays unchanged.
+and browser/benchmark capture. The normal SDK package is canonicalized by
+`scripts/package.mjs`: ZIP entry names use ordinal order, every entry uses the
+UTC DOS-compatible timestamp `1980-01-01T00:00:00Z`, and the archive uses DOS
+platform metadata with stable file/directory attributes. Canonicalization
+checks CRCs and preserves every decompressed member byte; it does not alter the
+manifest, visual resource, or compiled runtime. The rebuild check requires
+identical complete archive bytes as well as identical members.
+
+When invoked with `--audit`, the SDK certification-audit build is transient.
+The wrapper snapshots and restores the selected normal/minified PBIVIZ,
+`dist/package.json`, and webpack statistics, then verifies that the selected
+production archive is unchanged. Never treat the audit/unminified build as
+the production package. Keep frozen sample and native evidence separate from
+newly generated `dist` output: an outer ZIP SHA difference alone is not a
+runtime/member change, while any changed decompressed member makes prior
+native acceptance stale. Every final gate must reference the exact selected
+archive. The pinned `1.1.1.0` archive stays unchanged.
+
+See the [2026-10-03 canonical-package follow-up](CANONICAL-PBIVIZ-REPRODUCIBILITY.md)
+for exact archive/member hashes, timezone builds, the native-evidence boundary,
+and the current dependency-audit blocker.
 
 For final screenshots, run `node scripts\release-browser.mjs --screenshots` with
 the owner's `RELEASE_FINAL_READY_SHA`. Its same `release-browser-results.json`
