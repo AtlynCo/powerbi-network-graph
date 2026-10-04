@@ -45,7 +45,7 @@ try {
         previousSha256: before.sha256, members: currentMembers, archiveByteIdentical,
         beforeEntryDates: Object.fromEntries(Object.values(before.zip.files).map(entry => [entry.name, entry.date.toISOString()])),
         afterEntryDates: Object.fromEntries(Object.values(after.zip.files).map(entry => [entry.name, entry.date.toISOString()])),
-        scope: "Two canonical SDK production archives with unchanged inputs: exact archive-byte equality, decompressed member equality, and CRC validation. Transient certification-audit output never replaces the selected production PBIVIZ."
+        scope: "Two canonical, unminified SDK production archives with unchanged inputs: exact archive-byte equality, decompressed member equality, and CRC validation. Transient certification-audit output never replaces the selected production PBIVIZ."
     });
     console.log(`Rebuild reproduced the complete PBIVIZ (${after.bytes.length} bytes); SHA-256 ${after.sha256}.`);
 } catch (error) {

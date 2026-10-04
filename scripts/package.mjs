@@ -77,7 +77,7 @@ async function packageMembersEqual(left, right) {
 
 function runPackage({ certificationAudit = false } = {}) {
     run(process.execPath, [
-        path.join(tools, "bin", "pbiviz.js"), "package", "--all-locales",
+        path.join(tools, "bin", "pbiviz.js"), "package", "--all-locales", "--no-minify",
         ...(certificationAudit ? ["--certification-audit", "--no-stats"] : [])
     ]);
 }
@@ -154,10 +154,11 @@ try {
             platform: "DOS",
             fileDosPermissions: "0x20",
             directoryDosPermissions: "0x10",
-            compression: "DEFLATE level 9"
+            compression: "DEFLATE level 9",
+            javascriptMinification: "disabled with the powerbi-visuals-tools --no-minify option"
         },
         certificationAudit,
-        note: "The selected artifact is the canonicalized normal/minified SDK package. Certification-audit output is transient and never replaces the selected production package or its webpack statistics."
+        note: "The selected artifact is the canonicalized normal, unminified SDK package. Certification-audit output is transient and never replaces the selected production package or its webpack statistics."
     });
 } catch (error) {
     restoreFiles(originalOutputs);
