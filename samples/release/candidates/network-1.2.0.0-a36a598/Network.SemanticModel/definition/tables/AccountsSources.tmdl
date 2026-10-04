@@ -1,0 +1,23 @@
+table AccountsSources
+
+	column NodeID
+		dataType: string
+		isKey
+		sourceColumn: NodeID
+		summarizeBy: none
+
+	partition AccountsSources = m
+		mode: import
+		source =
+			#table(type table [NodeID = text], {
+				{"0001"},
+				{"0002"},
+				{"0003"},
+				{"0004"},
+				{"0005"},
+				{"0006"},
+				{"0007"},
+				{"0008"}
+			})
+
+	annotation PBI_ResultType = Table

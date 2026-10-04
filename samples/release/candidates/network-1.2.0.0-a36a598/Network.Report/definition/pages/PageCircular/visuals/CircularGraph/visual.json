@@ -1,0 +1,212 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "CircularGraph",
+  "position": {
+    "x": 24,
+    "y": 100,
+    "width": 960,
+    "height": 644,
+    "z": 1024,
+    "tabOrder": 1024
+  },
+  "visual": {
+    "visualType": "AtlynNetworkAB24C68297094C32AF64D50D92C01711",
+    "query": {
+      "queryState": {
+        "source": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Services"
+                    }
+                  },
+                  "Property": "SourceID"
+                }
+              },
+              "queryRef": "Services.SourceID",
+              "nativeQueryRef": "SourceID"
+            }
+          ]
+        },
+        "target": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Services"
+                    }
+                  },
+                  "Property": "TargetID"
+                }
+              },
+              "queryRef": "Services.TargetID",
+              "nativeQueryRef": "TargetID"
+            }
+          ]
+        },
+        "relationshipType": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Services"
+                    }
+                  },
+                  "Property": "RelationshipType"
+                }
+              },
+              "queryRef": "Services.RelationshipType",
+              "nativeQueryRef": "RelationshipType"
+            }
+          ]
+        },
+        "edgeId": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Services"
+                    }
+                  },
+                  "Property": "EdgeID"
+                }
+              },
+              "queryRef": "Services.EdgeID",
+              "nativeQueryRef": "EdgeID"
+            }
+          ]
+        },
+        "weight": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Services"
+                    }
+                  },
+                  "Property": "Services Total Weight"
+                }
+              },
+              "queryRef": "Services.Services Total Weight",
+              "nativeQueryRef": "Services Total Weight"
+            }
+          ]
+        },
+        "tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Services"
+                    }
+                  },
+                  "Property": "Services Average Duration ms"
+                }
+              },
+              "queryRef": "Services.Services Average Duration ms",
+              "nativeQueryRef": "Services Average Duration ms"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Services"
+                    }
+                  },
+                  "Property": "Services Events"
+                }
+              },
+              "queryRef": "Services.Services Events",
+              "nativeQueryRef": "Services Events"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Services"
+                    }
+                  },
+                  "Property": "Services Input Rows"
+                }
+              },
+              "queryRef": "Services.Services Input Rows",
+              "nativeQueryRef": "Services Input Rows"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Circular: the same directed service relationships'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Circular: the same directed service relationships'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "exploration": [
+        {
+          "properties": {
+            "view": {
+              "expr": {
+                "Literal": {
+                  "Value": "'split'"
+                }
+              }
+            },
+            "layout": {
+              "expr": {
+                "Literal": {
+                  "Value": "'circular'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

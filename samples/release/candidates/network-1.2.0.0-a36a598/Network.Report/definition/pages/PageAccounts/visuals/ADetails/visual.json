@@ -1,0 +1,170 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "ADetails",
+  "position": {
+    "x": 24,
+    "y": 566,
+    "width": 960,
+    "height": 178,
+    "z": 5684,
+    "tabOrder": 5684
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Accounts"
+                    }
+                  },
+                  "Property": "SourceID"
+                }
+              },
+              "queryRef": "Accounts.SourceID",
+              "nativeQueryRef": "SourceID"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Accounts"
+                    }
+                  },
+                  "Property": "TargetID"
+                }
+              },
+              "queryRef": "Accounts.TargetID",
+              "nativeQueryRef": "TargetID"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Accounts"
+                    }
+                  },
+                  "Property": "RelationshipType"
+                }
+              },
+              "queryRef": "Accounts.RelationshipType",
+              "nativeQueryRef": "RelationshipType"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Accounts"
+                    }
+                  },
+                  "Property": "EdgeID"
+                }
+              },
+              "queryRef": "Accounts.EdgeID",
+              "nativeQueryRef": "EdgeID"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Accounts"
+                    }
+                  },
+                  "Property": "Accounts Total Weight"
+                }
+              },
+              "queryRef": "Accounts.Accounts Total Weight",
+              "nativeQueryRef": "Accounts Total Weight"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Accounts"
+                    }
+                  },
+                  "Property": "Accounts Events"
+                }
+              },
+              "queryRef": "Accounts.Accounts Events",
+              "nativeQueryRef": "Accounts Events"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Accounts"
+                    }
+                  },
+                  "Property": "Accounts Input Rows"
+                }
+              },
+              "queryRef": "Accounts.Accounts Input Rows",
+              "nativeQueryRef": "Accounts Input Rows"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Accounts"
+                    }
+                  },
+                  "Property": "Accounts Average Duration ms"
+                }
+              },
+              "queryRef": "Accounts.Accounts Average Duration ms",
+              "nativeQueryRef": "Accounts Average Duration ms"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Relationship detail — compare with host selections'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Relationship detail — compare with host selections'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

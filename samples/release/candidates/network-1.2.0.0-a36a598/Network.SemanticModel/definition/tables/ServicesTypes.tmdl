@@ -1,0 +1,27 @@
+table ServicesTypes
+
+	column RelationshipType
+		dataType: string
+		isKey
+		sourceColumn: RelationshipType
+		summarizeBy: none
+
+	partition ServicesTypes = m
+		mode: import
+		source =
+			#table(type table [RelationshipType = text], {
+				{"calls"},
+				{"confirms"},
+				{"copies"},
+				{"emits"},
+				{"monitors"},
+				{"notifies"},
+				{"reconciles"},
+				{"reserves"},
+				{"responds"},
+				{"retries"},
+				{"verifies"},
+				{"writes"}
+			})
+
+	annotation PBI_ResultType = Table

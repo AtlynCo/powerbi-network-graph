@@ -1,0 +1,89 @@
+table Accounts
+
+	measure 'Accounts Total Weight' = SUM('Accounts'[Weight])
+		formatString: #,0.##
+		displayFolder: Investigation
+
+	measure 'Accounts Input Rows' = COUNTROWS('Accounts')
+		formatString: #,0
+		displayFolder: Investigation
+
+	measure 'Accounts Events' = SUM('Accounts'[EventCount])
+		formatString: #,0
+		displayFolder: Investigation
+
+	measure 'Accounts Average Duration ms' = AVERAGE('Accounts'[DurationMs])
+		formatString: #,0.0
+		displayFolder: Investigation
+
+	measure 'Accounts Blank Weights' = COUNTROWS(FILTER('Accounts', ISBLANK('Accounts'[Weight])))
+		formatString: #,0
+		displayFolder: Investigation
+
+	measure 'Accounts Nonpositive Weights' = COUNTROWS(FILTER('Accounts', NOT(ISBLANK('Accounts'[Weight])) && 'Accounts'[Weight] <= 0))
+		formatString: #,0
+		displayFolder: Investigation
+
+	measure 'Accounts Visible Nodes' = COUNTROWS(DISTINCT(UNION(SELECTCOLUMNS('Accounts', "ID", 'Accounts'[SourceID]), SELECTCOLUMNS('Accounts', "ID", 'Accounts'[TargetID]))))
+		formatString: #,0
+		displayFolder: Investigation
+
+	column SourceID
+		dataType: string
+		sourceColumn: SourceID
+		summarizeBy: none
+
+	column TargetID
+		dataType: string
+		sourceColumn: TargetID
+		summarizeBy: none
+
+	column RelationshipType
+		dataType: string
+		sourceColumn: RelationshipType
+		summarizeBy: none
+
+	column EdgeID
+		dataType: string
+		sourceColumn: EdgeID
+		summarizeBy: none
+
+	column Weight
+		dataType: double
+		sourceColumn: Weight
+		summarizeBy: sum
+		formatString: #,0.##
+
+	column DurationMs
+		dataType: double
+		sourceColumn: DurationMs
+		summarizeBy: sum
+
+	column EventCount
+		dataType: int64
+		sourceColumn: EventCount
+		summarizeBy: sum
+
+	partition Accounts = m
+		mode: import
+		source =
+			#table(type table [SourceID = text, TargetID = text, RelationshipType = text, EdgeID = text, Weight = nullable number, DurationMs = number, EventCount = Int64.Type], {
+				{"0001", "0002", "transfer", "T01", 100, 20, 1},
+				{"0002", "0001", "transfer", "T02", 40, 18, 1},
+				{"0002", "0003", "transfer", "T03", 75, 24, 1},
+				{"0003", "0001", "transfer", "T04", 25, 21, 1},
+				{"0001", "0002", "transfer", "T05", 30, 22, 1},
+				{"0001", "0002", "fee", "T06", 2, 5, 1},
+				{"0003", "0003", "adjustment", "T07", 5, 8, 1},
+				{"0003", "0004", "transfer", "T08", 50, 25, 1},
+				{"0004", "0005", "transfer", "T09", 20, 30, 1},
+				{"0005", "0004", "refund", "T10", 5, 27, 1},
+				{"0001", "0002", "transfer", "T01", 20, 26, 1},
+				{"0005", "0006", "transfer", "T11", 0, 16, 1},
+				{"0006", "0005", "transfer", "T12", null, 15, 1},
+				{"0006", "0004", "adjustment", "T13", -3, 12, 1},
+				{"0007", "0008", "transfer", "T-CONFLICT", 10, 14, 1},
+				{"0008", "0007", "transfer", "T-CONFLICT", 10, 14, 1}
+			})
+
+	annotation PBI_ResultType = Table

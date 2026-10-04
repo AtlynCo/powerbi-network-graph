@@ -1,0 +1,29 @@
+relationship Services_Sources
+	fromColumn: Services.SourceID
+	toColumn: ServicesSources.NodeID
+	crossFilteringBehavior: oneDirection
+
+relationship Services_Targets
+	fromColumn: Services.TargetID
+	toColumn: ServicesTargets.NodeID
+	crossFilteringBehavior: oneDirection
+
+relationship Services_Types
+	fromColumn: Services.RelationshipType
+	toColumn: ServicesTypes.RelationshipType
+	crossFilteringBehavior: oneDirection
+
+relationship Accounts_Sources
+	fromColumn: Accounts.SourceID
+	toColumn: AccountsSources.NodeID
+	crossFilteringBehavior: oneDirection
+
+relationship Accounts_Targets
+	fromColumn: Accounts.TargetID
+	toColumn: AccountsTargets.NodeID
+	crossFilteringBehavior: oneDirection
+
+relationship Accounts_Types
+	fromColumn: Accounts.RelationshipType
+	toColumn: AccountsTypes.RelationshipType
+	crossFilteringBehavior: oneDirection

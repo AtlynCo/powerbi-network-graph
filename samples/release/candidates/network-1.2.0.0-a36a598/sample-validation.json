@@ -1,0 +1,283 @@
+{
+  "status": "local-structure-only",
+  "assemblerSha256": "9405dd803f7d1509a831f8d93532003f0b3405df0df4a0236dbacc49fd4cc721",
+  "visual": {
+    "guid": "AtlynNetworkAB24C68297094C32AF64D50D92C01711",
+    "version": "1.2.0.0",
+    "apiVersion": "5.11.0"
+  },
+  "archive": {
+    "source": "dist/AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.2.0.0.pbiviz",
+    "embeddedCopy": "package/AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.2.0.0.pbiviz",
+    "bytes": 239595,
+    "sourceSha256": "25b966ecd54dbcfe87adceafc01badbbfa3b3ac259070a9c8a2c615ecdc2c544",
+    "embeddedSha256": "25b966ecd54dbcfe87adceafc01badbbfa3b3ac259070a9c8a2c615ecdc2c544",
+    "equal": true
+  },
+  "resources": [
+    {
+      "path": "package.json",
+      "bytes": 760,
+      "sourceSha256": "3fcaa2b8d15a955003469e32f63d84368a352fd9116c3cc5ef04a0ec763aa136",
+      "embeddedSha256": "3fcaa2b8d15a955003469e32f63d84368a352fd9116c3cc5ef04a0ec763aa136",
+      "equal": true
+    },
+    {
+      "path": "resources/AtlynNetworkAB24C68297094C32AF64D50D92C01711.pbiviz.json",
+      "bytes": 1750392,
+      "sourceSha256": "001927f6e40fcccf17d6adf4f9ff0be71afd8b48c0cbd7ef050ee0cf7d170697",
+      "embeddedSha256": "001927f6e40fcccf17d6adf4f9ff0be71afd8b48c0cbd7ef050ee0cf7d170697",
+      "equal": true
+    }
+  ],
+  "schemas": {
+    "commit": "83ce11373faada0d01e76264a5cceb0ba70003e6",
+    "documents": 14,
+    "validatedFiles": 30
+  },
+  "model": {
+    "tables": 8,
+    "relationships": 6,
+    "measures": 14,
+    "globallyUniqueMeasureNames": true,
+    "measureNames": [
+      {
+        "table": "Accounts",
+        "measures": [
+          "Accounts Total Weight",
+          "Accounts Input Rows",
+          "Accounts Events",
+          "Accounts Average Duration ms",
+          "Accounts Blank Weights",
+          "Accounts Nonpositive Weights",
+          "Accounts Visible Nodes"
+        ]
+      },
+      {
+        "table": "AccountsSources",
+        "measures": []
+      },
+      {
+        "table": "AccountsTargets",
+        "measures": []
+      },
+      {
+        "table": "AccountsTypes",
+        "measures": []
+      },
+      {
+        "table": "Services",
+        "measures": [
+          "Services Total Weight",
+          "Services Input Rows",
+          "Services Events",
+          "Services Average Duration ms",
+          "Services Blank Weights",
+          "Services Nonpositive Weights",
+          "Services Visible Nodes"
+        ]
+      },
+      {
+        "table": "ServicesSources",
+        "measures": []
+      },
+      {
+        "table": "ServicesTargets",
+        "measures": []
+      },
+      {
+        "table": "ServicesTypes",
+        "measures": []
+      }
+    ],
+    "measureValidatorSha256": "5924c543fd0900366dd8db7986ee064c91d0f5cd196492bcc1bcada33a9c0f4d",
+    "pages": 5,
+    "boundGraphVisuals": 4,
+    "verifiedFieldBindings": 50,
+    "rows": {
+      "Services": 14,
+      "Accounts": 16
+    },
+    "externalDataSources": 0,
+    "validation": "strict-authored-template-and-references"
+  },
+  "limitations": [
+    "No Power BI Desktop opening, Power Query refresh, DAX execution or PBIX conversion is performed by this script.",
+    "TMDL validation is a strict authored-template and referential check, not a substitute for Microsoft's TOM/TMDL parser or native model loading.",
+    "Public PBIR schemas validate structure, not Power BI query execution, custom-visual loading, native layout or host interactions.",
+    "A cache-free PBIP opens without imported rows until Desktop refreshes its literal tables. No cache.abf or fabricated PBIX is included.",
+    "Partner Center requires an offline PBIX with the same visual version/content; native conversion and offline retest remain release blockers.",
+    "No certification, marketplace submission, publication, permission change or cloud execution is performed."
+  ],
+  "reportVersions": {
+    "artifact": "4.0",
+    "definition": "2.0.0",
+    "validatorSha256": "12931cfa6e59b5cba66ad71e3eb7d1c0bc51f91fe3b7fffd78b876306746173f"
+  },
+  "sourceFiles": [
+    {
+      "path": "Network.Report/definition.pbir",
+      "sha256": "244e1ee363b2dbf62f16104623fe09c537e1602a81d12659fea53d70403e0823"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageAccounts/page.json",
+      "sha256": "580de9ccdcd408d31e36384fc4cbcf7e9ac8193efc359b0da2bb61d5eb8c3086"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageAccounts/visuals/ADetails/visual.json",
+      "sha256": "77ec957895a58b98ac636f1c9cb10e142506740c3acffc693cdfd2fdbeae7a3c"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageAccounts/visuals/AGraph/visual.json",
+      "sha256": "083be6b89f2475e8e6c0a89a914a3f31b091207304f28e2b04caf2bdeefabb08"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageAccounts/visuals/AGuide/visual.json",
+      "sha256": "408136bb2567a27c5f6c32d466bb9613e004b8f0c56621d46411be6b73793985"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageAccounts/visuals/AHeading/visual.json",
+      "sha256": "d425b584df0052532e22240bc25f046cb62beb2905a8a73ac38a0313432a10d2"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageAccounts/visuals/ASubheading/visual.json",
+      "sha256": "54c5c644b1e43362566f577e141f8bdc639babe9550076a73cf1bbced859a53d"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageAccounts/visuals/ATypes/visual.json",
+      "sha256": "0f49e8c1b68e958b9fc05c5b474bc56b609e597b3929535390ffee9bf88264fd"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageCircular/page.json",
+      "sha256": "89de7ed5671bb69c561d823e5b3b94883eec2d25f3edd26622cc569d7186785d"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageCircular/visuals/CircularGraph/visual.json",
+      "sha256": "acd7f56eae1cce18e7edfa7a91c06862a550e9e8aa4d91edf97e8b207621f815"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageCircular/visuals/CircularGuide/visual.json",
+      "sha256": "3b8d9175affdf9681bf7e21203677b15aa0af7bf0b4596b1f9d6cb9eda2fe962"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageCircular/visuals/CircularHeading/visual.json",
+      "sha256": "18b518a61415539803978df13d82e124e3ad8003ea7f6f4bff88730679de7b2a"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageHints/page.json",
+      "sha256": "597227be1af7c973737cf1d41e73ebfc689ba8730ca57a1720876174541aca9e"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageHints/visuals/Hints/visual.json",
+      "sha256": "a6befa00f7cb15642bf79f9411bf4a8a5254a8a67cc48c713b735cebbcef91a3"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageRadial/page.json",
+      "sha256": "31b632405edc23a8488b7049c0177d32d172d4a8c9c874d6cabb7a8d008686a3"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageRadial/visuals/RadialGraph/visual.json",
+      "sha256": "74487958722e748b3f82bd373d10fb2602b69d930efd453a40dcd5bb43c2e1a2"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageRadial/visuals/RadialGuide/visual.json",
+      "sha256": "46a8bab5a2575c67f5530e3cbcf997beeace1cf50b97ad6f4730f246da7b7d0f"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageRadial/visuals/RadialHeading/visual.json",
+      "sha256": "d67118554cc92233e4b87fb7387ad30215e3f7e6951d1623ff92e2f4dd0600b3"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageServices/page.json",
+      "sha256": "63bf2feacfa76d92c266e8d91a819f5407060cf2248b7092404eb96c68df649e"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageServices/visuals/SDetails/visual.json",
+      "sha256": "fbb1b177da3f8f0391c42ba5574c0e3973c138a971016db6e06478827b2bcb2c"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageServices/visuals/SGraph/visual.json",
+      "sha256": "779de1e42ea4653c3f9496064867dddf038b6931d8b6eb951aed993a10af5fcc"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageServices/visuals/SGuide/visual.json",
+      "sha256": "bbe340b8aec3664b026e0ceed41e14d68f90e2b20542604cfc3f68922df84c0c"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageServices/visuals/SHeading/visual.json",
+      "sha256": "ae999f8dcc0eb3252fdead62b44c5b7dee208d403b2e2ec4f950aaa6d4a475b3"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageServices/visuals/SSubheading/visual.json",
+      "sha256": "28801f58a34895797ab962bd3789d6264f7b9b108cd0766ec9f8dfd1208997aa"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageServices/visuals/STypes/visual.json",
+      "sha256": "63382aee6937224e8c6b691aa786c6561be13e319ad411af49c66746a681295b"
+    },
+    {
+      "path": "Network.Report/definition/pages/pages.json",
+      "sha256": "d3577ef9295f865bd7ce14350587cb0bb489d4b965b97cb48144b34e8864a231"
+    },
+    {
+      "path": "Network.Report/definition/report.json",
+      "sha256": "8d462defd1e16efde04ca3b4b5186a449ed4c7f93cdb26ee5aa4a42d2632384c"
+    },
+    {
+      "path": "Network.Report/definition/version.json",
+      "sha256": "0f9f217a60981bf882d7b1963977fc72cc051078df8512b46caa607aff2e5220"
+    },
+    {
+      "path": "Network.SemanticModel/definition.pbism",
+      "sha256": "c6ac66b7d299865a5936942e3c39cfbbf936bf086b63c53123e4ab9d12f7f21e"
+    },
+    {
+      "path": "Network.SemanticModel/definition/database.tmdl",
+      "sha256": "02a4f2fe934e8cf4204b89423dad45be7be37db8b376ec834f49e8b08e8d2710"
+    },
+    {
+      "path": "Network.SemanticModel/definition/model.tmdl",
+      "sha256": "b50e7e20a9271b20786e9264b040619439abe70c72db80b0c69b9b723c77a27c"
+    },
+    {
+      "path": "Network.SemanticModel/definition/relationships.tmdl",
+      "sha256": "30969ea314ddbf9d9790f13315f94ec2b99acd0e006ae3d8e84069db3212ab44"
+    },
+    {
+      "path": "Network.SemanticModel/definition/tables/Accounts.tmdl",
+      "sha256": "6eddb520ea023b48cab58fdd786718a4b36d172157745c2eac45da833174fe63"
+    },
+    {
+      "path": "Network.SemanticModel/definition/tables/AccountsSources.tmdl",
+      "sha256": "045c9acd87bd52db513a8d43e301d7bdba19c847eb995f4a75e0b1475cf393e6"
+    },
+    {
+      "path": "Network.SemanticModel/definition/tables/AccountsTargets.tmdl",
+      "sha256": "28f36e0efb74eecd11dcc24c8f07e9301154d3faa92c0b69fc11c088ff528aa7"
+    },
+    {
+      "path": "Network.SemanticModel/definition/tables/AccountsTypes.tmdl",
+      "sha256": "a16a62ccafea0de77b136be54783f4efde2da52dd077b5fce760b0b825c7f84f"
+    },
+    {
+      "path": "Network.SemanticModel/definition/tables/Services.tmdl",
+      "sha256": "f24f89f6b9ad3a089f58241e66bba307bbcf005832ec9237405f3ffe489dcc5f"
+    },
+    {
+      "path": "Network.SemanticModel/definition/tables/ServicesSources.tmdl",
+      "sha256": "988ddb1ddd6d47f5d0e9a814df465ef4879caf4bf86d09a1deaaf3503b25d793"
+    },
+    {
+      "path": "Network.SemanticModel/definition/tables/ServicesTargets.tmdl",
+      "sha256": "d945f1389b3ac01a63aa9c04cb0569a52ec1c67736f971f370eef51852d67f35"
+    },
+    {
+      "path": "Network.SemanticModel/definition/tables/ServicesTypes.tmdl",
+      "sha256": "cb7a5e14b8c75c44e1b1b43d4116c018574d18eeed70b6fbd793050193241d12"
+    },
+    {
+      "path": "Network.pbip",
+      "sha256": "169e7eb2f9634f331bc4e2df07f1e928e216e7bffc4e1459b3ea35e8ce9f2cce"
+    }
+  ]
+}

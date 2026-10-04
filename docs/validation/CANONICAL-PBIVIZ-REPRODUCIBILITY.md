@@ -94,6 +94,12 @@ The resulting unminified candidate is:
 | Compiled JS member | 1,617,499 bytes; SHA-256 `e510df86ac00ba6a11cf80c48aa0f9bdaef2e67da609dd9ad27a451a43a74e4e`; 32,375 lines |
 | SDK configuration | `powerbi-visuals-tools` 7.2.1 with `--no-minify`; API package 5.11.1 and declaration 5.11.0 |
 
+The official Microsoft [`powerbi-visuals-tools` 7.2.2 release](https://github.com/microsoft/PowerBI-visuals-tools/releases/tag/7.2.2)
+exists. In this environment the configured registry returned E404 for 7.2.2,
+and public registry probes failed TLS. Tools 7.2.1 is the latest installable
+version here, not the global latest. No feed/TLS workaround, SDK downgrade,
+or dependency substitution was attempted.
+
 The completed `npm run package` check ran the normal and audit builds, reported
 no external requests, and inspected the selected normal PBIVIZ. The audit
 build's archive/member bytes differed; the wrapper restored the normal
@@ -102,13 +108,13 @@ passed at 239,595 bytes with identical full-archive SHA-256
 `25b966ecd54dbcfe87adceafc01badbbfa3b3ac259070a9c8a2c615ecdc2c544`.
 Normal builds under `TZ=Etc/GMT+12` and `TZ=Etc/GMT-14` were byte-identical.
 ZIP CRC and canonical metadata checks passed.
-The existing `browser-test-results.json` and `release-browser-results.json`
-still identify the superseded `98bd9ff6...` package hash. They do not validate
-this candidate. No browser rerun was performed because the shared Edge/Desktop
-is reserved for the coordinator.
+At the time this candidate was first recorded, the existing browser result
+files still identified the superseded `98bd9ff6...` package hash. They did
+not validate that build. Candidate-specific headless suites were run later;
+their result and exact artifact hash are recorded below.
 
-This candidate was **not frozen** into the PBIP/sample handoff. The existing
-PBIP remains untouched and still embeds the frozen payload:
+At that time this candidate was **not frozen** into the PBIP/sample handoff.
+The historical PBIP remained untouched and embedded the frozen payload:
 
 | PBIP item | Existing bytes / SHA-256 | Candidate comparison |
 | --- | --- | --- |
@@ -165,3 +171,54 @@ currently reports no first patched version. npm offers Tools 1.7.2 only as a
 breaking major downgrade. No safe compatible fix is published; no downgrade,
 override, suppression, or audit bypass was applied. Microsoft therefore
 continues to block certification readiness on the full-audit requirement.
+
+## Separate frozen candidate PBIP and headless results (2026-10-04)
+
+To preserve the historical sample, a separate copy was assembled under
+`samples/release/candidates/network-1.2.0.0-a36a598/`. The existing sample
+assembler gained a constrained `--sample-root` option that accepts only
+directories under `samples/release/candidates`; its default remains the
+historical `samples/release/` path. The candidate was built and schema-checked
+with:
+
+```powershell
+node .\scripts\sample-package.mjs --sample-root samples\release\candidates\network-1.2.0.0-a36a598
+```
+
+The command passed: 30 schema-validated files, four bound graph visuals, 50
+field bindings, and exact archive/resource equality. The independent
+`samples/release/sample-validation.json`, old 1.2.0.0 package, and original
+PBIP were not modified.
+
+| Candidate item | Exact worktree path | Bytes | SHA-256 |
+| --- | --- | ---: | --- |
+| Paired PBIVIZ | `samples/release/candidates/network-1.2.0.0-a36a598/package/AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.2.0.0.pbiviz` | 239,595 | `25b966ecd54dbcfe87adceafc01badbbfa3b3ac259070a9c8a2c615ecdc2c544` |
+| PBIP shortcut | `samples/release/candidates/network-1.2.0.0-a36a598/Network.pbip` | 274 | `169e7eb2f9634f331bc4e2df07f1e928e216e7bffc4e1459b3ea35e8ce9f2cce` |
+| Embedded `package.json` | `samples/release/candidates/network-1.2.0.0-a36a598/Network.Report/CustomVisuals/AtlynNetworkAB24C68297094C32AF64D50D92C01711/package.json` | 760 | `3fcaa2b8d15a955003469e32f63d84368a352fd9116c3cc5ef04a0ec763aa136` |
+| Embedded visual resource | `samples/release/candidates/network-1.2.0.0-a36a598/Network.Report/CustomVisuals/AtlynNetworkAB24C68297094C32AF64D50D92C01711/resources/AtlynNetworkAB24C68297094C32AF64D50D92C01711.pbiviz.json` | 1,750,392 | `001927f6e40fcccf17d6adf4f9ff0be71afd8b48c0cbd7ef050ee0cf7d170697` |
+
+The production PBIVIZ was built from source HEAD
+`a36a5981980219f713593989a62238f137ba631d`; its 24 build inputs have SHA-256
+`f34082031d754f7bbb8ebeb82b8289417d68557a4612477010bf3f46aeab3450`.
+Current build-input comparison remained exact after the sample-assembler-only
+change. The production payload itself was not modified.
+
+Both offline suites loaded the exact PBIVIZ listed above using the installed
+Edge executable at
+`C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe` in Playwright
+headless mode. `npm run test:browser` passed 17/17 actual-package checks;
+`node scripts/release-browser.mjs --preliminary` passed 38/38 release-browser
+checks. Both reports identify package SHA-256
+`25b966ecd54dbcfe87adceafc01badbbfa3b3ac259070a9c8a2c615ecdc2c544`, with
+zero runtime errors and zero network requests. The harness blocks requests
+and mocks Power BI APIs; these results do not verify native Desktop field
+wells/drag-drop, refresh, save/reopen, Service, export or certification.
+
+The current full audit remains blocked at 0 moderate, 6 high, 0 critical by
+`GHSA-vfj7-8cjw-p6xm` in the transitive `braces@3.0.3` chain. The official
+Tools 7.2.2 release is unavailable from the configured registry (E404), and
+public registry probes failed TLS; no TLS bypass, feed workaround, downgrade,
+override, or suppression was used. Manifest and lockfile remain Tools 7.2.1,
+API package 5.11.1, and declared API 5.11.0. The previous owner-saved PBIX
+acceptance still applies only to the older frozen PBIVIZ; no candidate PBIX
+was fabricated or accepted by Desktop.

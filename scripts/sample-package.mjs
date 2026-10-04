@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { readFile, writeFile, mkdir, readdir, rm } from "node:fs/promises";
+import { readFile, writeFile, mkdir, readdir, rm, realpath } from "node:fs/promises";
 import path from "node:path";
 import JSZip from "jszip";
 import Ajv from "ajv";
@@ -8,7 +8,24 @@ import { assertReportVersions, PBIR_ARTIFACT_VERSION, PBIR_DEFINITION_VERSION } 
 import { assertUniqueMeasureNames, measureDefinitions, measureName } from "./sample-measures.mjs";
 
 const root = process.cwd();
-const sample = path.join(root, "samples", "release");
+const defaultSample = path.join(root, "samples", "release");
+const candidateRoot = path.join(defaultSample, "candidates");
+const args = process.argv.slice(2);
+const sampleRootIndex = args.indexOf("--sample-root");
+let sample = defaultSample;
+if (sampleRootIndex >= 0) {
+    const requestedRoot = args[sampleRootIndex + 1];
+    assert(requestedRoot, "--sample-root requires a candidate directory");
+    const resolvedRoot = path.resolve(root, requestedRoot);
+    const realCandidateRoot = await realpath(candidateRoot);
+    const realSampleRoot = await realpath(resolvedRoot);
+    const relativeRoot = path.relative(realCandidateRoot, realSampleRoot);
+    assert(relativeRoot && relativeRoot !== ".." && !relativeRoot.startsWith(`..${path.sep}`) && !path.isAbsolute(relativeRoot),
+        "--sample-root must be a child directory of samples/release/candidates");
+    assert.equal(args.indexOf("--sample-root", sampleRootIndex + 1), -1, "--sample-root may be specified only once");
+    sample = resolvedRoot;
+    args.splice(sampleRootIndex, 2);
+}
 const reportName = "Network.Report";
 const modelName = "Network.SemanticModel";
 const reportRoot = path.join(sample, reportName);
@@ -516,7 +533,7 @@ async function validate(release) {
     console.log("Native Desktop refresh/open, model execution, PBIX conversion and submission tests remain unverified.");
 }
 
-const flags = new Set(process.argv.slice(2));
+const flags = new Set(args);
 for (const flag of flags) assert(["--author", "--refresh-schemas", "--validate"].includes(flag), `Unknown argument: ${flag}`);
 if (flags.has("--refresh-schemas")) await refreshSchemas();
 if (flags.has("--author")) await author();

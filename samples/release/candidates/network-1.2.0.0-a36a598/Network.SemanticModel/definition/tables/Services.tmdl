@@ -1,0 +1,87 @@
+table Services
+
+	measure 'Services Total Weight' = SUM('Services'[Weight])
+		formatString: #,0.##
+		displayFolder: Investigation
+
+	measure 'Services Input Rows' = COUNTROWS('Services')
+		formatString: #,0
+		displayFolder: Investigation
+
+	measure 'Services Events' = SUM('Services'[EventCount])
+		formatString: #,0
+		displayFolder: Investigation
+
+	measure 'Services Average Duration ms' = AVERAGE('Services'[DurationMs])
+		formatString: #,0.0
+		displayFolder: Investigation
+
+	measure 'Services Blank Weights' = COUNTROWS(FILTER('Services', ISBLANK('Services'[Weight])))
+		formatString: #,0
+		displayFolder: Investigation
+
+	measure 'Services Nonpositive Weights' = COUNTROWS(FILTER('Services', NOT(ISBLANK('Services'[Weight])) && 'Services'[Weight] <= 0))
+		formatString: #,0
+		displayFolder: Investigation
+
+	measure 'Services Visible Nodes' = COUNTROWS(DISTINCT(UNION(SELECTCOLUMNS('Services', "ID", 'Services'[SourceID]), SELECTCOLUMNS('Services', "ID", 'Services'[TargetID]))))
+		formatString: #,0
+		displayFolder: Investigation
+
+	column SourceID
+		dataType: string
+		sourceColumn: SourceID
+		summarizeBy: none
+
+	column TargetID
+		dataType: string
+		sourceColumn: TargetID
+		summarizeBy: none
+
+	column RelationshipType
+		dataType: string
+		sourceColumn: RelationshipType
+		summarizeBy: none
+
+	column EdgeID
+		dataType: string
+		sourceColumn: EdgeID
+		summarizeBy: none
+
+	column Weight
+		dataType: double
+		sourceColumn: Weight
+		summarizeBy: sum
+		formatString: #,0.##
+
+	column DurationMs
+		dataType: double
+		sourceColumn: DurationMs
+		summarizeBy: sum
+
+	column EventCount
+		dataType: int64
+		sourceColumn: EventCount
+		summarizeBy: sum
+
+	partition Services = m
+		mode: import
+		source =
+			#table(type table [SourceID = text, TargetID = text, RelationshipType = text, EdgeID = text, Weight = nullable number, DurationMs = number, EventCount = Int64.Type], {
+				{"Gateway", "Orders", "calls", "S01", 120, 18, 120},
+				{"Orders", "Payments", "calls", "S02", 90, 32, 90},
+				{"Payments", "Ledger", "writes", "S03", 85, 12, 85},
+				{"Ledger", "Orders", "reconciles", "S04", 15, 22, 15},
+				{"Orders", "Gateway", "responds", "S05", 118, 17, 118},
+				{"Gateway", "Orders", "monitors", "S06", 12, 4, 12},
+				{"Orders", "Orders", "retries", "S07", 6, 40, 6},
+				{"Payments", "Alerts", "emits", "S08", 8, 5, 8},
+				{"Alerts", "Gateway", "notifies", "S09", 8, 9, 8},
+				{"Orders", "Inventory", "reserves", "S10", 100, 14, 100},
+				{"Inventory", "Orders", "confirms", "S11", 97, 11, 97},
+				{"Orders", "Payments", "calls", "S12", 10, 30, 10},
+				{"Archive", "Backup", "copies", "S13", 25, 80, 25},
+				{"Backup", "Archive", "verifies", "S14", 25, 70, 25}
+			})
+
+	annotation PBI_ResultType = Table
