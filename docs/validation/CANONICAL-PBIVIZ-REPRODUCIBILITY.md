@@ -102,6 +102,10 @@ passed at 239,595 bytes with identical full-archive SHA-256
 `25b966ecd54dbcfe87adceafc01badbbfa3b3ac259070a9c8a2c615ecdc2c544`.
 Normal builds under `TZ=Etc/GMT+12` and `TZ=Etc/GMT-14` were byte-identical.
 ZIP CRC and canonical metadata checks passed.
+The existing `browser-test-results.json` and `release-browser-results.json`
+still identify the superseded `98bd9ff6...` package hash. They do not validate
+this candidate. No browser rerun was performed because the shared Edge/Desktop
+is reserved for the coordinator.
 
 This candidate was **not frozen** into the PBIP/sample handoff. The existing
 PBIP remains untouched and still embeds the frozen payload:
@@ -139,12 +143,18 @@ The existing native handoff documentation records an owner-saved
 `9248f79d195ec76fe61f278911a79cbb333f50a12bec17a3ab8130419e325ab7`, with
 cold reopen of the five-page 1.2 report and exact visual-member comparison to
 the *previous frozen* package. That PBIX is absent from this worktree, so its
-`DataModel` and embedded-resource parity could not be rechecked here; that
-prior acceptance does not validate the new unminified resource. The separate
+reported ZIP-CRC-passing `DataModel` (36,292 bytes) and embedded-resource
+parity could not be rechecked here; the prior comparison was to the frozen
+`6136c82c...f00ff` PBIVIZ and does not validate the new unminified resource.
+The separate
 portal-observed filenames `AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.1.1.0.pbiviz`
 and `AtlynNetwork_sample.pbix` were not available for hashing or parity checks
 and are not evidence for this candidate. Native Desktop field-well drag/drop,
 refresh, save/reopen, and interactions remain unverified in this worktree.
+In source, `source` and `target` are grouping roles, the `dataViewMappings`
+condition permits incremental one-role assignments, and unit tests cover
+partial-role data views. This is schema/unit evidence only; it does not resolve
+the reported native field-well/drag-drop rejection.
 
 The current full `npm audit --json` still exits nonzero: 0 moderate, 6 high,
 0 critical. The six high entries are the `braces` advisory
