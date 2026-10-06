@@ -8,6 +8,15 @@ the historical 1.1 draft for candidate preparation without rewriting it.
 Use the current [prepublication evidence](../validation/PREPUBLISH-1.2.md)
 and [October runbook](october-2026-handoff.md) for remaining gates.
 
+**2026-09-29 reviewer supplement:** the opening boundary and technical table
+below preserve the September 24-25 preparation snapshot, not current portal
+state. The [dated reviewer handoff](reviewer-handoff-1.2-20260929.md) records
+the subsequently identified existing offer, still-historical stored 1.1.1.0
+technical pair, and genuine unbound 1.2 field-well evidence. Use **Services
+Total Weight**, not the raw Weight column, in the approved PBIX. English
+copy was previously saved/reload-verified; these new reviewer instructions
+are **not** already saved into portal notes and do not clear the stored old pair.
+
 ## Listing fields
 
 **Name** (owner must confirm reservation/rights):
@@ -108,6 +117,13 @@ product-specific pages disagree on image dimensions. New native evidence
 captures, if present, are separate and must not be relabeled as these images.
 
 ## Technical and reviewer handoff
+
+This table preserves the September 24-25 baseline. For September 29
+source/access checks, existing offer identity, exact stored-versus-candidate
+hashes and empty-well reproduction steps, use the
+[dated supplement](reviewer-handoff-1.2-20260929.md).
+The signed-in display **Atlyn Partner Admin** does not independently confirm
+the legal publisher/account ID.
 
 | Item | Verified candidate / gate |
 | --- | --- |
