@@ -174,7 +174,9 @@ Visuals tools 7.2.1 resolves a development certificate even when packaging. The 
 
 The package wrapper uses the official `pbiviz package --all-locales` option. With Power BI visuals tools 7.2.1 and formatting utilities 7, this avoids a locale-pruning loader incompatibility with the formatting utilities' ESM output. All number/date culture data stays bundled **offline**; this does not add runtime requests or translate the UI beyond `en-US` and `ar-SA`. Recheck this choice when upgrading the SDK or formatting utilities rather than removing it solely to shrink the bundle.
 
-The dependency baseline uses Vitest 4.1.11 and scoped development overrides for `qs` 6.16.0 under `webpack-dev-server` and `uuid` 11.1.1 under `sockjs`. Retain the lockfile and re-run audits after upgrades. A previously clean audit is not a permanent security guarantee; runtime and full dependency audits cover different scopes.
+The dependency baseline uses Vitest 4.1.12, ESLint 9.39.5 and typescript-eslint 8.72.1, with minimatch 11.0.1 and scoped development overrides for `qs` 6.17.0 under `webpack-dev-server` and `uuid` 11.1.1 under `sockjs`. On 2026-11-06 the owner approved Network's build-only minimatch override outside parent major ranges and retention of the sockjs UUID override outside its declared UUID 8 range. These packages are absent from the distributed visual; isolated Node 24 tests and exact payload comparisons support the exception, not upstream compatibility or a clean online audit. Retain the lockfile and re-run authorized audits after upgrades. A previously clean audit is not a permanent security guarantee; runtime and full dependency audits cover different scopes.
+
+First-party terms authority is the owner-designated https://atlynco.com/legal/terms. The storefront source is `web/src/app/pages/legal/terms/terms.html`; the URL was not fetched during offline release preparation. The proprietary `LICENSE` and npm `UNLICENSED` identifier do not grant open-source rights. Identified third-party components retain their respective licenses.
 
 ```powershell
 npm ci

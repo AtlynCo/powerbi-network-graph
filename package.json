@@ -29,25 +29,26 @@
     "powerbi-visuals-utils-formattingutils": "7.0.0"
   },
   "devDependencies": {
-    "@eslint/js": "9.39.1",
+    "@eslint/js": "9.39.5",
     "@playwright/test": "1.58.2",
     "@types/node": "24.10.1",
     "acorn": "8.18.0",
     "acorn-walk": "8.3.5",
     "ajv": "6.15.0",
-    "eslint": "9.39.1",
-    "eslint-plugin-powerbi-visuals": "1.0.0",
+    "eslint": "9.39.5",
+    "eslint-plugin-powerbi-visuals": "1.1.1",
     "jsdom": "26.1.0",
     "jszip": "3.10.1",
     "powerbi-visuals-api": "5.11.1",
     "powerbi-visuals-tools": "7.2.1",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.48.1",
-    "vitest": "4.1.11"
+    "typescript-eslint": "8.72.1",
+    "vitest": "4.1.12"
   },
   "overrides": {
+    "minimatch": "11.0.1",
     "webpack-dev-server": {
-      "qs": "6.16.0"
+      "qs": "6.17.0"
     },
     "sockjs": {
       "uuid": "11.1.1"
