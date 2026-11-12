@@ -27,11 +27,36 @@ async function check(name, action) {
     checks.push(name);
     console.log(`PASS ${name}`);
 }
+async function screenshotMock(filename, width, height) {
+    await settle();
+    await page.evaluate(({ artifactName, sha256, width }) => {
+        document.getElementById("mock-preview-label")?.remove();
+        const banner = document.createElement("div");
+        banner.id = "mock-preview-label";
+        banner.textContent = `MOCK HOST / CHROMIUM — NOT Power BI Desktop or Service. ${artifactName} SHA-256 ${sha256.slice(0, 16)}…`;
+        banner.style.cssText = `width:${width}px;box-sizing:border-box;padding:8px;background:#fff1bf;color:#172d3d;font:12px Segoe UI,sans-serif;border-bottom:2px solid #a64000`;
+        document.body.prepend(banner);
+    }, { artifactName: artifact.filename, sha256: artifact.sha256, width });
+    await page.screenshot({ path: path.join(root, "dist", filename), clip: { x: 0, y: 0, width, height } });
+    await page.locator("#mock-preview-label").evaluate(element => element.remove());
+    console.log(`Saved dist/${filename} from the mocked Chromium host.`);
+}
 const normal = [
     { source: "A", target: "B", weight: 0 }, { source: "A", target: "B", weight: 2 },
     { source: "B", target: "A", weight: 3 }, { source: "B", target: "C", weight: null },
     { source: "C", target: "C", weight: 1 }, { source: "D", target: "A", weight: 5 },
     { source: "X", target: "Y", weight: 2 }
+];
+const circularSample = [
+    { source: "Maya Chen", target: "Rowan Patel", type: "PR", itemId: "PR-104", weight: 5 },
+    { source: "Maya Chen", target: "Rowan Patel", type: "Spec", itemId: "PR-104", weight: 2 },
+    { source: "Casey Nguyen", target: "Rowan Patel", type: "PR", itemId: "PR-104", weight: 3 },
+    { source: "Quinn Davis", target: "Rowan Patel", type: "PR", itemId: "PR-104", weight: 1 },
+    { source: "Rowan Patel", target: "Maya Chen", type: "PR", itemId: "PR-118", weight: 4 },
+    { source: "Maya Chen", target: "Jordan Lee", type: "PR", itemId: "PR-125", weight: 2 },
+    { source: "Maya Chen", target: "Maya Chen", type: "Spec", itemId: "SPEC-09", weight: 2 },
+    { source: "Quinn Davis", target: null, type: "PR", itemId: "PR-901", weight: 3 },
+    { source: "Avery Brooks", target: null, type: "Spec", itemId: "SPEC-14", weight: 2 }
 ];
 
 try {
@@ -96,6 +121,84 @@ try {
             disclaimer: "Actual PBIVIZ compiled JS/CSS rendered in real Chromium with a mocked Power BI host. NOT native Desktop/Service validation or certification."
         });
     });
+    await mount({ width: 1400, height: 900 });
+    await update(circularSample, {
+        itemIds: true,
+        objects: { exploration: { layoutMode: "circular", groupBlankTargets: true, view: "split" } }
+    });
+    await check("Circular light-mode split view renders role rings, source-colored parallel types, self-link disclosure, blank-target bucket and full lists", async () => {
+        const theme = await page.evaluate(() => {
+            const root = document.querySelector(".atlyn-network");
+            return {
+                isHighContrast: window.fixture.host.colorPalette.isHighContrast,
+                paletteBackground: window.fixture.host.colorPalette.background.value,
+                renderedBackground: getComputedStyle(root).backgroundColor,
+                splitView: root.classList.contains("view-split")
+            };
+        });
+        assert.deepEqual(theme, {
+            isHighContrast: false, paletteBackground: "#ffffff",
+            renderedBackground: "rgb(255, 255, 255)", splitView: true
+        });
+        assert.equal(await page.locator(".atlyn-network.circular").count(), 1);
+        assert.equal(await page.locator(".network-node").count(), 7);
+        assert.equal(await page.locator(".network-edge").count(), 8);
+        const maya = page.locator('.network-node[data-node-id="s:Maya Chen"]');
+        assert.equal(await maya.locator(".network-role-halo").count(), 1);
+        assert.equal(await maya.locator(".network-node-core").getAttribute("stroke-width"), "3");
+        const quinn = page.locator('.network-node[data-node-id="s:Quinn Davis"]');
+        assert.equal(await quinn.locator(".network-role-halo").count(), 0);
+        assert.equal(await quinn.locator(".network-node-core").getAttribute("stroke-width"), "3");
+        const bucket = page.locator('.network-node[data-node-id="bucket:external"]');
+        assert.equal(await bucket.count(), 1);
+        assert.equal(await bucket.locator(".network-node-core").getAttribute("stroke-dasharray"), "3 2");
+        const status = await page.locator('[role="status"]').innerText();
+        assert.match(status, /Self-links hidden from the diagram; retained in the lists:\s*1/);
+        assert.match(status, /Hidden self-link rows: 1/);
+        assert.match(status, /Hidden self-link weight:\s*2(?:\.00)?/);
+        const pair = await page.locator(".network-edge").evaluateAll(groups => groups
+            .filter(group => group.getAttribute("aria-label")?.startsWith("Maya Chen → Rowan Patel"))
+            .map(group => {
+                const line = group.querySelector(".edge-line");
+                const markerId = line?.getAttribute("marker-end")?.match(/^url\(#(.+)\)$/)?.[1];
+                const marker = markerId ? document.getElementById(markerId) : null;
+                return {
+                    label: group.getAttribute("aria-label"),
+                    dash: line?.getAttribute("stroke-dasharray") ?? null,
+                    stroke: line?.getAttribute("stroke"),
+                    markerFill: marker?.querySelector("path")?.getAttribute("fill")
+                };
+            }));
+        const sourceColor = await maya.locator(".network-node-core").getAttribute("stroke");
+        assert.equal(pair.length, 2);
+        assert(pair.some(edge => edge.label.includes("[PR]") && edge.dash === null));
+        assert(pair.some(edge => edge.label.includes("[Spec]") && edge.dash === "6 4"));
+        assert(pair.every(edge => edge.stroke === sourceColor && edge.markerFill === sourceColor));
+        await act("relationships").click();
+        const relationshipRows = await act("select-edge").allTextContents();
+        assert.equal(relationshipRows.length, 9);
+        assert(relationshipRows.some(text => text.startsWith("Maya Chen → Maya Chen")));
+        await act("entities").click();
+        await act("fit").click();
+        await screenshotMock("circular-overview.png", 1400, 940);
+    });
+    await act("all-items").click();
+    await check("All items opens the two-ring detail with owned items and directed source-to-item curves", async () => {
+        assert.equal(await page.locator(".network-guide-ring").count(), 2);
+        assert.equal(await page.locator(".network-item").count(), 6);
+        assert.equal(await page.locator(".network-edge.network-item-edge").count(), 8);
+        assert.equal(await act("all-items").getAttribute("aria-pressed"), "true");
+        await act("fit").click();
+        await screenshotMock("circular-two-ring-detail.png", 1400, 940);
+    });
+    await act("reset-circle").click();
+    await check("Reset circle returns to overview without dropping loaded relationships", async () => {
+        assert.equal(await page.locator(".network-guide-ring").count(), 1);
+        assert.equal(await page.locator(".network-item").count(), 0);
+        assert.equal(await act("all-items").getAttribute("aria-pressed"), "false");
+        assert.equal(await page.locator(".network-edge").count(), 8);
+    });
+    await update(normal, { width: 1000, height: 700 });
     await check("search and directional local focus do not select or filter host; node selection includes hidden incident identities", async () => {
         const before = (await calls()).select.length;
         await page.locator('input[type="search"]').fill("A");
@@ -304,7 +407,9 @@ try {
         artifact: artifact.filename, sha256: artifact.sha256, browser: await browser.version(),
         engine: "Real Chromium via Playwright", source: "JS/CSS extracted from the inspected real PBIVIZ",
         host: "Offline Power BI API mock; not native Desktop/Service, certification, or AppSource proof",
-        checks, runtimeRequests: requests, errors, bundledNotices, passed: true
+        checks, runtimeRequests: requests, errors, bundledNotices,
+        screenshots: ["circular-overview.png", "circular-two-ring-detail.png"],
+        passed: true
     });
     console.log(`Passed ${checks.length} actual-package Chromium checks; zero runtime requests. Host is mocked, not native Power BI.`);
 } catch (error) {

@@ -1,12 +1,35 @@
 import { Graph, GraphEdge, GraphNode } from "./graph";
+import { circularSignature, layoutCircularDetail, layoutCircularOverview } from "./circular";
+import type { CircularDetailOptions, CircularOptions } from "./circular";
+import type { LayoutMode, SelfLinks } from "./settings";
+
+export { layoutCircularDetail, layoutCircularOverview, orderCircularNodes } from "./circular";
+export interface LayoutOptions extends CircularOptions {
+    layoutMode?: LayoutMode;
+    selfLinks?: SelfLinks;
+    detail?: CircularDetailOptions;
+}
 
 export interface Point { x: number; y: number }
 export interface Bounds { x: number; y: number; width: number; height: number }
 export interface EdgeRoute { path: string; controls: Point[] }
 export interface Layout { positions: Map<string, Point>; bounds: Bounds; signature: string; routes: Map<string, EdgeRoute> }
 
-export function topologySignature(graph: Graph): string {
-    return JSON.stringify([graph.nodes.map(node => node.id), graph.edges.map(edge => [edge.id, edge.source, edge.target])]);
+function circularOptions(options: LayoutOptions): CircularDetailOptions {
+    return {
+        ...options, ...options.detail,
+        hideSelfLinks: options.detail?.hideSelfLinks ?? options.hideSelfLinks ??
+            (options.selfLinks === "hide" || (options.selfLinks !== "show" && options.layoutMode === "circular"))
+    };
+}
+
+export function topologySignature(graph: Graph, options: LayoutOptions = {}): string {
+    if (options.layoutMode === "circular") return circularSignature(graph, circularOptions(options), !!options.detail);
+    const topology = [graph.nodes.map(node => node.id), graph.edges.map(edge => [edge.id, edge.source, edge.target])];
+    if ((options.selfLinks && options.selfLinks !== "auto") || options.hideSelfLinks || options.circularOrder === "weight") {
+        return JSON.stringify([...topology, "force", options.selfLinks ?? "auto", !!options.hideSelfLinks, options.circularOrder ?? "alphabetical"]);
+    }
+    return JSON.stringify(topology);
 }
 
 function components(graph: Graph): GraphNode[][] {
@@ -31,7 +54,12 @@ function components(graph: Graph): GraphNode[][] {
 }
 
 // Fixed iteration counts and topology-only input: no random seed, clocks, timers or live simulation.
-export function layoutGraph(graph: Graph): Layout {
+export function layoutGraph(graph: Graph, options: LayoutOptions = {}): Layout {
+    if (options.layoutMode === "circular") {
+        return options.detail ? layoutCircularDetail(graph, circularOptions(options)) : layoutCircularOverview(graph, circularOptions(options));
+    }
+    const signature = topologySignature(graph, options);
+    if (options.selfLinks === "hide" || options.hideSelfLinks) graph = { ...graph, edges: graph.edges.filter(edge => edge.source !== edge.target) };
     const positions = new Map<string, Point>();
     const groups = components(graph);
     const packed: { nodes: GraphNode[]; positions: Map<string, Point>; bounds: Bounds }[] = [];
@@ -106,7 +134,7 @@ export function layoutGraph(graph: Graph): Layout {
     }
     const orderedPositions = new Map(graph.nodes.map(node => [node.id, positions.get(node.id)!]));
     const routes = routeGraph(graph, orderedPositions);
-    return { positions: orderedPositions, bounds: layoutBounds(graph, orderedPositions, routes), signature: topologySignature(graph), routes };
+    return { positions: orderedPositions, bounds: layoutBounds(graph, orderedPositions, routes), signature, routes };
 }
 
 export function routeGraph(graph: Graph, positions: Map<string, Point>): Map<string, EdgeRoute> {
@@ -157,7 +185,7 @@ export function layoutBounds(graph: Graph, positions: Map<string, Point>, routes
         const label = showLabels ? 22 + Math.min(26, [...node.label].length + 3) * labelSize * 0.8 : 24;
         coordinates.push({ x: point.x - label, y: point.y - labelSize * 2 - 20 }, { x: point.x + label, y: point.y + labelSize * 2 + 20 });
     }
-    for (const edge of graph.edges) coordinates.push(...routes.get(edge.id)!.controls);
+    for (const edge of graph.edges) coordinates.push(...routes.get(edge.id)?.controls ?? []);
     if (!coordinates.length) return { x: -50, y: -50, width: 100, height: 100 };
     const x = Math.min(...coordinates.map(point => point.x)) - 12;
     const y = Math.min(...coordinates.map(point => point.y)) - 12;

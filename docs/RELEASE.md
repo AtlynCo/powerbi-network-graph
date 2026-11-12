@@ -77,6 +77,9 @@ Use an actual report with a relationship table, another visual displaying those 
 - [ ] Verify Ctrl/Cmd native relationship multiselect, selected/mixed states, and incoming native selection updates. Check overlapping incident groups using native SDK toggle semantics; do not assert additive union or an entity-multiselect abstraction.
 - [ ] Clear report selection independently of pan/zoom, local focus, and search.
 - [ ] Verify local focus/search/traversal do not send a report filter or alter native selection.
+- [ ] Circular Overview plain entity/chord activation keeps the native row-selection action above and also opens a local outgoing-item/source-target detail when items are loaded. Ctrl/Cmd/Shift activation does not drill. Toolbar/list **Focus**, **All items**, **Reset circle**, and numbered legend focus only explore locally, without selecting report rows. Person detail excludes own-item self-links even when self-links are shown in Overview. Inner item activation selects all contributing loaded item rows; Source → Item activation selects that curve's contributing rows. Item emphasis and circle reset do not clear native selection.
+- [ ] Circular entity/relationship lists retain all loaded topology, including diagram-hidden self-links, independently of circular detail. Search still filters list names locally.
+- [ ] Force traversal/path controls are hidden in Circular mode, which exposes directed source/pair item expansion instead. All local views remain bounded to loaded data.
 - [ ] Verify disabled host interactions are respected, and host selection/context failures produce usable notices.
 - [ ] Verify pending selection followed by Clear settles cleared; destroy prevents late host actions. Tooltip failures must leave the accessible relationship list usable.
 - [ ] Verify a single-identity edge's native context menu; entity and multi-identity edge context menus are explicitly visual-level.

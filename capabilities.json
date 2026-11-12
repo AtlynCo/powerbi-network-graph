@@ -5,13 +5,14 @@
     { "name": "weight", "displayName": "Weight", "displayNameKey": "Role_Weight", "kind": "Measure", "requiredTypes": [{ "numeric": true }] },
     { "name": "relationshipType", "displayName": "Relationship type", "displayNameKey": "Role_Type", "kind": "Grouping" },
     { "name": "edgeId", "displayName": "Edge ID", "displayNameKey": "Role_Edge", "kind": "Grouping" },
+    { "name": "itemId", "displayName": "Item ID", "displayNameKey": "Role_Item", "kind": "Grouping" },
     { "name": "tooltips", "displayName": "Tooltips", "displayNameKey": "Role_Tooltips", "kind": "Measure" }
   ],
   "dataViewMappings": [{
-    "conditions": [{ "source": { "max": 1 }, "target": { "max": 1 }, "weight": { "max": 1 }, "relationshipType": { "max": 1 }, "edgeId": { "max": 1 }, "tooltips": { "max": 8 } }],
+    "conditions": [{ "source": { "max": 1 }, "target": { "max": 1 }, "weight": { "max": 1 }, "relationshipType": { "max": 1 }, "edgeId": { "max": 1 }, "itemId": { "max": 1 }, "tooltips": { "max": 8 } }],
     "categorical": {
       "categories": {
-        "select": [{ "for": { "in": "source" } }, { "for": { "in": "target" } }, { "for": { "in": "relationshipType" } }, { "for": { "in": "edgeId" } }],
+        "select": [{ "for": { "in": "source" } }, { "for": { "in": "target" } }, { "for": { "in": "relationshipType" } }, { "for": { "in": "edgeId" } }, { "for": { "in": "itemId" } }],
         "dataReductionAlgorithm": { "top": { "count": 5000 } }
       },
       "values": { "select": [{ "bind": { "to": "weight" } }, { "for": { "in": "tooltips" } }] }
@@ -25,7 +26,14 @@
         "edgeColor": { "type": { "fill": { "solid": { "color": true } } } },
         "showLabels": { "type": { "bool": true } },
         "labelSize": { "type": { "numeric": true } },
-        "avoidLabelOverlap": { "type": { "bool": true } }
+        "avoidLabelOverlap": { "type": { "bool": true } },
+        "colorMode": { "type": { "enumeration": [
+          { "value": "auto", "displayName": "Automatic" },
+          { "value": "source", "displayName": "By source entity" },
+          { "value": "relationshipType", "displayName": "By relationship type" },
+          { "value": "uniform", "displayName": "Uniform colors" }
+        ] } },
+        "roleRings": { "type": { "bool": true } }
       }
     },
     "exploration": {
@@ -36,7 +44,22 @@
           { "value": "split", "displayName": "Graph and list" },
           { "value": "graph", "displayName": "Graph" },
           { "value": "list", "displayName": "List" }
-        ] } }
+        ] } },
+        "layoutMode": { "type": { "enumeration": [
+          { "value": "force", "displayName": "Force-directed" },
+          { "value": "circular", "displayName": "Circular ring" }
+        ] } },
+        "circularOrder": { "type": { "enumeration": [
+          { "value": "alphabetical", "displayName": "Alphabetical" },
+          { "value": "weight", "displayName": "By total weight" }
+        ] } },
+        "selfLinks": { "type": { "enumeration": [
+          { "value": "auto", "displayName": "Automatic" },
+          { "value": "show", "displayName": "Show in diagram" },
+          { "value": "hide", "displayName": "Hide from diagram" }
+        ] } },
+        "groupBlankTargets": { "type": { "bool": true } },
+        "blankTargetLabel": { "type": { "text": true } }
       }
     },
     "navigation": {

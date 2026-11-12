@@ -4,7 +4,7 @@ import { execFileSync } from "node:child_process";
 import { digest, root } from "./artifact.mjs";
 
 export function git(...args) {
-    return execFileSync("git", ["--no-pager", ...args], { cwd: root, encoding: "utf8" }).trim();
+    return execFileSync("git", ["--no-pager", ...args], { cwd: root, encoding: "utf8", windowsHide: true }).trim();
 }
 
 export async function hashFiles(files) {

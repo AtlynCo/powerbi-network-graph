@@ -149,7 +149,7 @@ export function installMockHost({ guid, resources, locale, highContrast, width, 
         createLocalizationManager: () => ({ getDisplayName: key => resources[locale]?.[key] ?? key }),
         colorPalette: {
             isHighContrast: highContrast,
-            foreground: { value: "#FFFF00" }, background: { value: "#000000" },
+            foreground: { value: "#FFFF00" }, background: { value: highContrast ? "#000000" : "#ffffff" },
             foregroundSelected: { value: "#00FFFF" }, hyperlink: { value: "#00FFFF" },
             getColor: () => ({ value: "#007D87" })
         },
@@ -179,7 +179,10 @@ export function installMockHost({ guid, resources, locale, highContrast, width, 
         visual, host, calls, faults, rows: [], view: undefined, container,
         release() { const ready = pending; pending = []; ready.forEach(finish => finish()); },
         createView(rows, options = {}) {
-            const fields = ["source", "target", ...(options.types === false ? [] : ["relationshipType"]), ...(options.edgeIds ? ["edgeId"] : [])];
+            const fields = [
+                "source", "target", ...(options.types === false ? [] : ["relationshipType"]),
+                ...(options.edgeIds ? ["edgeId"] : []), ...(options.itemIds ? ["itemId"] : [])
+            ];
             const categories = fields.map(role => ({
                 source: { displayName: role, queryName: `fixture.${role}`, roles: { [role]: true }, type: { text: true } },
                 values: rows.map(row => row[role === "relationshipType" ? "type" : role] ?? (role === "relationshipType" ? "uses" : null)),

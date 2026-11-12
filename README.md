@@ -29,7 +29,7 @@ This is **relationship exploration**, not causal-impact prediction, fraud detect
 2. In Power BI Desktop, use the Visualizations pane's **Import a visual from a file** action and select the package. Menu names may differ between Desktop versions. Tenant policy may prevent importing or using uncertified custom visuals.
 3. Import a relationship table. The [offline samples](samples/README.md) include CSV and Power Query M sources, field mapping, and expected topology.
 4. Add Atlyn Network to a report page; bind **Source ID** and **Target ID**.
-5. Optionally bind Weight, Relationship type, Edge ID, and up to eight tooltip measures. Review the status text for omitted data, incomplete weights, or unavailable native identities.
+5. Optionally bind Weight, Relationship type, Edge ID, Item ID, and up to eight tooltip measures. Review the status text for omitted data, incomplete weights, or unavailable native identities.
 6. Use **Entities** or **Relationships** for accessible exploration, and distinguish **Focus locally** from **Select loaded incident relationships**.
 
 Native opening, saving/reopening, and PBIX conversion must be performed in Desktop. An authored PBIP source is not evidence of a successful native open. Never rename a JSON file, ZIP, or source folder to `.pbix`.
@@ -49,7 +49,10 @@ The visual consumes a **categorical DataView**, not a table of independently add
 | Weight | Numeric measure | No; maximum one | Nonnegative finite contribution to a delivered relationship group |
 | Relationship type | Grouping | No; maximum one | Distinguishes relationship kinds between the same directed endpoints |
 | Edge ID | Grouping | No; maximum one | Stable relationship identifier; distinguishes same-type parallel relationships |
+| Item ID | Grouping | No; maximum one | Optional stable item identifier for Circular ring's two-ring detail; does not replace Edge ID |
 | Tooltips | Measures | No; maximum eight | Additional model-formatted values; not assumed additive |
+
+Item ID enables the optional inner work-item ring in Circular ring mode. It is a separate grouping field; leaving it unbound does not change Force mode or its relationship contracts.
 
 ### Identifiers and endpoints
 
@@ -139,6 +142,12 @@ The **200-identity limit is per requested action after deduplication**. If an ed
 Local incident inspection does **not** reduce the identities in an entity-selection action. For an over-cap entity, inspect its incident list and select individual relationships, or apply a genuine report/model filter before attempting another complete incident selection.
 
 Local exploration is transient until **Save local view** is used. The snapshot is stored in a hidden visual property, and changed saved metadata can restore it when a report bookmark is replayed. Saving a view does not itself create a Power BI bookmark. Malformed snapshots or snapshots referencing unavailable entities visibly reset local focus. Native bookmark/property persistence and export replay remain Desktop/service gates.
+
+### Circular ring and two-ring item detail
+
+Choose **Exploration → Layout mode → Circular ring** for a perimeter guide ring. Target entities receive a concentric halo; source entities use a 3px core stroke, so bidirectional entities show both roles. Curves and arrowheads use stable source-category colors, with parallel relationship types distinguished by solid/dashed strokes. Self-links are hidden from the diagram by default but retained in the relationship list and disclosed in status counts and weight. When **Group blank targets** is enabled, blank targets use a dashed-ring **External / unknown** bucket.
+
+Binding **Item ID** enables two-ring detail: plain entity activation focuses its outgoing items, and plain chord activation focuses items for that directed source/target pair. **All items** shows all loaded items; **Reset circle** returns to the overview. These are local drill-in actions and do not filter the report. Force-directed mode and its existing traversal/path controls remain unchanged.
 
 ### Context menus and tooltips
 

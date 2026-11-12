@@ -29,7 +29,7 @@ const env = {
 };
 
 function run(command, args) {
-    const result = spawnSync(command, args, { cwd: root, env, stdio: "inherit" });
+    const result = spawnSync(command, args, { cwd: root, env, stdio: "inherit", windowsHide: true });
     if (result.error) throw result.error;
     if (result.status !== 0) throw new Error(`${command} failed with exit code ${result.status}`);
 }
