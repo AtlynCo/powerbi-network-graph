@@ -1,5 +1,9 @@
 # Partner Center draft — Atlyn Network
 
+**Current target:** `1.2.0.0`. Dated native and package evidence below concerns
+earlier candidates; do not treat it as verification of the current package.
+See [current local evidence](../validation/RESULTS-1.2.md).
+
 **Prepared 2026-09-09. Draft text only; nothing entered into Partner Center.**
 
 **Owner approval, 2026-09-10:** use existing Atlyn storefront subscriptions for acquisition and **ungated visuals with free shared viewing**. The current offline runtime is intended; it does not enforce paid-author status. No license keys, new signer, AAD/API integration, feature gates or runtime requests are to be added. Licensing integration is no longer a blocker. Main/certification refs, merging and submission remain held for the parent's final native/assets/legal/release gate. The additional Microsoft Power BI visual certification badge is required, not yet achieved.

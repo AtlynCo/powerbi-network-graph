@@ -26,6 +26,12 @@ export async function loadBrowserArtifact() {
 }
 
 export async function createBrowserHarness({ artifact, touch = false } = {}) {
+    if (process.platform === "win32") {
+        const launcher = await readFile(path.join(root, "node_modules", "playwright-core", "lib", "server", "utils", "processLauncher.js"), "utf8");
+        assert(launcher.includes("  const spawnOptions = {\n    windowsHide: true,") &&
+            launcher.includes("Stop-Process -Id $id -Force") && !launcher.includes("taskkill /pid"),
+        "Playwright launch paths are not hidden; run node scripts/patch-loader.mjs before browser tests");
+    }
     artifact ??= await loadBrowserArtifact();
     if (!artifact.historical) {
         const manifest = JSON.parse(await readFile(path.join(root, "dist", "build-inputs.json"), "utf8"));
@@ -52,6 +58,7 @@ export async function createBrowserHarness({ artifact, touch = false } = {}) {
     });
     const requests = [];
     const errors = [];
+    const warnings = [];
     const errorDetails = [];
     await context.route("**/*", async route => {
         requests.push(route.request().url());
@@ -64,6 +71,7 @@ export async function createBrowserHarness({ artifact, touch = false } = {}) {
         errorDetails.push({ kind: "pageerror", message: error.message, stack: error.stack });
     });
     page.on("console", message => {
+        if (message.type() === "warning") warnings.push(message.text());
         if (message.type() === "error") {
             errors.push(message.text());
             errorDetails.push({ kind: "console", message: message.text(), location: message.location() });
@@ -90,7 +98,7 @@ export async function createBrowserHarness({ artifact, touch = false } = {}) {
     const settle = () => page.evaluate(async () => {
         for (let i = 0; i < 4; i++) await new Promise(resolve => window.requestAnimationFrame(resolve));
     });
-    return { artifact, browser, context, page, requests, errors, errorDetails, mount, update, settle, close: () => browser.close() };
+    return { artifact, browser, context, page, requests, errors, warnings, errorDetails, mount, update, settle, close: () => browser.close() };
 }
 
 export function installMockHost({ guid, resources, locale, highContrast, width, height, name = "fixture" }) {
@@ -257,11 +265,16 @@ export async function releaseSampleFixtures() {
     assert(!path.relative(root, source).startsWith(".."), "Sample literal source must remain inside the worktree");
     assert.equal(digest(await readFile(source)), contract.sourceSha256, "Sample contract differs from its literal source; regenerate it before capturing evidence");
     const domains = {};
-    for (const name of ["Services", "Accounts"]) {
+    for (const name of ["Services", "Accounts", "Contributions"]) {
         const domain = contract.domains.find(domain => domain.table === name);
         assert(domain, `Missing ${name} certification sample domain`);
-        assert.equal(domain.rows.length, name === "Services" ? 14 : 16);
+        assert.equal(domain.rows.length, name === "Services" ? 14 : name === "Accounts" ? 16 : 24);
         domains[name] = domain.rows.map(row => {
+            if (name === "Contributions") {
+                assert.equal(row.length, 8);
+                const [source, target, type, edgeId, itemId, weight, durationMs, eventCount] = row;
+                return { source, target, type, edgeId, itemId, weight, durationMs, eventCount };
+            }
             assert.equal(row.length, 7);
             const [source, target, type, edgeId, weight, durationMs, eventCount] = row;
             return { source, target, type, edgeId, weight, durationMs, eventCount };

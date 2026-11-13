@@ -129,7 +129,7 @@ describe("Visual context menu and empty state", () => {
             };
             return {
                 metadata: { columns: [...categories.map(category => category.source), weights.source, tooltips.source],
-                    objects: { ...options.objects, exploration: { layoutMode: "circular", groupBlankTargets: true, ...options.objects?.exploration } } },
+                    objects: { ...options.objects, exploration: { layout: "circular", groupBlankTargets: true, ...options.objects?.exploration } } },
                 categorical: { categories, values: [weights, tooltips] as unknown as powerbi.DataViewValueColumns }
             };
         }
@@ -408,13 +408,29 @@ describe("Visual context menu and empty state", () => {
                 expect(camera()).not.toBe(zoomed);
                 click('[data-action="reset-circle"]');
                 expect(camera()).toBe(overview);
-                data.metadata.objects!.exploration!.layoutMode = "force";
+                data.metadata.objects!.exploration!.layout = "force";
                 update();
                 expect(element.querySelector(".network-guide-ring")).toBeNull();
                 expect(element.querySelector<HTMLDivElement>(".network-circle-controls")!.hidden).toBe(true);
-                data.metadata.objects!.exploration!.layoutMode = "circular";
+                data.metadata.objects!.exploration!.layout = "circular";
                 update();
                 expect(camera()).toBe(overview);
+            });
+
+            it("switches to radial and exposes automatic and selected centers", () => {
+                Object.defineProperty(SVGElement.prototype, "getComputedTextLength", { configurable: true, value: () => 32 });
+                const fixture = setupCircular();
+                const choice = fixture.element.querySelector<HTMLSelectElement>('[data-control="layout"]')!;
+                choice.value = "radial";
+                choice.dispatchEvent(new Event("change"));
+                const root = fixture.element.querySelector<HTMLElement>(".atlyn-network")!;
+                expect(root.dataset.layout).toBe("radial");
+                expect(root.dataset.layoutCenter).toBeTruthy();
+                expect(fixture.element.querySelector(".network-status")!.textContent).toContain("Automatic center");
+                fixture.click('[data-action="center-node"][data-focus-key="s:A"]');
+                expect(root.dataset.layoutCenter).toBe("s:A");
+                expect(fixture.element.querySelector<HTMLSelectElement>('[data-control="layout-center"]')!.value).toBe("s:A");
+                expect(fixture.selectionManager.select).not.toHaveBeenCalled();
             });
 
             it("supports Edge ID fallback items and shows self-links only when explicitly requested", () => {
@@ -460,6 +476,10 @@ describe("Visual context menu and empty state", () => {
                 checkCamera();
                 restored.update();
                 checkCamera();
+                const legacyCircle = { ...saved, version: 1 };
+                const legacyRestored = setupCircular(circularData({ objects: { navigation: { savedView: JSON.stringify(legacyCircle) } } }));
+                expect(legacyRestored.element.querySelectorAll(".network-item")).toHaveLength(4);
+                expect(legacyRestored.element.querySelector<HTMLElement>(".atlyn-network")!.dataset.layout).toBe("circular");
                 for (const fields of [{ circularSource: "s:missing", circularDetail: "source", circularItem: undefined },
                     { circularTarget: "s:missing", circularSource: "s:A", circularDetail: "pair", circularItem: undefined },
                     { circularItem: "removed" }]) {

@@ -45,9 +45,10 @@
           { "value": "graph", "displayName": "Graph" },
           { "value": "list", "displayName": "List" }
         ] } },
-        "layoutMode": { "type": { "enumeration": [
+        "layout": { "type": { "enumeration": [
           { "value": "force", "displayName": "Force-directed" },
-          { "value": "circular", "displayName": "Circular ring" }
+          { "value": "circular", "displayName": "Circular ring" },
+          { "value": "radial", "displayName": "Rooted radial" }
         ] } },
         "circularOrder": { "type": { "enumeration": [
           { "value": "alphabetical", "displayName": "Alphabetical" },

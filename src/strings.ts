@@ -1,6 +1,12 @@
 export const en = {
     Role_Item: "Item ID",
     LayoutMode: "Layout mode", LayoutForce: "Force-directed", LayoutCircular: "Circular ring",
+    LayoutRadial: "Rooted radial", LayoutChoice: "Layout (local only)",
+    RadialCenter: "Radial center (local only)", AutomaticCenter: "Automatic center",
+    CenterNode: "Use as radial center", EffectiveCenter: "Layout center", ComponentCenters: "Separate component centers",
+    MissingCenter: "Requested center is not loaded; automatic center shown. The requested center is retained.",
+    RadialHelp: "Rings show minimum undirected hops in loaded relationships, ignoring weights. Arrows still show original direction. Each disconnected component has its own center.",
+    AutomaticCenterHelp: "Automatic center: largest component, most distinct neighbors, stable ID tie break. A layout convenience, not centrality or business importance.",
     CircularOrder: "Circular entity order", OrderAlphabetical: "Alphabetical", OrderWeight: "By total weight",
     SelfLinks: "Self-links", SelfAuto: "Automatic", SelfShow: "Show in diagram", SelfHide: "Hide from diagram",
     GroupBlankTargets: "Group blank targets", BlankTargetLabel: "Blank target label",
@@ -80,6 +86,12 @@ export const en = {
 export type MessageKey = keyof typeof en;
 
 export const ar: Record<MessageKey, string> = {
+    LayoutRadial: "شعاعي", LayoutChoice: "التخطيط (محلي فقط)",
+    RadialCenter: "المركز الشعاعي (محلي فقط)", AutomaticCenter: "مركز تلقائي",
+    CenterNode: "استخدام كمركز شعاعي", EffectiveCenter: "مركز التخطيط", ComponentCenters: "مراكز المكونات المنفصلة",
+    MissingCenter: "المركز المطلوب غير محمّل؛ يُعرض مركز تلقائي. تم الاحتفاظ بالمركز المطلوب.",
+    RadialHelp: "الحلقات تمثل أقل عدد من الخطوات غير الموجّهة في العلاقات المحمّلة دون الأوزان. الأسهم تبين الاتجاه الأصلي. لكل مكوّن منفصل مركزه.",
+    AutomaticCenterHelp: "المركز التلقائي: أكبر مكوّن ثم أكثر الجيران المختلفين ثم المعرّف الثابت عند التعادل. وسيلة تخطيط وليست مقياس مركزية أو أهمية تجارية.",
     Role_Item: "معرّف العنصر",
     LayoutMode: "وضع التخطيط", LayoutForce: "تخطيط موجّه بالقوى", LayoutCircular: "حلقة دائرية",
     CircularOrder: "ترتيب الكيانات الدائري", OrderAlphabetical: "أبجدي", OrderWeight: "حسب الوزن الإجمالي",

@@ -8,10 +8,10 @@ All names, accounts, and values are synthetic. These examples demonstrate direct
 | `reciprocal-accounts.csv` | Text account codes with leading zeros, repeated and conflicting Edge IDs, zero/missing/negative weights |
 | `circular-contributions.csv` | Synthetic code/spec review interactions for Circular ring and two-ring Item ID detail |
 | `LoadRelationships.pq` | Power Query M import from a local CSV path |
-| `OfflineSamples.pq` | Self-contained literal Power Query tables for either sample; no path or network dependency |
+| `OfflineSamples.pq` | Self-contained literal Power Query tables for all three samples; no path or network dependency |
 | [`release/Network.pbip`](release/README.md) | Fully authored offline PBIP: bound graph pages, native detail tables/slicers, literal model tables, measures, and exact embedded release visual |
 
-**The PBIP is authored and locally structure-validated; native opening and PBIX conversion remain Desktop gates.** Follow the [authored sample instructions](release/README.md), refresh its literal tables, inspect both bound graph pages, and save/reopen a genuine PBIX. No native opening, query execution, or PBIX is fabricated or claimed here. The alternative M/CSV recipes below remain useful for building your own report.
+**The 1.2 PBIP is authored and locally validated; native opening and PBIX conversion remain Desktop gates.** Follow the [authored sample instructions](release/README.md), refresh its literal tables, inspect all four bound graphs, and save/reopen a genuine PBIX. No native opening, query execution, or PBIX is fabricated or claimed here. The alternative M/CSV recipes below remain useful for building your own report.
 
 ## Circular contribution sample
 
@@ -35,7 +35,7 @@ Use **All items** to expand the two-ring detail to all loaded items and **Reset 
 1. Open Power BI Desktop and create a blank report.
 2. Choose **Get data → Blank query**, then open **Advanced Editor** in Power Query.
 3. Paste the complete contents of `OfflineSamples.pq`.
-4. Set `Dataset` to `"cyclic-services"` or `"reciprocal-accounts"`.
+4. Set `Dataset` to `"cyclic-services"`, `"reciprocal-accounts"`, or `"contributions"`.
 5. Name the query **Relationships** and choose **Close & Apply**.
 
 The query contains literal data, reads no file, and makes no network request. Its Power Query and subsequent native visual behavior still need verification in Desktop; repository text checks are not an M-engine execution.

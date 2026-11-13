@@ -90,18 +90,26 @@ const columns = [
     ["Weight", "double", "nullable number"], ["DurationMs", "double", "number"],
     ["EventCount", "int64", "Int64.Type"]
 ];
+const contributionColumns = [
+    ["SourceID", "string", "text"], ["TargetID", "string", "nullable text"],
+    ["RelationshipType", "string", "text"], ["EdgeID", "string", "text"],
+    ["ItemID", "string", "text"], ["Weight", "double", "nullable number"],
+    ["DurationMs", "double", "number"], ["EventCount", "int64", "Int64.Type"]
+];
 const domains = [
     { table: "Services", variable: "CyclicServices", label: "Cyclic services", prefix: "S", count: 14 },
-    { table: "Accounts", variable: "ReciprocalAccounts", label: "Reciprocal accounts", prefix: "A", count: 16 }
+    { table: "Accounts", variable: "ReciprocalAccounts", label: "Reciprocal accounts", prefix: "A", count: 16 },
+    { table: "Contributions", variable: "Contributions", label: "Contributions", prefix: "C", count: 24 }
 ];
 const databaseDefinition = "database Network\n\tcompatibilityLevel: 1600\n\tcompatibilityMode: powerBI\n";
 const modelDefinition = tables => `model Model\n\tculture: en-US\n\tdefaultPowerBIDataSourceVersion: powerBI_V3\n\tdiscourageImplicitMeasures\n\tsourceQueryCulture: en-US\n\nannotation __PBI_TimeIntelligenceEnabled = 0\n\n${tables.map(table => `ref table ${table}`).join("\n")}\n`;
 function tableDefinition(table, rows) {
-    const mColumns = columns.map(([name, , type]) => `${name} = ${type}`).join(", ");
+    const tableColumns = table === "Contributions" ? contributionColumns : columns;
+    const mColumns = tableColumns.map(([name, , type]) => `${name} = ${type}`).join(", ");
     const mRows = rows.map(row => `\t\t\t\t{${row.map(value => JSON.stringify(value)).join(", ")}}`).join(",\n");
     const measures = measureDefinitions(table).map(([name, expression, format]) =>
         `\tmeasure '${name}' = ${expression}\n\t\tformatString: ${format}\n\t\tdisplayFolder: Investigation\n`).join("\n");
-    const fields = columns.map(([name, type]) =>
+    const fields = tableColumns.map(([name, type]) =>
         `\tcolumn ${name}\n\t\tdataType: ${type}\n\t\tsourceColumn: ${name}\n\t\tsummarizeBy: ${type === "string" ? "none" : "sum"}\n${name === "Weight" ? "\t\tformatString: #,0.##\n" : ""}`).join("\n");
     return `table ${table}\n\n${measures}\n${fields}\n\tpartition ${table} = m\n\t\tmode: import\n\t\tsource =\n\t\t\t#table(type table [${mColumns}], {\n${mRows}\n\t\t\t})\n\n\tannotation PBI_ResultType = Table\n`;
 }
@@ -158,6 +166,13 @@ const tasks = {
     ]
 };
 
+function literalRows(pq, domain) {
+    const schemaName = domain.table === "Contributions" ? "ContributionsSchema" : "Schema";
+    const match = pq.match(new RegExp(`${domain.variable} = #table\\(${schemaName}, \\{([\\s\\S]*?)\\n    \\}\\)`));
+    assert(match, `Literal source table missing: ${domain.variable}`);
+    return [...match[1].matchAll(/\{([^{}]+)\}/g)].map(item => JSON.parse(`[${item[1]}]`));
+}
+
 async function author() {
     assertUniqueMeasureNames(domains.map(({ table }) => ({ table, measures: measureDefinitions(table).map(([name]) => name) })));
     const pq = await readFile(path.join(root, "samples", "OfflineSamples.pq"), "utf8");
@@ -166,23 +181,25 @@ async function author() {
     const relationships = [];
     const pages = [];
     for (const [index, domain] of domains.entries()) {
-        const match = pq.match(new RegExp(`${domain.variable} = #table\\(Schema, \\{([\\s\\S]*?)\\n    \\}\\)`));
-        assert(match, `Literal source table missing: ${domain.variable}`);
-        const rows = [...match[1].matchAll(/\{([^{}]+)\}/g)].map(item => JSON.parse(`[${item[1]}]`));
+        const tableColumns = domain.table === "Contributions" ? contributionColumns : columns;
+        const rows = literalRows(pq, domain);
         assert.equal(rows.length, domain.count);
-        assert(rows.every(row => row.length === columns.length && row.slice(0, 4).every(value => typeof value === "string")));
+        assert(rows.every(row => row.length === tableColumns.length && typeof row[0] === "string" &&
+            (typeof row[1] === "string" || (domain.table === "Contributions" && row[1] === null)) &&
+            row.slice(2, 4).every(value => typeof value === "string")));
         await put(path.join(modelRoot, "definition", "tables", `${domain.table}.tmdl`), tableDefinition(domain.table, rows));
         allTables.push(domain.table);
         const dimensions = [];
-        for (const [suffix, field, columnIndex] of [["Sources", "NodeID", 0], ["Targets", "NodeID", 1], ["Types", "RelationshipType", 2]]) {
+        for (const [suffix, field, columnIndex] of [["Sources", domain.table === "Contributions" ? "SourceID" : "NodeID", 0], ["Targets", domain.table === "Contributions" ? "TargetID" : "NodeID", 1], ["Types", "RelationshipType", 2]]) {
             const name = `${domain.table}${suffix}`;
-            const values = [...new Set(rows.map(row => row[columnIndex]))].sort();
+            const values = [...new Set(rows.map(row => row[columnIndex]).filter(value => value !== null))].sort();
             await put(path.join(modelRoot, "definition", "tables", `${name}.tmdl`), dimensionDefinition(name, field, values));
             allTables.push(name);
             dimensions.push({ table: name, field, values });
-            relationships.push(`relationship ${domain.table}_${suffix}\n\tfromColumn: ${domain.table}.${columns[columnIndex][0]}\n\ttoColumn: ${name}.${field}\n\tcrossFilteringBehavior: oneDirection\n`);
+            relationships.push(`relationship ${domain.table}_${suffix}\n\tfromColumn: ${domain.table}.${tableColumns[columnIndex][0]}\n\ttoColumn: ${name}.${field}\n\tcrossFilteringBehavior: oneDirection\n`);
         }
         contract.domains.push({ ...domain, rows, dimensions, measures: measureDefinitions(domain.table) });
+        if (domain.table === "Contributions") continue;
         const pageName = `Page${domain.table}`;
         pages.push(pageName);
         const pageRoot = path.join(reportRoot, "definition", "pages", pageName);
@@ -220,20 +237,87 @@ async function author() {
         });
         for (const item of visuals) await put(path.join(pageRoot, "visuals", item.name, "visual.json"), item);
     }
+    pages.push("PageCircular");
+    const circularRoot = path.join(reportRoot, "definition", "pages", "PageCircular");
+    const circularGraph = visual("CircularGraph", guid, 280, 100, 1062, 444, {
+        source: role(projection("Contributions", "SourceID")),
+        target: role(projection("Contributions", "TargetID")),
+        relationshipType: role(projection("Contributions", "RelationshipType")),
+        itemId: role(projection("Contributions", "ItemID")),
+        weight: role(projection("Contributions", "Total Weight", true)),
+        tooltips: role(projection("Contributions", "Average Duration ms", true), projection("Contributions", "Events", true), projection("Contributions", "Input Rows", true))
+    }, "Circular contributions: select a relationship to investigate");
+    circularGraph.visual.objects = {
+        exploration: [{ properties: { layout: literal("circular"), view: literal("graph"), groupBlankTargets: literal(true) } }],
+        appearance: [{ properties: { colorMode: literal("source"), roleRings: literal(true) } }]
+    };
+    const circularTable = visual("CircularDetails", "tableEx", 280, 560, 1062, 184, {
+        Values: role(...["SourceID", "TargetID", "RelationshipType", "ItemID"].map(name => projection("Contributions", name)),
+            ...["Total Weight", "Events", "Input Rows", "Average Duration ms"].map(name => projection("Contributions", name, true)))
+    }, "Contribution details");
+    const circularType = visual("CircularTypes", "slicer", 24, 100, 240, 150, {
+        Values: role(projection("ContributionsTypes", "RelationshipType"))
+    }, "Relationship type");
+    const circularSource = visual("CircularSources", "slicer", 24, 266, 240, 210, {
+        Values: role(projection("ContributionsSources", "SourceID"))
+    }, "Source");
+    await put(path.join(circularRoot, "page.json"), {
+        $schema: schemas.page, name: "PageCircular", displayName: "3. Circular contributions",
+        displayOption: "FitToPage", width: 1366, height: 768,
+        visualInteractions: [
+            { source: circularGraph.name, target: circularTable.name, type: "DataFilter" },
+            { source: circularTable.name, target: circularGraph.name, type: "DataFilter" },
+            ...[circularType, circularSource].flatMap(slicer => [circularGraph, circularTable].map(target => ({
+                source: slicer.name, target: target.name, type: "DataFilter"
+            })))
+        ]
+    });
+    for (const item of [
+        textBox("CircularHeading", "3. Circular contributions and Item ID", 24, 16, 1290, 64, "24pt"),
+        circularType, circularSource,
+        textBox("CircularGuide", "Filter source or type. Select a relationship to inspect shared items. Blank targets represent external owners. Circle position does not imply importance.", 24, 492, 240, 252, "10pt"),
+        circularGraph, circularTable
+    ]) await put(path.join(circularRoot, "visuals", item.name, "visual.json"), item);
+    pages.push("PageRadial");
+    const radialRoot = path.join(reportRoot, "definition", "pages", "PageRadial");
+    const radialGraph = visual("RadialGraph", guid, 24, 100, 960, 644, {
+        source: role(projection("Services", "SourceID")),
+        target: role(projection("Services", "TargetID")),
+        relationshipType: role(projection("Services", "RelationshipType")),
+        edgeId: role(projection("Services", "EdgeID")),
+        weight: role(projection("Services", "Total Weight", true)),
+        tooltips: role(projection("Services", "Average Duration ms", true), projection("Services", "Events", true), projection("Services", "Input Rows", true))
+    }, "Rooted Radial: directed service relationships");
+    radialGraph.visual.objects = { exploration: [{ properties: { view: literal("split"), layout: literal("radial") } }] };
+    await put(path.join(radialRoot, "page.json"), {
+        $schema: schemas.page, name: "PageRadial", displayName: "4. Radial relationships",
+        displayOption: "FitToPage", width: 1366, height: 768
+    });
+    for (const item of [
+        textBox("RadialHeading", "4. Radial relationships", 24, 16, 1290, 64, "24pt"), radialGraph,
+        textBox("RadialGuide", [
+            "LOADED UNDIRECTED HOP RINGS",
+            "Automatic center is Orders: largest component, most distinct non-self neighbors, then stable ID. This is a layout convenience, not centrality or business importance.",
+            "Use the Radial center selector or Use as radial center in the entity list. This does not change local focus, weights, report filters or selection.",
+            "Each ring is minimum undirected hop distance over loaded relationships. Arrows retain their direction. Disconnected components are packed separately.",
+            "A filtered-out requested center uses an automatic fallback. Save local view explicitly to retain the center."
+        ].join("\n\n"), 1008, 100, 334, 644, "11pt")
+    ]) await put(path.join(radialRoot, "visuals", item.name, "visual.json"), item);
     pages.push("PageHints");
     await put(path.join(reportRoot, "definition", "pages", "PageHints", "page.json"), {
-        $schema: schemas.page, name: "PageHints", displayName: "3. Hints and semantics",
+        $schema: schemas.page, name: "PageHints", displayName: "5. Hints and semantics",
         displayOption: "FitToPage", width: 1366, height: 768
     });
     const hints = [
-        "3. Hints and semantics",
+        "5. Hints and semantics",
         "START OFFLINE: open Network.pbip with current Power BI Desktop; enable PBIP/PBIR/TMDL preview features if required. Refresh loads only literal in-project tables; it needs no files, credentials or network data source.",
-        "BINDING: Source ID and Target ID are text. Edge ID and relationship type are categories. Services Total Weight and Accounts Total Weight are SUM measures. Tooltip measures use the same table prefixes: e.g. Accounts Average Duration ms, Accounts Events and Accounts Input Rows. All 14 measure names are model-global unique. Two source rows for T01 become one Power BI category tuple with weight 120.",
+        "BINDING: Source ID, Target ID and Item ID are text categories. Table-prefixed measures are model-global unique. Two source rows for T01 become one Power BI category tuple with weight 120.",
+        "LAYOUTS: Force shows directed relationships. Circular places loaded entities around a ring; Item ID enables two-ring detail. Radial places entities on undirected hop rings around a chosen or automatic center. Positions do not establish importance or causality.",
         "INVESTIGATION: distinguish source → target direction, reciprocal pairs, parallel typed relationships, self-loops and disconnected components. Use search and local neighborhood controls for exploration; use host selections and slicers for model filtering.",
         "MODEL: separate source-node and target-node dimension tables avoid ambiguous bidirectional filter paths. Type dimensions filter edge facts through single-direction many-to-one relationships. Cycles in the drawn graph are not model relationship cycles.",
         "LIMITS: this is a bounded relationship explorer, not a DAG/process miner, causal inference engine, fraud detector, arbitrary large-graph engine, or raw-event deduplication service. Incomplete known weight is not a complete total or financial balance.",
         "RELEASE CHECK: the embedded private visual is assembled from the actual release PBIVIZ. sample-validation.json records archive and per-resource SHA-256 equality. This source project is not a PBIX and is not evidence of Microsoft certification.",
-        "NATIVE GATE: refresh, inspect both graphs and tooltips, test slicer/table cross-filtering, save and reopen, then Save As PBIX. Retest offline and verify the embedded version/content before submitting. No native validation is claimed by this authored source."
+        "NATIVE GATE: refresh, inspect all four graphs and tooltips, test slicer/table cross-filtering, save and reopen, then Save As PBIX. Retest offline and verify the embedded version/content before submitting. No native validation is claimed by this authored source."
     ];
     await put(path.join(reportRoot, "definition", "pages", "PageHints", "visuals", "Hints", "visual.json"),
         textBox("Hints", hints.join("\n\n"), 32, 24, 1290, 712, "14pt"));
@@ -247,7 +331,7 @@ async function author() {
     await put(path.join(reportRoot, "definition", "pages", "pages.json"), { $schema: schemas.pages, pageOrder: pages, activePageName: pages[0] });
     await put(path.join(reportRoot, "definition", "report.json"), { $schema: schemas.report, themeCollection: {}, resourcePackages: [] });
     await put(path.join(sample, "sample-contract.json"), contract);
-    console.log("Authored 3 PBIR pages, 2 bound graphs, 8 typed TMDL tables, 14 measures and 6 model relationships.");
+    console.log("Authored 5 PBIR pages, 4 bound graphs, 12 typed TMDL tables, 21 measures and 9 model relationships.");
 }
 
 async function artifact() {
@@ -363,8 +447,11 @@ async function validate(release) {
     assert.equal(inside(path.join(customRoot, "resources"), report.resourcePackages[0].items[0].path), inside(customRoot, release.resource.file));
     const contract = await json(path.join(sample, "sample-contract.json"));
     assert.equal(contract.source, "samples/OfflineSamples.pq", "Unexpected literal sample source");
-    assert.equal(contract.sourceSha256, hash(await readFile(path.join(root, "samples", "OfflineSamples.pq"))),
+    const pq = await readFile(path.join(root, "samples", "OfflineSamples.pq"), "utf8");
+    assert.equal(contract.sourceSha256, hash(pq),
         "Sample contract differs from its literal source; regenerate the authored sample");
+    assert.deepEqual(contract.domains.map(({ table, variable, count }) => ({ table, variable, count })),
+        domains.map(({ table, variable, count }) => ({ table, variable, count })), "Unexpected sample domains");
     const expectedTables = new Map();
     const expectedRelationships = [];
     const tableFiles = (await readdir(path.join(modelRoot, "definition", "tables"))).sort();
@@ -382,18 +469,23 @@ async function validate(release) {
     assertUniqueMeasureNames(contract.domains.map(domain => ({ table: domain.table, measures: domain.measures.map(([name]) => name) })));
     for (const domain of contract.domains) {
         assert.equal(domain.rows.length, domain.count);
+        assert.deepEqual(domain.rows, literalRows(pq, domain), `Contract rows differ from literal source: ${domain.table}`);
         assert.deepEqual(domain.measures, measureDefinitions(domain.table), `Stale measure metadata: ${domain.table}`);
         const source = modelTables.get(`${domain.table}.tmdl`);
         assert.equal(source, tableDefinition(domain.table, domain.rows), `Authored literal table or measure changed: ${domain.table}`);
-        expectedTables.set(domain.table, new Map([...columns.map(([name, type]) => [name, type]), ...domain.measures.map(([name]) => [name, "measure"])]));
+        const tableColumns = domain.table === "Contributions" ? contributionColumns : columns;
+        expectedTables.set(domain.table, new Map([...tableColumns.map(([name, type]) => [name, type]), ...domain.measures.map(([name]) => [name, "measure"])]));
         for (const dimension of domain.dimensions) {
             assert.equal(new Set(dimension.values).size, dimension.values.length);
             assert.equal(await readFile(path.join(modelRoot, "definition", "tables", `${dimension.table}.tmdl`), "utf8"), dimensionDefinition(dimension.table, dimension.field, dimension.values));
             expectedTables.set(dimension.table, new Map([[dimension.field, "string"]]));
             const suffix = dimension.table.slice(domain.table.length);
             const factColumn = suffix === "Sources" ? "SourceID" : suffix === "Targets" ? "TargetID" : "RelationshipType";
-            const index = columns.findIndex(([name]) => name === factColumn);
-            assert(domain.rows.every(row => dimension.values.includes(row[index])), `Orphan relationship key in ${domain.table}`);
+            const index = tableColumns.findIndex(([name]) => name === factColumn);
+            assert.deepEqual(dimension.values, [...new Set(domain.rows.map(row => row[index]).filter(value => value !== null))].sort(),
+                `Stale dimension values in ${dimension.table}`);
+            assert(domain.rows.every(row => (factColumn === "TargetID" && row[index] === null) || dimension.values.includes(row[index])),
+                `Orphan relationship key in ${domain.table}`);
             expectedRelationships.push(`relationship ${domain.table}_${suffix}\n\tfromColumn: ${domain.table}.${factColumn}\n\ttoColumn: ${dimension.table}.${dimension.field}\n\tcrossFilteringBehavior: oneDirection\n`);
         }
     }
@@ -408,7 +500,7 @@ async function validate(release) {
         assert(!/(?:Web\.|File\.|Folder\.|Sql\.|OData\.|SharePoint\.|AzureStorage\.|AnalysisServices\.|Extension\.|Value\.NativeQuery|dataSource\s|https?:\/\/|powerbi:\/\/)/i.test(text.replace(/"\$schema":\s*"[^"]+"/g, "")), `External data source forbidden: ${filename}`);
     }
     const pages = await json(path.join(reportRoot, "definition", "pages", "pages.json"));
-    assert.deepEqual(pages.pageOrder, ["PageServices", "PageAccounts", "PageHints"]);
+    assert.deepEqual(pages.pageOrder, ["PageServices", "PageAccounts", "PageCircular", "PageRadial", "PageHints"]);
     assert(pages.pageOrder.includes(pages.activePageName));
     let graphCount = 0;
     let bindings = 0;
@@ -427,12 +519,15 @@ async function validate(release) {
             assert(position.x >= 0 && position.y >= 0 && position.x + position.width <= page.width && position.y + position.height <= page.height, `Off-page visual: ${container.name}`);
             if (container.visual.visualType === guid) {
                 graphCount++;
+                const tableName = pageName === "PageCircular" ? "Contributions" : pageName === "PageRadial" ? "Services" : pageName.slice("Page".length);
+                const expectedLayout = pageName === "PageCircular" ? "circular" : pageName === "PageRadial" ? "radial" : undefined;
+                if (expectedLayout) assert.deepEqual(container.visual.objects.exploration[0].properties.layout, literal(expectedLayout));
                 const state = container.visual.query.queryState;
-                assert.deepEqual(Object.keys(state).sort(), ["edgeId", "relationshipType", "source", "target", "tooltips", "weight"]);
+                assert.deepEqual(Object.keys(state).sort(), [pageName === "PageCircular" ? "itemId" : "edgeId", "relationshipType", "source", "target", "tooltips", "weight"].sort());
                 const expectedRoleFields = {
-                    source: ["SourceID"], target: ["TargetID"], relationshipType: ["RelationshipType"], edgeId: ["EdgeID"],
-                    weight: [measureName(pageName.slice("Page".length), "Total Weight")],
-                    tooltips: ["Average Duration ms", "Events", "Input Rows"].map(name => measureName(pageName.slice("Page".length), name))
+                    source: ["SourceID"], target: ["TargetID"], relationshipType: ["RelationshipType"], edgeId: ["EdgeID"], itemId: ["ItemID"],
+                    weight: [measureName(tableName, "Total Weight")],
+                    tooltips: ["Average Duration ms", "Events", "Input Rows"].map(name => measureName(tableName, name))
                 };
                 for (const [name, value] of Object.entries(state)) {
                     assert(roleNames.has(name), `Role absent from final visual: ${name}`);
@@ -441,7 +536,7 @@ async function validate(release) {
                     assert.deepEqual(value.projections.map(item => (item.field.Column || item.field.Measure)?.Property), expectedRoleFields[name], `Unexpected sample field mapping for ${name}`);
                     for (const item of value.projections) {
                         const reference = item.field.Column || item.field.Measure;
-                        assert.equal(reference?.Expression.SourceRef.Entity, pageName.slice("Page".length), `Cross-domain field mapping for ${name}`);
+                        assert.equal(reference?.Expression.SourceRef.Entity, tableName, `Cross-domain field mapping for ${name}`);
                         const type = expectedTables.get(reference?.Expression.SourceRef.Entity)?.get(reference?.Property);
                         assert.equal(type, ["weight", "tooltips"].includes(name) ? "measure" : "string", `Incorrect role binding type: ${name}`);
                     }
@@ -464,7 +559,7 @@ async function validate(release) {
         assert.equal(new Set(ids).size, ids.length);
         for (const interaction of page.visualInteractions || []) assert(ids.includes(interaction.source) && ids.includes(interaction.target), "Broken interaction link");
     }
-    assert.equal(graphCount, 2);
+    assert.equal(graphCount, 4);
     const accounts = contract.domains.find(domain => domain.table === "Accounts");
     assert(accounts.rows.every(row => /^000[1-8]$/.test(row[0]) && /^000[1-8]$/.test(row[1])), "Leading-zero text IDs must be preserved");
     assert.equal(accounts.rows.filter(row => row[3] === "T01").reduce((sum, row) => sum + row[4], 0), 120);

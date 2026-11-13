@@ -2,11 +2,12 @@ import powerbi from "powerbi-visuals-api";
 import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 import { createFormatter, NetworkData, readData, tooltipValues } from "./data";
 import { FocusMode, GraphEdge, GraphItem, GraphItemEdge, GraphIndex, indexGraph, reachable, shortestPath, summarizeSelfLinks } from "./graph";
-import { Layout, LayoutOptions, layoutBounds, layoutGraph, topologySignature } from "./layout";
+import { Layout, LayoutOptions, layoutBounds, layoutGraph, resolveLayout, topologySignature } from "./layout";
 import { circularColor, CircularBaseLayout, CircularDetailLayout } from "./circular";
-import { parseSavedView, SavedView, ViewPreference } from "./navigation";
+import { geometryFingerprint, parseSavedView, SavedView, ViewPreference } from "./navigation";
 import { relationshipSelection } from "./selection";
 import { hideSelfLinks, resolveColorMode, Settings } from "./settings";
+import type { LayoutMode } from "./settings";
 import { ar, en, MessageKey } from "./strings";
 import { thirdPartyNotices } from "./thirdPartyNotices";
 import "../style/visual.less";
@@ -49,6 +50,8 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     private readonly entity = element("select");
     private readonly focusMode = element("select");
     private readonly pathTarget = element("select");
+    private readonly layoutChoice = element("select");
+    private readonly centerChoice = element("select");
     private readonly circularControls = element("div", "network-circle-controls");
     private readonly badgeLegend = element("div", "network-badge-legend");
     private readonly viewButton: HTMLButtonElement;
@@ -79,6 +82,9 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     private targetId = "";
     private viewPreference: ViewPreference = "auto";
     private configuredView: ViewPreference = "auto";
+    private layoutMode: LayoutMode = "force";
+    private configuredLayout: LayoutMode = "force";
+    private requestedRoot = "";
     private savedViewValue: string | undefined;
     private compact: boolean | undefined;
     private toolsOpen = false;
@@ -194,6 +200,27 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     }
 
     private buildToolbar(): void {
+        this.layoutChoice.dataset.control = "layout";
+        this.layoutChoice.setAttribute("aria-label", this.t("LayoutChoice"));
+        for (const [value, key] of [["force", "LayoutForce"], ["circular", "LayoutCircular"], ["radial", "LayoutRadial"]] as const) {
+            const option = element("option");
+            option.value = value;
+            option.textContent = this.t(key);
+            this.layoutChoice.append(option);
+        }
+        this.layoutChoice.addEventListener("change", () => {
+            const value = this.layoutChoice.value;
+            if (value !== "force" && value !== "circular" && value !== "radial") return;
+            this.layoutMode = value;
+            this.populateEntities();
+            this.localFocusChanged();
+        });
+        this.centerChoice.dataset.control = "layout-center";
+        this.centerChoice.setAttribute("aria-label", this.t("RadialCenter"));
+        this.centerChoice.addEventListener("change", () => {
+            this.requestedRoot = this.centerChoice.value;
+            this.localFocusChanged();
+        });
         this.circularControls.append(
             this.button("AllItems", "all-items", () => this.setCircularDetail(this.circularDetail === "allItems" ? "overview" : "allItems")),
             this.button("ResetCircle", "reset-circle", () => this.setCircularDetail("overview"))
@@ -243,7 +270,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             this.localFocusChanged();
         });
         this.toolbar.append(
-            this.search, this.entity, this.focusMode, this.pathTarget, this.circularControls,
+            this.layoutChoice, this.centerChoice, this.search, this.entity, this.focusMode, this.pathTarget, this.circularControls,
             this.button("ResetFocus", "reset-focus", () => {
                 this.mode = "all";
                 this.focusMode.value = "all";
@@ -299,7 +326,8 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         }
         const size = this.plotSize();
         const state: SavedView = {
-            version: 1, focus: this.focusId, target: this.targetId, mode: this.mode,
+            version: 2, layout: this.layoutMode, root: this.requestedRoot, geometry: geometryFingerprint(this.layout.signature),
+            focus: this.focusId, target: this.targetId, mode: this.mode,
             search: this.search.value, view: this.viewPreference,
             centerX: (size.width / 2 - this.camera.x) / this.camera.scale,
             centerY: (size.height / 2 - this.camera.y) / this.camera.scale, scale: this.camera.scale,
@@ -337,6 +365,8 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             this.circularSource = this.circularTarget = this.circularItem = "";
             this.search.value = "";
             this.viewPreference = this.configuredView;
+            this.layoutMode = this.configuredLayout;
+            this.requestedRoot = "";
             this.autoFit = true;
             if (value !== undefined) this.notice.textContent = this.t("BadSavedView");
             return undefined;
@@ -346,11 +376,13 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         this.mode = state.mode;
         this.search.value = state.search;
         this.viewPreference = state.view;
+        this.layoutMode = state.version === 2 ? state.layout : state.circularDetail ? this.configuredLayout : "force";
+        this.requestedRoot = state.version === 2 ? state.root : "";
         this.circularDetail = state.circularDetail ?? "overview";
         this.circularSource = state.circularSource ?? "";
         this.circularTarget = state.circularTarget ?? "";
         this.circularItem = state.circularItem ?? "";
-        this.autoFit = false;
+        this.autoFit = true;
         return state;
     }
 
@@ -387,6 +419,12 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
                 this.configuredView = configured;
                 this.viewPreference = configured;
             }
+            const layout = this.settings.exploration.layout.value.value;
+            const validLayout: LayoutMode = layout === "radial" || layout === "circular" ? layout : "force";
+            if (validLayout !== this.configuredLayout) {
+                this.configuredLayout = validLayout;
+                this.layoutMode = validLayout;
+            }
             if (!this.data.graph.nodes.some(node => node.id === this.focusId)) {
                 this.focusId = this.data.graph.nodes[0]?.id ?? "";
                 this.mode = "all";
@@ -404,7 +442,8 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
                 this.autoFit = true;
             }
             this.ensureLayout();
-            if (restored) this.autoFit = false;
+            const restoreCamera = restored?.version === 2 && restored.geometry === geometryFingerprint(this.layout.signature);
+            if (restoreCamera) this.autoFit = false;
             this.applyResponsive();
             this.populateEntities();
             this.applyTheme();
@@ -412,7 +451,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             this.renderList();
             this.syncSelection();
             this.renderStatus();
-            if (restored) {
+            if (restored && restoreCamera) {
                 const size = this.plotSize();
                 this.camera = { scale: restored.scale, x: size.width / 2 - restored.centerX * restored.scale, y: size.height / 2 - restored.centerY * restored.scale };
                 this.transform();
@@ -460,13 +499,28 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     private populateEntities(): void {
         this.entity.replaceChildren();
         this.pathTarget.replaceChildren();
+        this.centerChoice.replaceChildren();
+        const automatic = element("option");
+        automatic.value = "";
+        automatic.textContent = this.t("AutomaticCenter");
+        this.centerChoice.append(automatic);
         for (const node of this.data.graph.nodes) {
             const option = element("option");
             option.value = node.id;
             option.textContent = this.nodeLabel(node.id);
             this.entity.append(option);
             this.pathTarget.append(option.cloneNode(true));
+            this.centerChoice.append(option.cloneNode(true));
         }
+        if (this.requestedRoot && !this.index.nodes.has(this.requestedRoot)) {
+            const missing = element("option");
+            missing.value = this.requestedRoot;
+            missing.textContent = `${this.t("Missing")}: ${this.requestedRoot}`;
+            this.centerChoice.append(missing);
+        }
+        this.centerChoice.value = this.requestedRoot;
+        this.centerChoice.hidden = this.layoutMode !== "radial";
+        this.layoutChoice.value = this.layoutMode;
         this.entity.value = this.focusId;
         this.pathTarget.value = this.targetId;
         this.focusMode.value = this.mode;
@@ -526,7 +580,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             (!path || pathEdges.has(edge.id)) && this.layout.routes.has(edge.id));
     }
 
-    private isCircular(): boolean { return this.settings.exploration.layoutMode.value.value === "circular"; }
+    private isCircular(): boolean { return this.layoutMode === "circular"; }
 
     private darkSurface(): boolean {
         const value = this.host.colorPalette.background?.value ?? "#ffffff";
@@ -547,7 +601,8 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     private layoutOptions(): LayoutOptions {
         const exploration = this.settings.exploration;
         return {
-            layoutMode: this.isCircular() ? "circular" : "force",
+            layoutMode: this.layoutMode,
+            requestedRoot: this.requestedRoot,
             circularOrder: exploration.circularOrder.value.value === "weight" ? "weight" : "alphabetical",
             selfLinks: exploration.selfLinks.value.value === "show" ? "show" : exploration.selfLinks.value.value === "hide" ? "hide" : "auto",
             roleRings: this.settings.appearance.roleRings.value,
@@ -568,6 +623,8 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             this.autoFit = true;
             this.page = 0;
         }
+        this.root.dataset.layout = this.layoutMode;
+        this.root.dataset.layoutCenter = this.layout.root ?? "";
     }
 
     private setCircularDetail(detail: NonNullable<SavedView["circularDetail"]>, source = "", target = ""): void {
@@ -960,6 +1017,13 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         if (!this.interactionsAllowed()) messages.push(this.t("InteractionsDisabled"));
         if (this.viewport.width < 180 || this.viewport.height < 150) messages.push(this.t("MicroHelp"));
         if (this.isCircular()) messages.push(this.circularDisclosure());
+        if (this.layoutMode === "radial") {
+            const resolved = resolveLayout(graph, "radial", this.requestedRoot);
+            messages.push(this.t("RadialHelp"));
+            if (this.layout.root) messages.push(`${this.t("EffectiveCenter")}: ${this.nodeLabel(this.layout.root)}. ${this.t("ComponentCenters")}: ${this.layout.roots?.length ?? 0}.`);
+            if (!this.requestedRoot || resolved.missingRoot) messages.push(this.t("AutomaticCenterHelp"));
+            if (resolved.missingRoot) messages.push(this.t("MissingCenter"));
+        }
         this.status.textContent = messages.join(" ");
         this.status.title = this.status.textContent;
     }
@@ -1052,6 +1116,16 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
                     select.title = this.t(native.reason === "limit" ? "SelectionLimit" : "SelectionMissing");
                 }
                 actions.append(focus, inspect, select);
+                if (this.layoutMode === "radial") {
+                    const center = this.button("CenterNode", "center-node", () => {
+                        this.requestedRoot = node.id;
+                        this.populateEntities();
+                        this.localFocusChanged();
+                        this.centerChoice.focus();
+                    });
+                    center.dataset.focusKey = node.id;
+                    actions.append(center);
+                }
                 row.append(name, counts, actions);
                 items.append(row);
             }

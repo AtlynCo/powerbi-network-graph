@@ -1,5 +1,10 @@
 # Local compiled-package validation
 
+Current `1.2.0.0` evidence and benchmark results are recorded in
+[RESULTS-1.2.md](RESULTS-1.2.md). Circular overview and Radial use
+topology-cold render; Two-Ring measures entry from Circular overview.
+These operations are not directly interchangeable.
+
 These checks run **only in the current worktree**, with the cached Chromium
 binary and browser profiles under `.browser-cache` / `.tool-home`. No GitHub
 Actions, hosted CI, Codespaces, cloud sessions, native application automation,

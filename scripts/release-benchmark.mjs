@@ -52,7 +52,7 @@ const report = {
         contention: "Other editor/visual/browser sessions may be active on this shared machine. Relevant process CPU counters and aggregate CPU busy delta recorded before/after; Windows os.loadavg is not a useful load signal."
     },
     machine: { hostname: os.hostname(), platform: os.platform(), release: os.release(), architecture: os.arch(), cpu: os.cpus()[0]?.model, logicalCpus: os.cpus().length, ramBytes: os.totalmem(), freeRamBefore: os.freemem(), node: process.version },
-    budgetsP95EndToEndMs: budgets, results: [], passed: false
+    budgetsP95EndToEndMs: budgets, results: [], layoutResults: [], passed: false
 };
 try {
     harness = await createBrowserHarness();
@@ -144,6 +144,62 @@ try {
             await writeReport(`release-benchmark-${tag}.json`, report);
         }
     }
+    report.methodology.layoutComparison = "Force uses the existing cold-render results. Circular overview and Radial measure a topology update after an empty view; two-ring detail measures entry from Circular overview. Two frames are included. Item IDs are unique per relationship, with repeated rows sharing an ID. These exploratory layout observations have no separate p95 budget.";
+    for (const fixtureName of ["typical", "maximum"]) {
+        const rows = fixtures[fixtureName].map(row => ({ ...row, itemId: `item-${row.edgeId}` }));
+        for (const layout of ["circular-overview", "circular-two-ring", "radial"]) {
+            const options = {
+                edgeIds: true, itemIds: layout !== "radial",
+                objects: { exploration: { layout: layout === "radial" ? "radial" : "circular", view: "split" } }
+            };
+            await harness.mount({ width: 1366, height: 768 });
+            await harness.update(rows, options);
+            await page.evaluate(({ rows, options }) => {
+                window.layoutBenchmarkView = window.fixture.createView(rows, options);
+            }, { rows, options });
+            const values = await page.evaluate(async ({ options, layout, samples, warmup }) => {
+                const state = window.fixture;
+                const frame = () => new Promise(resolve => window.requestAnimationFrame(resolve));
+                const paint = async () => { await frame(); await frame(); };
+                const results = [];
+                for (let sample = -warmup; sample < samples; sample++) {
+                    if (layout === "circular-two-ring") {
+                        const reset = state.container.querySelector('[data-action="reset-circle"]');
+                        if (!reset.disabled) reset.click();
+                    } else state.update([], options);
+                    await paint();
+                    const started = window.performance.now();
+                    if (layout === "circular-two-ring") state.container.querySelector('[data-action="all-items"]').click();
+                    else {
+                        state.view = window.layoutBenchmarkView;
+                        state.visual.update({ dataViews: [state.view], viewport: { width: 1366, height: 768 }, type: 2 });
+                    }
+                    const synchronousMs = window.performance.now() - started;
+                    await paint();
+                    if (state.calls.lifecycle.at(-1) !== "finished") throw new Error("Layout benchmark rendered an error state");
+                    if (sample >= 0) results.push({ synchronousMs, endToEndMs: window.performance.now() - started });
+                }
+                return results;
+            }, { options, layout, samples, warmup });
+            const visibleTopology = await page.locator("#visual").evaluate(element => ({
+                nodes: element.querySelectorAll(".network-node").length,
+                edges: element.querySelectorAll(".network-edge").length,
+                items: element.querySelectorAll(".network-item").length
+            }));
+            assert.equal(visibleTopology.nodes, fixtureName === "maximum" ? 250 : 7, "Wrong layout topology");
+            if (layout === "circular-two-ring") assert(visibleTopology.items > 0, "Two-ring benchmark did not render items");
+            else assert.equal(visibleTopology.items, 0);
+            const result = {
+                fixture: fixtureName, layout, operation: layout === "circular-two-ring" ? "detail-entry" : "cold-render",
+                rows: rows.length, fixtureSha256: digest(JSON.stringify(rows)), visibleTopology,
+                synchronousMs: summarize(values.map(value => value.synchronousMs)),
+                endToEndMs: summarize(values.map(value => value.endToEndMs)), values
+            };
+            report.layoutResults.push(result);
+            console.log(`${fixtureName} ${layout}: p50 ${result.endToEndMs.p50.toFixed(1)} / p95 ${result.endToEndMs.p95.toFixed(1)} / max ${result.endToEndMs.max.toFixed(1)} ms`);
+            await writeReport(`release-benchmark-${tag}.json`, report);
+        }
+    }
     const cpuAfter = cpu();
     const total = values => Object.values(values).reduce((sum, value) => sum + value, 0);
     const elapsed = cpuAfter.reduce((sum, core, i) => sum + total(core) - total(cpuBefore[i]), 0);
@@ -179,6 +235,7 @@ try {
 } finally {
     report.finished = new Date().toISOString();
     await writeReport(`release-benchmark-${tag}.json`, report);
+    if (tag === "final") await writeReport("release-benchmark.json", report);
     await harness?.close();
     await lock.close();
     await unlink(lockPath);

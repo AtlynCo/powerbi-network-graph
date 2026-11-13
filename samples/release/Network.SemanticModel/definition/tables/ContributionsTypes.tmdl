@@ -1,0 +1,17 @@
+table ContributionsTypes
+
+	column RelationshipType
+		dataType: string
+		isKey
+		sourceColumn: RelationshipType
+		summarizeBy: none
+
+	partition ContributionsTypes = m
+		mode: import
+		source =
+			#table(type table [RelationshipType = text], {
+				{"PR"},
+				{"Spec"}
+			})
+
+	annotation PBI_ResultType = Table

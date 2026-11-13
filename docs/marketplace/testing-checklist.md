@@ -1,5 +1,11 @@
 # Submission and additional-certification gates
 
+**Current target:** `1.2.0.0`. The 2026-11-13 source sample has five pages,
+12 tables, 21 measures and nine relationships. Earlier native observations
+below do not validate its current PBIVIZ or PBIP. Native Desktop conversion,
+host matrix, native listing screenshots, publisher verification, upload and
+Microsoft review remain open.
+
 **Verified requirements: 2026-09-09. Only the explicitly dated coordinator observations below represent completed native coverage; none represents a Microsoft certification test.**
 
 **2026-09-10 owner approval:** external Atlyn storefront subscription acquisition with ungated visual runtime/free shared viewing. There is no paid-author enforcement or pending runtime licensing integration. Preserve offline behavior; do not add keys, new signing/AAD/API systems, feature gates or requests. The additional Microsoft Power BI visual certification badge is a required release outcome, not a completed gate. Main/certification refs, merging and submission remain held for the parent's final gate.

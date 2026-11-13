@@ -2,12 +2,12 @@ import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import powerbi from "powerbi-visuals-api";
 import { sanitizeBlankTargetLabel } from "./graph";
 
-export type LayoutMode = "force" | "circular";
+export type LayoutMode = "force" | "circular" | "radial";
 export type CircularOrder = "alphabetical" | "weight";
 export type SelfLinks = "auto" | "show" | "hide";
 export type ColorMode = "auto" | "source" | "relationshipType" | "uniform";
 export interface CircularSettings {
-    layoutMode: LayoutMode;
+    layout: LayoutMode;
     circularOrder: CircularOrder;
     selfLinks: SelfLinks;
     groupBlankTargets: boolean;
@@ -24,7 +24,7 @@ export function parseCircularSettings(objects?: powerbi.DataViewObjects): Circul
     const exploration = objects?.exploration;
     const appearance = objects?.appearance;
     return {
-        layoutMode: enumValue(exploration?.layoutMode, ["force", "circular"], "force"),
+        layout: enumValue(exploration?.layout, ["force", "circular", "radial"], "force"),
         circularOrder: enumValue(exploration?.circularOrder, ["alphabetical", "weight"], "alphabetical"),
         selfLinks: enumValue(exploration?.selfLinks, ["auto", "show", "hide"], "auto"),
         groupBlankTargets: exploration?.groupBlankTargets === true,
@@ -92,9 +92,10 @@ class Exploration extends formattingSettings.SimpleCard {
             { value: "graph", displayNameKey: "ViewGraph" }, { value: "list", displayNameKey: "ViewList" }
         ]
     });
-    public layoutMode = new formattingSettings.ItemDropdown({
-        name: "layoutMode", displayNameKey: "LayoutMode", value: { value: "force", displayNameKey: "LayoutForce" },
-        items: [{ value: "force", displayNameKey: "LayoutForce" }, { value: "circular", displayNameKey: "LayoutCircular" }]
+    public layout = new formattingSettings.ItemDropdown({
+        name: "layout", displayNameKey: "LayoutMode", value: { value: "force", displayNameKey: "LayoutForce" },
+        items: [{ value: "force", displayNameKey: "LayoutForce" }, { value: "circular", displayNameKey: "LayoutCircular" },
+            { value: "radial", displayNameKey: "LayoutRadial" }]
     });
     public circularOrder = new formattingSettings.ItemDropdown({
         name: "circularOrder", displayNameKey: "CircularOrder", value: { value: "alphabetical", displayNameKey: "OrderAlphabetical" },
@@ -113,14 +114,14 @@ class Exploration extends formattingSettings.SimpleCard {
     public blankTargetLabel = new formattingSettings.TextInput({
         name: "blankTargetLabel", displayNameKey: "BlankTargetLabel", value: "External / unknown", placeholder: "External / unknown"
     });
-    public override slices = [this.view, this.layoutMode, this.circularOrder, this.selfLinks, this.groupBlankTargets, this.blankTargetLabel];
+    public override slices = [this.view, this.layout, this.circularOrder, this.selfLinks, this.groupBlankTargets, this.blankTargetLabel];
     public override onPreProcess(): void {
         const parsed = parseCircularSettings({ exploration: {
-            layoutMode: this.layoutMode.value.value, circularOrder: this.circularOrder.value.value,
+            layout: this.layout.value.value, circularOrder: this.circularOrder.value.value,
             selfLinks: this.selfLinks.value.value, groupBlankTargets: this.groupBlankTargets.value,
             blankTargetLabel: this.blankTargetLabel.value
         } });
-        this.layoutMode.value = this.layoutMode.items.find(item => item.value === parsed.layoutMode)!;
+        this.layout.value = this.layout.items.find(item => item.value === parsed.layout)!;
         this.circularOrder.value = this.circularOrder.items.find(item => item.value === parsed.circularOrder)!;
         this.selfLinks.value = this.selfLinks.items.find(item => item.value === parsed.selfLinks)!;
         this.groupBlankTargets.value = parsed.groupBlankTargets;

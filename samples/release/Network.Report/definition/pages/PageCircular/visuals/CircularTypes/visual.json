@@ -1,0 +1,72 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "CircularTypes",
+  "position": {
+    "x": 24,
+    "y": 100,
+    "width": 240,
+    "height": 150,
+    "z": 1024,
+    "tabOrder": 1024
+  },
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ContributionsTypes"
+                    }
+                  },
+                  "Property": "RelationshipType"
+                }
+              },
+              "queryRef": "ContributionsTypes.RelationshipType",
+              "nativeQueryRef": "RelationshipType"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Relationship type'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Relationship type'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

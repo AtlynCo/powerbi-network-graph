@@ -17,7 +17,7 @@ const json = (filename: string) => JSON.parse(readFileSync(path.join(process.cwd
 describe("circular settings and localized contracts", () => {
     it("keeps safe backward-compatible defaults and resolves automatic self-links/colors by layout mode", () => {
         expect(parseCircularSettings()).toEqual({
-            layoutMode: "force", circularOrder: "alphabetical", selfLinks: "auto", groupBlankTargets: false,
+            layout: "force", circularOrder: "alphabetical", selfLinks: "auto", groupBlankTargets: false,
             blankTargetLabel: "External / unknown", colorMode: "auto", roleRings: true
         });
         expect(hideSelfLinks("force")).toBe(false);
@@ -30,27 +30,27 @@ describe("circular settings and localized contracts", () => {
     });
     it("sanitizes invalid enums, booleans and bounded trimmed labels without coercion", () => {
         const invalid = {
-            exploration: { layoutMode: "unknown", circularOrder: false, selfLinks: 0, groupBlankTargets: "true", blankTargetLabel: " \t " },
+            exploration: { layout: "unknown", circularOrder: false, selfLinks: 0, groupBlankTargets: "true", blankTargetLabel: " \t " },
             appearance: { colorMode: "unknown", roleRings: 0 }
         } as unknown as powerbi.DataViewObjects;
         expect(parseCircularSettings(invalid)).toEqual(parseCircularSettings());
         expect(parseCircularSettings({ exploration: { blankTargetLabel: "  Outside  " } }).blankTargetLabel).toBe("Outside");
         expect(parseCircularSettings({ exploration: { blankTargetLabel: "x".repeat(100) } }).blankTargetLabel).toHaveLength(80);
         expect(parseCircularSettings({
-            exploration: { layoutMode: "circular", circularOrder: "weight", selfLinks: "show", groupBlankTargets: true },
+            exploration: { layout: "circular", circularOrder: "weight", selfLinks: "show", groupBlankTargets: true },
             appearance: { colorMode: "source", roleRings: false }
-        })).toMatchObject({ layoutMode: "circular", circularOrder: "weight", selfLinks: "show", groupBlankTargets: true, colorMode: "source", roleRings: false });
+        })).toMatchObject({ layout: "circular", circularOrder: "weight", selfLinks: "show", groupBlankTargets: true, colorMode: "source", roleRings: false });
     });
     it("builds modern formatting cards with matching capability slices and sanitized model values", () => {
         const capabilities = json("capabilities.json");
         const service = new FormattingSettingsService();
         const model = service.populateFormattingSettingsModel(Settings, {
-            metadata: { columns: [], objects: { exploration: { blankTargetLabel: "x".repeat(100), layoutMode: "circular" } } }
+            metadata: { columns: [], objects: { exploration: { blankTargetLabel: "x".repeat(100), layout: "circular" } } }
         });
         const result = service.buildFormattingModel(model);
         expect(result.cards).toHaveLength(2);
         expect(model.exploration.blankTargetLabel.value).toHaveLength(80);
-        expect(model.exploration.layoutMode.value.value).toBe("circular");
+        expect(model.exploration.layout.value.value).toBe("circular");
         for (const card of model.cards) {
             for (const slice of card.slices) {
                 expect(capabilities.objects[card.name].properties[slice.name]).toBeDefined();

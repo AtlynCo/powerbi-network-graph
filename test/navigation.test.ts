@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseSavedView, SavedView } from "../src/navigation";
+import { geometryFingerprint, parseSavedView, SavedView } from "../src/navigation";
 
 const legacy: SavedView = {
     version: 1, focus: "", target: "", mode: "all", search: "", view: "auto",
@@ -23,5 +23,18 @@ describe("Circular saved views", () => {
             { circularSource: "s:A" }, { circularDetail: "allItems", circularItem: 4 },
             { circularDetail: "allItems", circularItem: "x".repeat(2049) }
         ]) expect(parseSavedView(JSON.stringify({ ...legacy, ...fields }))).toBeNull();
+    });
+    it("validates v2 layout, center, geometry and circular detail together", () => {
+        const state = {
+            ...legacy, version: 2, layout: "radial", root: "s:A",
+            geometry: geometryFingerprint("topology"), circularDetail: "pair",
+            circularSource: "s:A", circularTarget: "s:B", circularItem: "item"
+        };
+        expect(parseSavedView(JSON.stringify(state))).toEqual(state);
+        for (const fields of [
+            { layout: "bad" }, { layout: ["radial"] }, { root: 1 }, { root: "x".repeat(600) },
+            { geometry: "" }, { geometry: "z".repeat(32) }, { geometry: 3 },
+            { circularTarget: "" }, { scale: 0 }, { centerX: 1000001 }
+        ]) expect(parseSavedView(JSON.stringify({ ...state, ...fields }))).toBeNull();
     });
 });

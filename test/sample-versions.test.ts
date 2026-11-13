@@ -4,6 +4,15 @@ import { describe, expect, it } from "vitest";
 import { assertReportVersions, PBIR_ARTIFACT_VERSION, PBIR_DEFINITION_VERSION } from "../scripts/sample-report-versions.mjs";
 
 describe("independent PBIR artifact and report-definition versions", () => {
+    it("keeps the unified visual and npm versions synchronized", () => {
+        const visual = JSON.parse(readFileSync("pbiviz.json", "utf8"));
+        const metadata = JSON.parse(readFileSync("package.json", "utf8"));
+        const lock = JSON.parse(readFileSync("package-lock.json", "utf8"));
+        expect(visual.visual.version).toBe("1.2.0.0");
+        expect(metadata.version).toBe("1.2.0");
+        expect(lock.version).toBe(metadata.version);
+        expect(lock.packages[""].version).toBe(metadata.version);
+    });
     it("keeps the artifact at 4.0 and the page-definition format at 2.0.0", () => {
         expect(PBIR_ARTIFACT_VERSION).toBe("4.0");
         expect(PBIR_DEFINITION_VERSION).toBe("2.0.0");

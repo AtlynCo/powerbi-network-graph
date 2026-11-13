@@ -10,6 +10,10 @@ $reportArtifactVersion = "4.0"
 $reportDefinitionVersion = "2.0.0"
 Add-Type -Path $assembly
 $database = [Microsoft.AnalysisServices.Tabular.TmdlSerializer]::DeserializeDatabaseFromFolder($definition)
+$validation = $database.Model.Validate()
+if ($validation.ContainsErrors) {
+    throw "Microsoft TOM model validation failed: $($validation.Errors -join '; ')"
+}
 $measureOwners = [System.Collections.Generic.Dictionary[string,string]]::new([StringComparer]::OrdinalIgnoreCase)
 $measureNames = @(
     foreach ($table in $database.Model.Tables) {
@@ -22,14 +26,14 @@ $measureNames = @(
         }
     }
 )
-if ($database.Model.Tables.Count -ne 8 -or $database.Model.Relationships.Count -ne 6) {
-    throw "The deserialized model does not contain the expected eight tables and six relationships."
+if ($database.Model.Tables.Count -ne 12 -or $database.Model.Relationships.Count -ne 9) {
+    throw "The deserialized model does not contain the expected twelve tables and nine relationships."
 }
 $tables = @($database.Model.Tables | ForEach-Object {
     [pscustomobject][ordered]@{ name = $_.Name; columns = $_.Columns.Count; measures = $_.Measures.Count; partitions = $_.Partitions.Count }
 })
 $measures = ($tables | Measure-Object -Property measures -Sum).Sum
-if ($measures -ne 14) { throw "The deserialized model does not contain fourteen measures." }
+if ($measures -ne 21) { throw "The deserialized model does not contain twenty-one measures." }
 foreach ($file in @("definition.pbir", "definition\version.json", "definition\report.json", "definition\pages\pages.json")) {
     if (-not (Test-Path -LiteralPath (Join-Path $reportRoot $file) -PathType Leaf)) {
         throw "Required PBIR structure missing: $file"
@@ -54,6 +58,8 @@ $result = [ordered]@{
     passed = $true
     checkedAt = [DateTimeOffset]::UtcNow.ToString("o")
     parser = "Microsoft.AnalysisServices.Tabular.TmdlSerializer.DeserializeDatabaseFromFolder"
+    validator = "Microsoft.AnalysisServices.Tabular.Model.Validate"
+    validationErrors = $validation.Errors.Count
     assemblyVersion = [Microsoft.AnalysisServices.Tabular.TmdlSerializer].Assembly.GetName().Version.ToString()
     assemblySha256 = (Get-FileHash -LiteralPath $assembly -Algorithm SHA256).Hash.ToLowerInvariant()
     powershell = $PSVersionTable.PSVersion.ToString()
@@ -67,7 +73,7 @@ $result = [ordered]@{
     pbirDefinitionVersion = $version.version
     reportFiles = $reportFiles
     sourceFiles = $sourceFiles
-    limitations = "Official local TOM grammar/deserialization, explicit model-global measure uniqueness and required PBIR structure only. No Desktop UI, server, Power Query refresh, DAX evaluation, visual loading or PBIX conversion."
+    limitations = "Official local TOM deserialization and model validation, explicit model-global measure uniqueness and required PBIR structure only. No Desktop UI, server, Power Query refresh, DAX evaluation, visual loading or PBIX conversion."
 }
 $result | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $root "dist\tmdl-validation.json") -Encoding utf8
-Write-Output "Official TOM deserialized 8 tables, 14 globally unique measures and 6 relationships; required PBIR version/structure present."
+Write-Output "Official TOM deserialized and validated 12 tables, 21 globally unique measures and 9 relationships with 0 validation errors; required PBIR version/structure present."

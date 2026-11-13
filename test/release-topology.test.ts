@@ -206,6 +206,43 @@ describe("release nonfabricated highlight values", () => {
 });
 
 describe("release literal certification sample oracles", () => {
+    it("matches the contribution CSV and preserves blank external targets and shared item IDs", () => {
+        const contract = JSON.parse(readFileSync(path.join(process.cwd(), "samples", "release", "sample-contract.json"), "utf8")) as {
+            domains: { table: string; rows: [string, string | null, string, string, string, number, number, number][] }[];
+        };
+        const rows = contract.domains.find(domain => domain.table === "Contributions")!.rows;
+        const csv = readFileSync(path.join(process.cwd(), "samples", "circular-contributions.csv"), "utf8").trim().split(/\r?\n/).slice(1);
+        expect(rows).toHaveLength(24);
+        expect(csv).toHaveLength(rows.length);
+        csv.forEach((line, index) => {
+            const [source, target, weight, type, item] = line.split(",");
+            expect([rows[index][0], rows[index][1] ?? "", rows[index][5], rows[index][2], rows[index][4]])
+                .toEqual([source, target, Number(weight), type, item]);
+            expect(rows[index][3]).toBe(`C${String(index + 1).padStart(2, "0")}`);
+        });
+        expect(rows.filter(row => row[1] === null).map(row => row[4])).toEqual(["PR-901", "SPEC-14"]);
+        expect(rows.filter(row => row[4] === "PR-104")).toHaveLength(4);
+    });
+
+    it("wires both Circular slicers and the detail table bidirectionally with the graph", () => {
+        const root = path.join(process.cwd(), "samples", "release", "Network.Report", "definition", "pages", "PageCircular");
+        const page = JSON.parse(readFileSync(path.join(root, "page.json"), "utf8")) as {
+            width: number; height: number; visualInteractions: { source: string; target: string; type: string }[];
+        };
+        expect([page.width, page.height]).toEqual([1366, 768]);
+        for (const [source, target] of [
+            ["CircularGraph", "CircularDetails"], ["CircularDetails", "CircularGraph"],
+            ["CircularTypes", "CircularGraph"], ["CircularTypes", "CircularDetails"],
+            ["CircularSources", "CircularGraph"], ["CircularSources", "CircularDetails"]
+        ]) expect(page.visualInteractions).toContainEqual({ source, target, type: "DataFilter" });
+        const graph = JSON.parse(readFileSync(path.join(root, "visuals", "CircularGraph", "visual.json"), "utf8"));
+        expect(graph.visual.query.queryState.itemId.projections[0].field.Column.Property).toBe("ItemID");
+        expect(graph.visual.objects.exploration[0].properties).toMatchObject({
+            layout: { expr: { Literal: { Value: "'circular'" } } },
+            groupBlankTargets: { expr: { Literal: { Value: "true" } } }
+        });
+    });
+
     it.each(["Services", "Accounts"])("keeps the independently audited %s contract", name => {
         const contract = JSON.parse(readFileSync(path.join(process.cwd(), "samples", "release", "sample-contract.json"), "utf8")) as {
             domains: { table: string; rows: [string, string, string, string, number | null, number, number][] }[];

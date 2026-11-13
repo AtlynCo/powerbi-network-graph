@@ -1,6 +1,6 @@
 {
   "name": "atlyn-network",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "private": true,
   "license": "UNLICENSED",
   "engines": {
@@ -10,6 +10,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "eslint src test scripts",
+    "eslint": "npx eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "vitest run",
     "build": "node scripts/package.mjs",
     "package": "node scripts/package.mjs --audit && node scripts/inspect-package.mjs",

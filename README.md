@@ -2,7 +2,7 @@
 
 An offline custom visual for exploring **directed relationships supplied by a Power BI report**. Display cycles, reciprocal links, parallel relationships, and self-links without forcing the data into a tree. Explore the loaded graph with local search, neighborhood and directional traversal, or use accessible entity and relationship lists.
 
-**Status:** private Atlyn release candidate; version `1.1.0.0`. Certification-oriented, **not Microsoft certified**. Packaging and browser checks are not evidence of native Desktop, service, or export compatibility. See the [release gates](docs/RELEASE.md) before distribution.
+**Status:** private Atlyn release candidate; version `1.2.0.0`. Certification-oriented, **not Microsoft certified**. Packaging and browser checks are not evidence of native Desktop, service, or export compatibility. See the [release gates](docs/RELEASE.md) before distribution.
 
 **Approved commercial/runtime model (2026-09-10):** acquisition is through existing Atlyn storefront subscriptions; the visual runtime is intentionally ungated, including free shared-report viewing. It does not enforce paid-author status. No license keys, new signer, AAD/API integration, feature gates, WebAccess, or runtime license requests are required or authorized. The existing offline renderer is the intended runtime; licensing integration is no longer a blocker.
 
@@ -13,6 +13,7 @@ An offline custom visual for exploring **directed relationships supplied by a Po
 - Nodes come only from relationship endpoints. Standalone isolated entities are not supported.
 - Source-to-target direction is preserved, including cycles and reciprocal relationships.
 - Deterministic, bounded component-aware layout; no ongoing simulation, timers, or animation.
+- Force-directed, Circular ring with optional Two-Ring Item ID detail, and Rooted Radial layouts. Circular links are node-link paths, not ribbon chords. Radial rings represent undirected loaded hops, not business importance.
 - Curved parallel/reciprocal links and distinct arrowed loop petals; collision-aware labels, pan, pinch/wheel zoom, and fit.
 - Local entity search, incident relationships, neighborhood, upstream/downstream traversal, and one shortest directed path.
 - Explicit graph/list/split views and saved local exploration state, separate from report selection.
@@ -34,7 +35,7 @@ This is **relationship exploration**, not causal-impact prediction, fraud detect
 
 Native opening, saving/reopening, and PBIX conversion must be performed in Desktop. An authored PBIP source is not evidence of a successful native open. Never rename a JSON file, ZIP, or source folder to `.pbix`.
 
-The [complete offline PBIP](samples/release/README.md) contains two bound graph pages, native slicers/detail tables, a hints page, eight literal model tables, fourteen measures, and the exact embedded visual. [Marketplace preparation](docs/marketplace/README.md) supplies draft fields and the remaining native/legal gates. The [competitor workflow comparison](docs/marketplace/workflow-benchmark.md) credits verified Graph PRO/Powerviz capabilities and identifies Atlyn's missing features without claiming superiority.
+The [offline PBIP](samples/release/README.md) contains five pages, four bound graphs, native slicers and detail tables, twelve literal model tables, twenty-one measures, nine single-direction relationships, and the exact embedded visual. Native Desktop verification and PBIX conversion remain open. [Marketplace preparation](docs/marketplace/README.md) supplies draft fields and the remaining native/legal gates. The [competitor workflow comparison](docs/marketplace/workflow-benchmark.md) credits verified Graph PRO/Powerviz capabilities and identifies Atlyn's missing features without claiming superiority.
 
 See [sealed quality results](docs/validation/RESULTS.md) for measured improvements, package identity, actual-package media, and remaining limitations.
 

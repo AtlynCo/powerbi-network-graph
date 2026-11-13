@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { extractArtifact, readArtifact, root, verifyBundledNotices, writeReport } from "./artifact.mjs";
 import { createBrowserHarness } from "./browser-harness.mjs";
@@ -18,8 +18,10 @@ try {
     });
     throw error;
 }
-const { browser, page, requests, errors, mount, update, settle } = harness;
+const { browser, page, requests, errors, warnings, mount, update, settle } = harness;
 const checks = [];
+const previewRoot = path.resolve(process.env.PREVIEW_DIR ?? path.join(root, "dist", "verification-previews"));
+const previewFiles = [];
 const act = action => page.locator(`[data-action="${action}"]`);
 async function calls() { await settle(); return page.evaluate(() => window.fixture.calls); }
 async function check(name, action) {
@@ -40,6 +42,14 @@ async function screenshotMock(filename, width, height) {
     await page.screenshot({ path: path.join(root, "dist", filename), clip: { x: 0, y: 0, width, height } });
     await page.locator("#mock-preview-label").evaluate(element => element.remove());
     console.log(`Saved dist/${filename} from the mocked Chromium host.`);
+}
+async function preview(filename) {
+    await mkdir(previewRoot, { recursive: true });
+    await settle();
+    const destination = path.join(previewRoot, filename);
+    await page.screenshot({ path: destination, clip: { x: 0, y: 0, width: 1366, height: 768 } });
+    assert((await stat(destination)).size <= 1024 * 1024, `Preview exceeds 1024 KB: ${filename}`);
+    previewFiles.push(destination);
 }
 const normal = [
     { source: "A", target: "B", weight: 0 }, { source: "A", target: "B", weight: 2 },
@@ -121,10 +131,22 @@ try {
             disclaimer: "Actual PBIVIZ compiled JS/CSS rendered in real Chromium with a mocked Power BI host. NOT native Desktop/Service validation or certification."
         });
     });
+    await mount({ width: 1000, height: 700 });
+    await update(normal, { objects: { exploration: { layout: "radial", view: "split" } } });
+    await check("Rooted radial package supports automatic and locally selected centers without report selection", async () => {
+        const root = page.locator(".atlyn-network");
+        assert.equal(await root.getAttribute("data-layout"), "radial");
+        assert.equal(await root.getAttribute("data-layout-center"), "s:A");
+        assert((await page.locator(".network-status").textContent()).includes("Automatic center"));
+        await page.locator('[data-control="layout-center"]').selectOption("s:C");
+        assert.equal(await root.getAttribute("data-layout-center"), "s:C");
+        assert((await page.locator(".network-status").textContent()).includes("Layout center: C"));
+        assert.equal((await calls()).select.length, 0);
+    });
     await mount({ width: 1400, height: 900 });
     await update(circularSample, {
         itemIds: true,
-        objects: { exploration: { layoutMode: "circular", groupBlankTargets: true, view: "split" } }
+        objects: { exploration: { layout: "circular", groupBlankTargets: true, view: "split" } }
     });
     await check("Circular light-mode split view renders role rings, source-colored parallel types, self-link disclosure, blank-target bucket and full lists", async () => {
         const theme = await page.evaluate(() => {
@@ -379,6 +401,75 @@ try {
         assert.equal(after.clear, before.clear);
         assert.equal(await act("select-node").count(), 1);
     });
+    await check("Circular Arabic RTL shows perimeter and inward item labels and localized hidden self-links", async () => {
+        await mount({ locale: "ar-SA", width: 1366, height: 768 });
+        await update(circularSample, { itemIds: true, objects: { exploration: { layout: "circular", view: "split", groupBlankTargets: true } } });
+        assert.equal(await page.locator(".atlyn-network").getAttribute("dir"), "rtl");
+        assert((await page.locator(".network-perimeter-label").count()) > 0);
+        assert.match(await page.locator('[role="status"]').innerText(), /العلاقات الذاتية مخفية/);
+        await act("all-items").click();
+        assert((await page.locator(".network-item-label").count()) > 0);
+        assert(await page.locator(".network-item-label").evaluateAll(labels => {
+            const guide = document.querySelector(".network-inner-guide");
+            const center = new window.DOMPoint(Number(guide.getAttribute("cx")), Number(guide.getAttribute("cy"))).matrixTransform(guide.getCTM());
+            return labels.every(label => {
+                const anchor = new window.DOMPoint(0, 0).matrixTransform(label.getCTM());
+                const item = new window.DOMPoint(0, 0).matrixTransform(label.parentElement.getCTM());
+                return label.getAttribute("transform")?.includes("rotate(") &&
+                    Math.hypot(anchor.x - center.x, anchor.y - center.y) < Math.hypot(item.x - center.x, item.y - center.y);
+            });
+        }), "Two-ring item labels must point inward toward the center");
+    });
+    await check("Circular maximum graph uses numbered hollow badges with accessible legend and keyboard pagination", async () => {
+        await mount({ width: 1366, height: 768 });
+        const rows = Array.from({ length: 1000 }, (_, index) => ({
+            source: `N${String(index % 250).padStart(3, "0")}`,
+            target: `N${String((index + 1) % 250).padStart(3, "0")}`, edgeId: index, weight: 1
+        }));
+        await update(rows, { edgeIds: true, objects: { exploration: { layout: "circular", view: "split" } } });
+        assert.equal(await page.locator(".network-node").count(), 250);
+        assert.equal(await page.locator(".network-edge").count(), 1000);
+        const badges = await page.locator(".network-badge").allTextContents();
+        assert.deepEqual(badges.map(Number), Array.from({ length: 250 }, (_, index) => index + 1));
+        assert.equal(await page.locator(".network-badge-legend button[aria-label]").count(), 250);
+        assert.equal(await page.locator(".network-badge-legend .network-color-swatch[aria-hidden='true']").count(), 250);
+        assert.equal(await page.locator(".network-node-core").first().getAttribute("fill"), "var(--bg)");
+        for (const [tab, action, attribute, count] of [["entities", "select-node", "data-node-id", 250], ["relationships", "select-edge", "data-edge-id", 1000]]) {
+            await act(tab).click();
+            const seen = new Set();
+            for (let i = 0; i < Math.ceil(count / 25); i++) {
+                for (const value of await act(action).evaluateAll((elements, attr) => elements.map(element => element.getAttribute(attr)), attribute)) seen.add(value);
+                if (i < Math.ceil(count / 25) - 1) {
+                    await act("next").focus();
+                    await page.keyboard.press("Enter");
+                }
+            }
+            assert.equal(seen.size, count);
+        }
+    });
+    await check("1.1 saved view and formatting without layout or Item ID restore Force", async () => {
+        await mount({ width: 1366, height: 768 });
+        const warningsBefore = warnings.length;
+        const savedView = JSON.stringify({ version: 1, focus: "s:A", target: "s:B", mode: "path", search: "", view: "split", centerX: 0, centerY: 0, scale: 1 });
+        await update(normal, { objects: { exploration: { view: "split" }, navigation: { savedView } } });
+        assert.equal(await page.locator(".atlyn-network").getAttribute("data-layout"), "force");
+        assert.equal(await page.locator(".network-node").count(), 2);
+        assert.deepEqual(errors, []);
+        assert.equal(warnings.length, warningsBefore);
+    });
+    await check("1366x768 light-mode Circular and Radial mock previews", async () => {
+        await mount({ width: 1366, height: 768 });
+        await update(circularSample, { itemIds: true, objects: { exploration: { layout: "circular", view: "graph", groupBlankTargets: true } } });
+        await act("fit").click();
+        await preview("circular-overview-1366x768.png");
+        await act("all-items").click();
+        await act("fit").click();
+        await preview("circular-two-ring-1366x768.png");
+        await mount({ width: 1366, height: 768 });
+        await update(normal, { objects: { exploration: { layout: "radial", view: "split" } } });
+        await act("fit").click();
+        await preview("radial-overview-1366x768.png");
+    });
     await check("Arabic RTL and high-contrast palette apply to actual compiled UI", async () => {
         await page.evaluate(() => window.fixture.visual.destroy());
         await mount({ locale: "ar-SA", highContrast: true });
@@ -408,7 +499,7 @@ try {
         engine: "Real Chromium via Playwright", source: "JS/CSS extracted from the inspected real PBIVIZ",
         host: "Offline Power BI API mock; not native Desktop/Service, certification, or AppSource proof",
         checks, runtimeRequests: requests, errors, bundledNotices,
-        screenshots: ["circular-overview.png", "circular-two-ring-detail.png"],
+        screenshots: ["circular-overview.png", "circular-two-ring-detail.png"], previewFiles,
         passed: true
     });
     console.log(`Passed ${checks.length} actual-package Chromium checks; zero runtime requests. Host is mocked, not native Power BI.`);
