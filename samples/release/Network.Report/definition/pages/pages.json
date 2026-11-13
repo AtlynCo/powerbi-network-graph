@@ -3,6 +3,8 @@
   "pageOrder": [
     "PageServices",
     "PageAccounts",
+    "PageCircular",
+    "PageRadial",
     "PageHints"
   ],
   "activePageName": "PageServices"

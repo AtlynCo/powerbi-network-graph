@@ -1,0 +1,239 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "CircularGraph",
+  "position": {
+    "x": 280,
+    "y": 100,
+    "width": 1062,
+    "height": 444,
+    "z": 1280,
+    "tabOrder": 1280
+  },
+  "visual": {
+    "visualType": "AtlynNetworkAB24C68297094C32AF64D50D92C01711",
+    "query": {
+      "queryState": {
+        "source": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Contributions"
+                    }
+                  },
+                  "Property": "SourceID"
+                }
+              },
+              "queryRef": "Contributions.SourceID",
+              "nativeQueryRef": "SourceID"
+            }
+          ]
+        },
+        "target": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Contributions"
+                    }
+                  },
+                  "Property": "TargetID"
+                }
+              },
+              "queryRef": "Contributions.TargetID",
+              "nativeQueryRef": "TargetID"
+            }
+          ]
+        },
+        "relationshipType": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Contributions"
+                    }
+                  },
+                  "Property": "RelationshipType"
+                }
+              },
+              "queryRef": "Contributions.RelationshipType",
+              "nativeQueryRef": "RelationshipType"
+            }
+          ]
+        },
+        "itemId": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Contributions"
+                    }
+                  },
+                  "Property": "ItemID"
+                }
+              },
+              "queryRef": "Contributions.ItemID",
+              "nativeQueryRef": "ItemID"
+            }
+          ]
+        },
+        "weight": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Contributions"
+                    }
+                  },
+                  "Property": "Contributions Total Weight"
+                }
+              },
+              "queryRef": "Contributions.Contributions Total Weight",
+              "nativeQueryRef": "Contributions Total Weight"
+            }
+          ]
+        },
+        "tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Contributions"
+                    }
+                  },
+                  "Property": "Contributions Average Duration ms"
+                }
+              },
+              "queryRef": "Contributions.Contributions Average Duration ms",
+              "nativeQueryRef": "Contributions Average Duration ms"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Contributions"
+                    }
+                  },
+                  "Property": "Contributions Events"
+                }
+              },
+              "queryRef": "Contributions.Contributions Events",
+              "nativeQueryRef": "Contributions Events"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Contributions"
+                    }
+                  },
+                  "Property": "Contributions Input Rows"
+                }
+              },
+              "queryRef": "Contributions.Contributions Input Rows",
+              "nativeQueryRef": "Contributions Input Rows"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Circular contributions: select a relationship to investigate'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Circular contributions: select a relationship to investigate'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "exploration": [
+        {
+          "properties": {
+            "layout": {
+              "expr": {
+                "Literal": {
+                  "Value": "'circular'"
+                }
+              }
+            },
+            "view": {
+              "expr": {
+                "Literal": {
+                  "Value": "'graph'"
+                }
+              }
+            },
+            "groupBlankTargets": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "appearance": [
+        {
+          "properties": {
+            "colorMode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'source'"
+                }
+              }
+            },
+            "roleRings": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

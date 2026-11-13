@@ -107,6 +107,33 @@ try {
         assert.equal(process.env.RELEASE_FINAL_READY_SHA, artifact.sha256, "Final screenshots require parent's final package-ready SHA in RELEASE_FINAL_READY_SHA");
         assert(!preliminary, "Final and preliminary evidence cannot be combined");
     }
+    await check("authored Contributions sample renders Circular and Arabic two-ring detail", async () => {
+        assert.equal(samples.domains.Contributions.length, 24);
+        assert.equal(samples.domains.Contributions.filter(row => row.target === null).length, 2);
+        await mount({ locale: "ar-SA", width: 1366, height: 768 });
+        await update(samples.domains.Contributions, {
+            itemIds: true,
+            objects: { exploration: { layout: "circular", view: "split", groupBlankTargets: true } }
+        });
+        assert.equal(await page.locator(".atlyn-network").getAttribute("dir"), "rtl");
+        assert((await page.locator(".network-perimeter-label").count()) > 0);
+        assert.match(await page.locator('[role="status"]').innerText(), /العلاقات الذاتية مخفية/);
+        await act("all-items").click();
+        assert.equal(await page.locator(".network-guide-ring").count(), 2);
+        assert((await page.locator(".network-item-label").count()) > 0);
+    });
+    await check("Services Rooted Radial chooses automatic and explicit center without host selection", async () => {
+        await mount({ width: 1366, height: 768 });
+        await update(samples.domains.Services, {
+            ...samples.options, objects: { exploration: { layout: "radial", view: "split" } }
+        });
+        assert.equal(await page.locator(".atlyn-network").getAttribute("data-layout-center"), "s:Orders");
+        assert.match(await page.locator(".network-status").innerText(), /Automatic center/);
+        await page.locator('[data-control="layout-center"]').selectOption("s:Gateway");
+        assert.equal(await page.locator(".atlyn-network").getAttribute("data-layout-center"), "s:Gateway");
+        assert.match(await page.locator(".network-status").innerText(), /Layout center: Gateway/);
+        assert.equal((await calls()).select.length, 0);
+    });
     await check("explicit topology oracle: cycles, loops, reciprocal/parallel IDs, disconnection and exact row identities", async () => {
         await mount();
         await update(fixtures.typical, { edgeIds: true });

@@ -1,9 +1,11 @@
-# Atlyn Network — authored offline sample
+# Atlyn Network authored offline sample
 
-**Target:** `1.1.1.0`, GUID `AtlynNetworkAB24C68297094C32AF64D50D92C01711`, API `5.11.0`.
-**Evidence status:** the coordinator reports **bounded PASS on Desktop 2.157.1354.0** for corrected sample commit `cbd21bee3de4f62ffaa93eb49a2e7881814913e5`: three pages rendered, Public PBIX saved and cold-reopened without refresh. The first refresh left manual-refresh/incomplete-data banners; the second observed refresh completed without a dialog. This is not full interaction, Service, export or certification acceptance.
+**Target:** `1.2.0.0`, GUID `AtlynNetworkAB24C68297094C32AF64D50D92C01711`, API `5.11.0`.
+**Evidence status:** local PBIR/schema checks and Microsoft TOM deserialization and model validation passed. The 1.2 source has not been opened, refreshed, or converted to PBIX in Desktop.
 
-This is a complete source project, not a placeholder or instructions to build an empty report. It contains two graph pages with real field projections, type slicers, relationship detail tables, explanatory text, and a third hints page. Both graphs reference the embedded private custom visual. Eight semantic-model tables, fourteen DAX measures and six single-direction relationships are authored. All data partitions use literal `#table` expressions; they read no CSV, workbook, URL, database or sibling directory.
+This source project has five pages: Services, Accounts, Circular contributions, Rooted Radial, and hints. Four graphs reference the embedded private custom visual. The Circular page pairs source/type slicers and a detail table with Item ID two-ring exploration. Twelve semantic-model tables, twenty-one DAX measures and nine single-direction relationships are authored. All data partitions use literal `#table` expressions; they read no CSV, workbook, URL, database or sibling directory.
+
+The following dated correction and native-result sections describe the historical 1.1 sample only. Their package hashes and native observations do not validate this 1.2 sample.
 
 ## Report version correction, 2026-09-10
 
@@ -69,13 +71,13 @@ records later evidence. Full measure/selection/slicer/tooltip/bookmark/
 accessibility checks, explicit offline refresh, Service/export and Microsoft
 review remain separate gates. See the [evidence record](../../docs/validation/RESULTS.md#bounded-native-desktop-result-2026-09-10).
 
-## Open and use — manual native gate
+## Open and use: manual native gate
 
 1. Open `Network.pbip` in a current Power BI Desktop. Enable PBIP, enhanced report format (PBIR) and TMDL preview features if your Desktop version requires them. Respect the organization's custom-visual policy; do not bypass it.
 2. **Refresh** the semantic model. Microsoft documents that a cache-free PBIP opens with model definitions but no imported rows until refresh. This project deliberately excludes `cache.abf`; its refresh evaluates only literal embedded data.
 3. On **1. Cyclic services**, inspect Orders, its self-loop, reciprocal calls/responses and the directed Orders → Payments → Ledger → Orders cycle. Compare relationship types with the slicer. Archive/Backup is a disconnected component. Graph/list selections should filter the detail table; the type slicer should filter both.
 4. On **2. Reciprocal accounts**, search `0001`, preserving the zero-prefixed text ID. Compare parallel T01/T05 transfers and the separate fee; inspect model-formatted tooltip measures.
-5. Read **3. Hints and semantics**. Test native selection, keyboard behavior, tooltips, local-view persistence, save/reopen and offline refresh. Record Desktop version, artifact hash, expected and actual outcomes.
+5. On **3. Circular contributions**, use the source and type slicers, select a relationship, and inspect Item ID detail in the graph and native table. On **4. Radial relationships**, change the center. Read **5. Hints and semantics**. Test native selection, keyboard behavior, tooltips, local-view persistence, save/reopen and offline refresh. Record Desktop version, artifact hash, expected and actual outcomes.
 6. Save As a real **PBIX**, reopen it offline, and verify that its custom visual version/content match the final PBIVIZ. This step belongs to the coordinator/operator. Do not rename this source project or its ZIP into a PBIX.
 
 If Power BI cannot load the private visual or reports a schema/model error, retain the exact diagnostic and repair the source before conversion. JSON-schema success alone does not prove custom-visual loading or query execution. The current worktree's longest generated path is close to Windows' documented 260-character PBIP limit; use an operator-approved shorter location if necessary. This script never copies outside the worktree.
@@ -88,10 +90,11 @@ If Power BI cannot load the private visual or reports a schema/model error, reta
 | `target` | `TargetID` (text, do not summarize) |
 | `relationshipType` | `RelationshipType` (text) |
 | `edgeId` | `EdgeID` (text) |
-| `weight` | `[Services Total Weight] = SUM('Services'[Weight])` or `[Accounts Total Weight] = SUM('Accounts'[Weight])` |
-| `tooltips` | `[Services Average Duration ms]`, `[Services Events]`, `[Services Input Rows]`; corresponding `Accounts`-prefixed measures on Accounts |
+| `itemId` | `Contributions[ItemID]` on Circular; Edge ID is not bound there |
+| `weight` | The table-prefixed `Total Weight` measure |
+| `tooltips` | The table-prefixed `Average Duration ms`, `Events` and `Input Rows` measures |
 
-`Services` has 14 physical rows. `Accounts` has 16 physical rows. Source-node and target-node dimensions are separate role-playing dimensions, preventing an ambiguous bidirectional model cycle. Type dimensions drive the page slicers. A cyclic **drawn network** does not require cyclic semantic-model relationships.
+`Services` has 14 physical rows, `Accounts` has 16, and `Contributions` has 24 including two blank targets. Contributions `DurationMs` and `EventCount` are synthetic example values. Source-node and target-node dimensions are separate role-playing dimensions, preventing an ambiguous bidirectional model cycle. Type dimensions drive the page slicers. A cyclic **drawn network** does not require cyclic semantic-model relationships.
 
 Additional measures `[Services Visible Nodes]`, `[Services Blank Weights]` and `[Services Nonpositive Weights]`, plus their `Accounts`-prefixed counterparts, support model investigation. Each prefixed `Nonpositive Weights` measure counts zero and negative facts; this is a quality-inspection measure, **not** the visual's invalid-weight rule: zero is valid.
 
@@ -136,23 +139,22 @@ Official schemas are vendored at a pinned Microsoft commit with their MIT licens
 ## Files and evidence boundaries
 
 - `Network.pbip`: report shortcut.
-- `Network.Report\definition.pbir`: local semantic-model link; `definition\`: three authored pages and thirteen visual containers.
+- `Network.Report\definition.pbir`: local semantic-model link; `definition\`: five authored pages.
 - `Network.Report\CustomVisuals\`: exact private package resources, not remote URLs.
-- `Network.SemanticModel\definition\`: eight TMDL tables, fourteen measures, six relationships.
+- `Network.SemanticModel\definition\`: twelve TMDL tables, twenty-one measures, nine relationships.
 - `sample-contract.json`: original synthetic rows and authored-model expectations.
 - `schemas\`: official schema cache and license, needed only by local validation.
 - `package\`: the unchanged release archive that proves embedding provenance.
-- `sample-validation.json`: local evidence only. No TOM parser execution, DAX/M evaluation, render correctness, native host behavior, certification or submission is inferred.
+- `sample-validation.json`: local JavaScript validation evidence only. Separate TOM evidence is in `dist\tmdl-validation.json`. No DAX/M evaluation, native host behavior, certification or submission is inferred.
 
 The public-format basis and remaining submission gates are documented in [`docs/marketplace/README.md`](../../docs/marketplace/README.md).
 
 ## Official local model-parser preflight
 
 `pwsh -NoProfile -File scripts\validate-tmdl.ps1 -AssemblyPath <official-TOM-DLL>`
-uses Microsoft's `TmdlSerializer.DeserializeDatabaseFromFolder`, without a
+uses Microsoft's `TmdlSerializer.DeserializeDatabaseFromFolder` and `Model.Validate`, without a
 server, Desktop UI, package restore or installation. Keep official companion
-DLLs together in the ignored `.tmp\tmdl-bin\net8.0` cache. The coordinated
-Microsoft.AnalysisServices 19.117.0 .NET 8 binaries were used successfully.
+DLLs together. Microsoft.AnalysisServices 19.118.3 .NET 8 binaries were used successfully.
 The script also requires report artifact version `4.0`, report-definition
 version `2.0.0`, the report/page structure, and case-insensitive model-global
 measure-name uniqueness. Results and exact

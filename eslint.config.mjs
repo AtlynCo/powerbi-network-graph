@@ -3,7 +3,7 @@ import tseslint from "typescript-eslint";
 import powerbi from "eslint-plugin-powerbi-visuals";
 
 export default tseslint.config(
-    { ignores: ["node_modules/**", "dist/**", ".tmp/**", ".tool-home/**", "webpack.statistics.*", "assets/**", "manual/**"] },
+    { ignores: ["node_modules/**", "dist/**", ".tmp/**", ".tool-home/**", ".browser-cache/**", "webpack.statistics.*", "assets/**", "manual/**"] },
     eslint.configs.recommended,
     ...tseslint.configs.recommended,
     {

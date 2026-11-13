@@ -78,6 +78,34 @@ describe("Power BI categorical data adapter", () => {
         expect(data.identities.size).toBe(0);
         expect(calls).toHaveLength(0);
     });
+    it("binds shared items and includes their real category identities in each contributing selection", () => {
+        const { host, calls } = mockHost();
+        const data = readData(view([
+            category("source", ["A", "B"]), category("target", ["C", "C"]),
+            category("itemId", ["PR #42", "PR #42"])
+        ], [measure("weight", [2, 3])]), host);
+        expect(data.graph.edges).toHaveLength(2);
+        expect(data.graph.items).toHaveLength(1);
+        expect(data.graph.items![0]).toMatchObject({ rows: [0, 1], weight: 5, ownerId: "s:C" });
+        expect(calls).toEqual([0, 1].map(index => ["source", "target", "itemId"].map(role => ({ role, index }))));
+        expect(data.identities.size).toBe(2);
+        const missing = readData(view([
+            category("source", ["A"]), category("target", ["C"]), category("itemId", ["PR #42"], false)
+        ]), host);
+        expect(missing.graph.items).toHaveLength(1);
+        expect(missing.identities.size).toBe(0);
+        expect(missing.identityMissing).toBe(true);
+    });
+    it("reads blank-target grouping from report metadata without fabricating a bucket selection identity", () => {
+        const { host, calls } = mockHost();
+        const supplied = view([category("source", ["A"]), category("target", [null]), category("itemId", ["external"])]);
+        supplied.metadata.objects = { exploration: { groupBlankTargets: true, blankTargetLabel: "  Outside  " } };
+        const data = readData(supplied, host);
+        expect(data.graph.nodes.find(node => node.isFallbackBucket)?.label).toBe("Outside");
+        expect(data.graph.items![0].rows).toEqual([0]);
+        expect(calls[0]).toEqual(["source", "target", "itemId"].map(role => ({ role, index: 0 })));
+        expect(data.identities.size).toBe(1);
+    });
     it("flags unequal role arrays as invalid delivered rows rather than inventing endpoints", () => {
         const { host } = mockHost();
         const data = readData(view([category("source", ["A", "B"]), category("target", ["C"])]), host);

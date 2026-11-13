@@ -1,0 +1,22 @@
+table ContributionsTargets
+
+	column TargetID
+		dataType: string
+		isKey
+		sourceColumn: TargetID
+		summarizeBy: none
+
+	partition ContributionsTargets = m
+		mode: import
+		source =
+			#table(type table [TargetID = text], {
+				{"Avery Brooks"},
+				{"Blake Rivera"},
+				{"Casey Nguyen"},
+				{"Jordan Lee"},
+				{"Maya Chen"},
+				{"Rowan Patel"},
+				{"Taylor Kim"}
+			})
+
+	annotation PBI_ResultType = Table

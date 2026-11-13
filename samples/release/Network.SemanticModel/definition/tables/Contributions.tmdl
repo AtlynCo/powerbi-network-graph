@@ -1,0 +1,102 @@
+table Contributions
+
+	measure 'Contributions Total Weight' = SUM('Contributions'[Weight])
+		formatString: #,0.##
+		displayFolder: Investigation
+
+	measure 'Contributions Input Rows' = COUNTROWS('Contributions')
+		formatString: #,0
+		displayFolder: Investigation
+
+	measure 'Contributions Events' = SUM('Contributions'[EventCount])
+		formatString: #,0
+		displayFolder: Investigation
+
+	measure 'Contributions Average Duration ms' = AVERAGE('Contributions'[DurationMs])
+		formatString: #,0.0
+		displayFolder: Investigation
+
+	measure 'Contributions Blank Weights' = COUNTROWS(FILTER('Contributions', ISBLANK('Contributions'[Weight])))
+		formatString: #,0
+		displayFolder: Investigation
+
+	measure 'Contributions Nonpositive Weights' = COUNTROWS(FILTER('Contributions', NOT(ISBLANK('Contributions'[Weight])) && 'Contributions'[Weight] <= 0))
+		formatString: #,0
+		displayFolder: Investigation
+
+	measure 'Contributions Visible Nodes' = COUNTROWS(DISTINCT(UNION(SELECTCOLUMNS('Contributions', "ID", 'Contributions'[SourceID]), SELECTCOLUMNS('Contributions', "ID", 'Contributions'[TargetID]))))
+		formatString: #,0
+		displayFolder: Investigation
+
+	column SourceID
+		dataType: string
+		sourceColumn: SourceID
+		summarizeBy: none
+
+	column TargetID
+		dataType: string
+		sourceColumn: TargetID
+		summarizeBy: none
+
+	column RelationshipType
+		dataType: string
+		sourceColumn: RelationshipType
+		summarizeBy: none
+
+	column EdgeID
+		dataType: string
+		sourceColumn: EdgeID
+		summarizeBy: none
+
+	column ItemID
+		dataType: string
+		sourceColumn: ItemID
+		summarizeBy: none
+
+	column Weight
+		dataType: double
+		sourceColumn: Weight
+		summarizeBy: sum
+		formatString: #,0.##
+
+	column DurationMs
+		dataType: double
+		sourceColumn: DurationMs
+		summarizeBy: sum
+
+	column EventCount
+		dataType: int64
+		sourceColumn: EventCount
+		summarizeBy: sum
+
+	partition Contributions = m
+		mode: import
+		source =
+			#table(type table [SourceID = text, TargetID = nullable text, RelationshipType = text, EdgeID = text, ItemID = text, Weight = nullable number, DurationMs = number, EventCount = Int64.Type], {
+				{"Maya Chen", "Rowan Patel", "PR", "C01", "PR-104", 5, 10, 1},
+				{"Jordan Lee", "Rowan Patel", "PR", "C02", "PR-104", 3, 10, 1},
+				{"Maya Chen", "Rowan Patel", "Spec", "C03", "PR-104", 2, 10, 1},
+				{"Quinn Davis", "Rowan Patel", "PR", "C04", "PR-104", 1, 10, 1},
+				{"Rowan Patel", "Maya Chen", "PR", "C05", "PR-118", 4, 10, 1},
+				{"Jordan Lee", "Maya Chen", "Spec", "C06", "PR-118", 2, 10, 1},
+				{"Casey Nguyen", "Maya Chen", "PR", "C07", "PR-118", 3, 10, 1},
+				{"Maya Chen", "Jordan Lee", "PR", "C08", "PR-125", 4, 10, 1},
+				{"Rowan Patel", "Jordan Lee", "Spec", "C09", "PR-125", 2, 10, 1},
+				{"Casey Nguyen", "Jordan Lee", "PR", "C10", "PR-125", 1, 10, 1},
+				{"Avery Brooks", "Blake Rivera", "Spec", "C11", "SPEC-09", 5, 10, 1},
+				{"Morgan Shah", "Blake Rivera", "Spec", "C12", "SPEC-09", 3, 10, 1},
+				{"Taylor Kim", "Blake Rivera", "Spec", "C13", "SPEC-09", 2, 10, 1},
+				{"Blake Rivera", "Avery Brooks", "Spec", "C14", "SPEC-10", 4, 10, 1},
+				{"Avery Brooks", "Blake Rivera", "PR", "C15", "PR-132", 3, 10, 1},
+				{"Rowan Patel", "Taylor Kim", "PR", "C16", "PR-133", 3, 10, 1},
+				{"Jordan Lee", "Taylor Kim", "Spec", "C17", "PR-133", 2, 10, 1},
+				{"Taylor Kim", "Rowan Patel", "PR", "C18", "PR-134", 4, 10, 1},
+				{"Maya Chen", "Casey Nguyen", "Spec", "C19", "SPEC-12", 3, 10, 1},
+				{"Casey Nguyen", "Maya Chen", "PR", "C20", "PR-135", 2, 10, 1},
+				{"Maya Chen", "Maya Chen", "Spec", "C21", "SPEC-13", 1, 10, 1},
+				{"Jordan Lee", "Jordan Lee", "PR", "C22", "PR-136", 2, 10, 1},
+				{"Quinn Davis", null, "PR", "C23", "PR-901", 3, 10, 1},
+				{"Avery Brooks", null, "Spec", "C24", "SPEC-14", 2, 10, 1}
+			})
+
+	annotation PBI_ResultType = Table

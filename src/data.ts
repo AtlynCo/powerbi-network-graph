@@ -1,6 +1,7 @@
 import powerbi from "powerbi-visuals-api";
 import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
 import { buildGraph, Graph, GraphEdge, InputRow, LIMITS } from "./graph";
+import { parseCircularSettings } from "./settings";
 
 export interface TooltipColumn {
     source: { displayName: string; format?: string };
@@ -25,6 +26,7 @@ export function readData(view: powerbi.DataView | undefined, host: powerbi.exten
     const target = categories.find(column => column.source.roles?.target);
     const type = categories.find(column => column.source.roles?.relationshipType);
     const edgeId = categories.find(column => column.source.roles?.edgeId);
+    const itemId = categories.find(column => column.source.roles?.itemId);
     const values = view?.categorical?.values ?? [];
     const weight = values.find(column => column.source.roles?.weight);
     const tooltipSources = values.filter(column => column.source.roles?.tooltips);
@@ -32,21 +34,23 @@ export function readData(view: powerbi.DataView | undefined, host: powerbi.exten
     const rows: InputRow[] = [];
     const identities = new Map<number, powerbi.visuals.ISelectionId>();
     const identityCategories = categories.filter(column =>
-        ["source", "target", "relationshipType", "edgeId"].some(role => column.source.roles?.[role]));
+        ["source", "target", "relationshipType", "edgeId", "itemId"].some(role => column.source.roles?.[role]));
     const rowCount = Math.max(0, ...identityCategories.map(column => column.values.length));
     let identityMissing = false;
     if (source && target) {
         for (let index = 0; index < Math.min(rowCount, LIMITS.rows); index++) {
             rows.push({
                 source: source.values[index], target: target.values[index], type: type?.values[index],
-                edgeId: edgeId?.values[index], weight: weight?.values[index], index,
+                edgeId: edgeId?.values[index], itemId: itemId?.values[index], weight: weight?.values[index], index,
                 highlight: weight?.highlights?.[index],
                 highlightActive: highlightColumns.some(column => column.highlights?.[index] != null)
             });
         }
     }
+    const settings = parseCircularSettings(view?.metadata.objects);
     const graph = buildGraph(rows, {
-        weighted: !!weight, edgeIds: !!edgeId, hasHighlights: highlightColumns.length > 0,
+        weighted: !!weight, edgeIds: !!edgeId, itemIds: !!itemId, hasHighlights: highlightColumns.length > 0,
+        groupBlankTargets: settings.groupBlankTargets, blankTargetLabel: settings.blankTargetLabel,
         partial: !!view?.metadata.segment
     });
     graph.diagnostics.omittedRows += Math.max(0, rowCount - LIMITS.rows);

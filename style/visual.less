@@ -1,5 +1,7 @@
 .atlyn-network {
     --background: #fff;
+    --bg: var(--background);
+    --bucket-surface: #f3f4f6;
     --foreground: #172d3d;
     --node: #007d87;
     --edge: #596579;
@@ -63,14 +65,51 @@
     .network-pager { padding-top: 5px; }
     .network-node, .edge-hit { cursor: pointer; }
     .network-node text { font-size: var(--label-size); unicode-bidi: plaintext; pointer-events: none; paint-order: stroke; stroke: var(--background); stroke-width: 3px; stroke-linejoin: round; }
-    .network-node.selected circle { stroke: var(--accent); stroke-width: 5px; }
+    &:not(.circular) .network-node.selected circle { stroke: var(--accent); stroke-width: 5px; }
     .network-node[aria-pressed="mixed"] circle { stroke-dasharray: 5 2; }
-    .network-node.local-focus circle { stroke-dasharray: 3 2; stroke: var(--accent); stroke-width: 4px; }
-    .network-node.search-match circle { r: 18px; stroke: var(--accent); stroke-width: 4px; }
-    .network-edge.selected path:not(.edge-hit) { stroke: var(--accent); stroke-width: 4px; }
+    &:not(.circular) .network-node.local-focus circle { stroke-dasharray: 3 2; stroke: var(--accent); stroke-width: 4px; }
+    &:not(.circular) .network-node.search-match circle { r: 18px; stroke: var(--accent); stroke-width: 4px; }
+    &:not(.circular) .network-edge.selected path:not(.edge-hit) { stroke: var(--accent); stroke-width: 4px; }
     .network-node.dimmed circle { opacity: .4; }
     .network-edge.dimmed path:not(.edge-hit) { opacity: .3; }
     .network-list button.dimmed { border-style: dashed; }
+    .network-circle-controls { display: flex; gap: 5px; flex-wrap: wrap; }
+    .network-guide-ring { opacity: .2; stroke-width: 1px; pointer-events: none; }
+    .network-inner-guide { stroke-dasharray: 2 3; }
+    .network-item-tether { opacity: .45; pointer-events: none; }
+    .network-badge-legend {
+        display: flex; flex-wrap: wrap; gap: 4px; padding: 4px;
+        max-height: 90px; overflow: auto; flex: 0 0 auto;
+        button { display: flex; align-items: center; gap: 5px; text-align: start; }
+    }
+    .network-color-swatch { border: 2px solid var(--swatch); width: 12px; height: 12px; border-radius: 50%; flex: 0 0 auto; }
+    &.circular {
+        .edge-guide { opacity: .15; pointer-events: none; }
+        .network-item { cursor: pointer; }
+        .network-item text {
+            font-size: var(--label-size); unicode-bidi: plaintext; pointer-events: none;
+            paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round;
+        }
+        .network-node.is-bucket .network-node-core { fill: var(--bucket-surface); }
+        .network-node.is-bucket .network-role-halo { opacity: .65; stroke-dasharray: 3 2; }
+        .network-node.emphasized, .network-node.selected, .network-node.search-match, .network-node.local-focus, .network-node.local-item, .network-node.highlighted,
+        .network-item.emphasized, .network-item.selected, .network-item.local-item, .network-item.highlighted,
+        .network-edge.emphasized, .network-edge.selected, .network-edge.local-item, .network-edge.highlighted {
+            filter: drop-shadow(0 0 3px var(--accent));
+        }
+        .network-edge.emphasized .edge-guide, .network-edge.selected .edge-guide,
+        .network-edge.local-item .edge-guide { opacity: .5; stroke-width: 12px; }
+        .network-item.dimmed, .network-item-tether.dimmed { opacity: .25; }
+        .network-item-tether.local-item { opacity: 1; stroke-width: 2px; }
+        .network-item[aria-pressed="mixed"] .network-item-core { stroke-dasharray: 3 2; }
+        &.high-contrast {
+            .network-guide-ring, .network-item-tether { opacity: 1; }
+            .network-item.dimmed, .network-item-tether.dimmed { opacity: 1; stroke-dasharray: 3 3; }
+            .network-node, .network-item, .network-edge { filter: none; }
+            .network-item.selected .network-item-core, .network-item.local-item .network-item-core,
+            .network-node.selected .network-node-core { stroke-width: 4px; }
+        }
+    }
     &.panning .network-svg, &.panning .network-node, &.panning .edge-hit { cursor: grabbing; }
     &.high-contrast {
         .network-node.dimmed circle, .network-edge.dimmed path:not(.edge-hit) { opacity: 1; stroke-dasharray: 3 3; }

@@ -6,18 +6,36 @@ All names, accounts, and values are synthetic. These examples demonstrate direct
 | --- | --- |
 | `cyclic-services.csv` | Clean service-dependency example: cycles, reciprocal/parallel relationships, self-link, and disconnected component |
 | `reciprocal-accounts.csv` | Text account codes with leading zeros, repeated and conflicting Edge IDs, zero/missing/negative weights |
+| `circular-contributions.csv` | Synthetic code/spec review interactions for Circular ring and two-ring Item ID detail |
 | `LoadRelationships.pq` | Power Query M import from a local CSV path |
-| `OfflineSamples.pq` | Self-contained literal Power Query tables for either sample; no path or network dependency |
+| `OfflineSamples.pq` | Self-contained literal Power Query tables for all three samples; no path or network dependency |
 | [`release/Network.pbip`](release/README.md) | Fully authored offline PBIP: bound graph pages, native detail tables/slicers, literal model tables, measures, and exact embedded release visual |
 
-**The PBIP is authored and locally structure-validated; native opening and PBIX conversion remain Desktop gates.** Follow the [authored sample instructions](release/README.md), refresh its literal tables, inspect both bound graph pages, and save/reopen a genuine PBIX. No native opening, query execution, or PBIX is fabricated or claimed here. The alternative M/CSV recipes below remain useful for building your own report.
+**The 1.2 PBIP is authored and locally validated; native opening and PBIX conversion remain Desktop gates.** Follow the [authored sample instructions](release/README.md), refresh its literal tables, inspect all four bound graphs, and save/reopen a genuine PBIX. No native opening, query execution, or PBIX is fabricated or claimed here. The alternative M/CSV recipes below remain useful for building your own report.
+
+## Circular contribution sample
+
+`circular-contributions.csv` contains 24 synthetic review contributions across nine people. Keep identifier columns as **Text** and Weight as a numeric column. Its recommended bindings are:
+
+| CSV column | Power BI type | Field well |
+| --- | --- | --- |
+| SourceId | Text | Source ID |
+| TargetId | Text; blank values retained | Target ID |
+| Weight | Whole or decimal number | Weight |
+| RelationshipType | Text | Relationship type |
+| ItemId | Text | Item ID |
+| Summary | Text | Not bound; example context only |
+
+Bind **Item ID** to enable the inner item ring. Set **Exploration → Layout mode = Circular ring** and **Group blank targets = On**. The two empty targets then join the dashed **External / unknown** fallback bucket. **PR-104** includes parallel PR and Spec contributions and several reviewers; other shared item IDs show multiple reviews of the same author. Source-only Quinn Davis demonstrates the single source ring. Maya Chen and Rowan Patel have reciprocal relationships, and the two self-review rows remain in the relationship list and status disclosure while their diagram links are hidden by default. PR and Spec relationship types distinguish parallel chords with solid and dashed strokes.
+
+Use **All items** to expand the two-ring detail to all loaded items and **Reset circle** to return to the overview. The detail is local exploration; it does not apply report filters. This CSV has no Edge ID column, so leave that field well unbound.
 
 ## Option A: self-contained offline query
 
 1. Open Power BI Desktop and create a blank report.
 2. Choose **Get data → Blank query**, then open **Advanced Editor** in Power Query.
 3. Paste the complete contents of `OfflineSamples.pq`.
-4. Set `Dataset` to `"cyclic-services"` or `"reciprocal-accounts"`.
+4. Set `Dataset` to `"cyclic-services"`, `"reciprocal-accounts"`, or `"contributions"`.
 5. Name the query **Relationships** and choose **Close & Apply**.
 
 The query contains literal data, reads no file, and makes no network request. Its Power Query and subsequent native visual behavior still need verification in Desktop; repository text checks are not an M-engine execution.

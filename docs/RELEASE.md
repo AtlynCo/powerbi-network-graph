@@ -5,7 +5,7 @@
 - Publisher: Atlyn; private `AtlynCo/powerbi-network-graph` repository.
 - Visual: Atlyn Network.
 - Stable GUID: `AtlynNetworkAB24C68297094C32AF64D50D92C01711`.
-- Visual version: `1.1.1.0`; npm version: `1.1.1`.
+- Visual version: `1.2.0.0`; npm version: `1.2.0`.
 - Intended artifact: the audited `.pbiviz` package, not source renamed as `.pbix`.
 - Certification-oriented engineering **does not mean Microsoft certified**.
 
@@ -23,7 +23,7 @@ No publication, AppSource submission, public GitHub release, screenshot upload, 
 - [ ] Preserve the stable GUID; align `pbiviz.json`, package metadata, release notes, and artifact version.
 - [ ] Confirm Node.js 24+ and a clean lockfile-based dependency installation (`npm ci`).
 - [ ] Run `npm run assets` with the project-required Node.js version and review regenerated icon/localization output; do not rely on a lower upstream tool minimum.
-- [ ] Run `npm run typecheck`, `npm run lint`, and `npm test`; retain actual outcomes.
+- [ ] Run `npm run typecheck`, `npm run lint`, `npm run eslint`, and `npm test`; retain actual outcomes.
 - [ ] Run `npm run build` and `npm run package`; retain inspection and packaging logs.
 - [ ] Run all gates locally; do not run GitHub Actions, hosted CI/CD, cloud coding or Codespaces. Use the isolated `scripts/package.mjs` wrapper with PowerShell 7 (`pwsh`) on Windows or OpenSSL on a local Unix host. Do not require `pbiviz install-cert` or mutate a user's certificate store/trust settings.
 - [ ] Verify ignored `.tool-home` isolation, cleanup of local short-lived certificate/key/PFX/passphrase material, and exclusion of that private material from Git, the final package, logs, and release evidence. Check cleanup explicitly if packaging was interrupted.
@@ -39,7 +39,7 @@ No publication, AppSource submission, public GitHub release, screenshot upload, 
 Example hash command after packaging:
 
 ```powershell
-Get-FileHash -Algorithm SHA256 .\dist\AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.1.1.0.pbiviz
+Get-FileHash -Algorithm SHA256 .\dist\AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.2.0.0.pbiviz
 ```
 
 Do not silently convert a warning into a passing gate. Keep verification artifacts private and exclude report/customer data and credentials.
@@ -77,6 +77,9 @@ Use an actual report with a relationship table, another visual displaying those 
 - [ ] Verify Ctrl/Cmd native relationship multiselect, selected/mixed states, and incoming native selection updates. Check overlapping incident groups using native SDK toggle semantics; do not assert additive union or an entity-multiselect abstraction.
 - [ ] Clear report selection independently of pan/zoom, local focus, and search.
 - [ ] Verify local focus/search/traversal do not send a report filter or alter native selection.
+- [ ] Circular Overview plain entity/chord activation keeps the native row-selection action above and also opens a local outgoing-item/source-target detail when items are loaded. Ctrl/Cmd/Shift activation does not drill. Toolbar/list **Focus**, **All items**, **Reset circle**, and numbered legend focus only explore locally, without selecting report rows. Person detail excludes own-item self-links even when self-links are shown in Overview. Inner item activation selects all contributing loaded item rows; Source → Item activation selects that curve's contributing rows. Item emphasis and circle reset do not clear native selection.
+- [ ] Circular entity/relationship lists retain all loaded topology, including diagram-hidden self-links, independently of circular detail. Search still filters list names locally.
+- [ ] Force traversal/path controls are hidden in Circular mode, which exposes directed source/pair item expansion instead. All local views remain bounded to loaded data.
 - [ ] Verify disabled host interactions are respected, and host selection/context failures produce usable notices.
 - [ ] Verify pending selection followed by Clear settles cleared; destroy prevents late host actions. Tooltip failures must leave the accessible relationship list usable.
 - [ ] Verify a single-identity edge's native context menu; entity and multi-identity edge context menus are explicitly visual-level.
@@ -99,6 +102,8 @@ The current context-menu SDK surface accepts a single identity. Do not pass an a
 - [ ] Verify modern formatting changes and persistence: entity color, relationship color, label visibility, 8–24 label size, overlap avoidance, and initial view.
 - [ ] Verify pan starting over marks, move/tap discrimination, two-pointer pinch, transformed picking, and simultaneous visual instances.
 - [ ] Verify explicit Save local view and native bookmark replay separately from report selection; invalid or unavailable-entity snapshots must reset visibly.
+- [ ] Verify Circular overview and Item ID two-ring detail, blank-target grouping, hidden self-link disclosure, dense numbered legend, and source/type slicer interactions in native hosts.
+- [ ] Verify Rooted Radial automatic and explicit center selection, disconnected components, saved views, and directed links in native hosts.
 - [ ] Inspect actual dense final-package screenshots and retain reproducible render/navigation/selection p50/p95/max with hardware, warmups, samples, and contention disclosed. A local mock selection roundtrip is not native report-filter latency.
 
 Browser tests can support DOM/SVG, keyboard, layout, and injected-host behavior. They cannot certify assistive-technology behavior inside native Power BI.

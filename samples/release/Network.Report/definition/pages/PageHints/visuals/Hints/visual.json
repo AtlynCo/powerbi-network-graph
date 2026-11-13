@@ -47,7 +47,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "3. Hints and semantics",
+                    "value": "5. Hints and semantics",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "14pt"
@@ -91,7 +91,29 @@
               {
                 "textRuns": [
                   {
-                    "value": "BINDING: Source ID and Target ID are text. Edge ID and relationship type are categories. Services Total Weight and Accounts Total Weight are SUM measures. Tooltip measures use the same table prefixes: e.g. Accounts Average Duration ms, Accounts Events and Accounts Input Rows. All 14 measure names are model-global unique. Two source rows for T01 become one Power BI category tuple with weight 120.",
+                    "value": "BINDING: Source ID, Target ID and Item ID are text categories. Table-prefixed measures are model-global unique. Two source rows for T01 become one Power BI category tuple with weight 120.",
+                    "textStyle": {
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "14pt"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "",
+                    "textStyle": {
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "14pt"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "LAYOUTS: Force shows directed relationships. Circular places loaded entities around a ring; Item ID enables two-ring detail. Radial places entities on undirected hop rings around a chosen or automatic center. Positions do not establish importance or causality.",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "14pt"
@@ -201,7 +223,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "NATIVE GATE: refresh, inspect both graphs and tooltips, test slicer/table cross-filtering, save and reopen, then Save As PBIX. Retest offline and verify the embedded version/content before submitting. No native validation is claimed by this authored source.",
+                    "value": "NATIVE GATE: refresh, inspect all four graphs and tooltips, test slicer/table cross-filtering, save and reopen, then Save As PBIX. Retest offline and verify the embedded version/content before submitting. No native validation is claimed by this authored source.",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "14pt"

@@ -1,11 +1,13 @@
 import powerbi from "powerbi-visuals-api";
 import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 import { createFormatter, NetworkData, readData, tooltipValues } from "./data";
-import { FocusMode, GraphEdge, GraphIndex, indexGraph, reachable, shortestPath } from "./graph";
-import { Layout, layoutBounds, layoutGraph, topologySignature } from "./layout";
-import { parseSavedView, SavedView, ViewPreference } from "./navigation";
+import { FocusMode, GraphEdge, GraphItem, GraphItemEdge, GraphIndex, indexGraph, reachable, shortestPath, summarizeSelfLinks } from "./graph";
+import { Layout, LayoutOptions, layoutBounds, layoutGraph, resolveLayout, topologySignature } from "./layout";
+import { circularColor, CircularBaseLayout, CircularDetailLayout } from "./circular";
+import { geometryFingerprint, parseSavedView, SavedView, ViewPreference } from "./navigation";
 import { relationshipSelection } from "./selection";
-import { Settings } from "./settings";
+import { hideSelfLinks, resolveColorMode, Settings } from "./settings";
+import type { LayoutMode } from "./settings";
 import { ar, en, MessageKey } from "./strings";
 import { thirdPartyNotices } from "./thirdPartyNotices";
 import "../style/visual.less";
@@ -48,6 +50,10 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     private readonly entity = element("select");
     private readonly focusMode = element("select");
     private readonly pathTarget = element("select");
+    private readonly layoutChoice = element("select");
+    private readonly centerChoice = element("select");
+    private readonly circularControls = element("div", "network-circle-controls");
+    private readonly badgeLegend = element("div", "network-badge-legend");
     private readonly viewButton: HTMLButtonElement;
     private readonly selection: powerbi.extensibility.ISelectionManager;
     private readonly formatting: FormattingSettingsService;
@@ -60,6 +66,11 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     private shownEdges: GraphEdge[] = [];
     private nodeElements = new Map<string, SVGGElement>();
     private edgeElements = new Map<string, SVGGElement>();
+    private itemElements = new Map<string, SVGGElement>();
+    private circularDetail: NonNullable<SavedView["circularDetail"]> = "overview";
+    private circularSource = "";
+    private circularTarget = "";
+    private circularItem = "";
     private labels = new Map<string, { element: SVGTextElement; width: number }>();
     private descriptions = new Map<string, string>();
     private displayLabels = new Map<string, string>();
@@ -71,6 +82,9 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     private targetId = "";
     private viewPreference: ViewPreference = "auto";
     private configuredView: ViewPreference = "auto";
+    private layoutMode: LayoutMode = "force";
+    private configuredLayout: LayoutMode = "force";
+    private requestedRoot = "";
     private savedViewValue: string | undefined;
     private compact: boolean | undefined;
     private toolsOpen = false;
@@ -145,7 +159,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         this.list.append(tabs, this.listContent, this.pager);
         this.svg.append(this.world);
         this.caption.tabIndex = 0;
-        this.plot.append(this.svg, this.caption);
+        this.plot.append(this.svg, this.badgeLegend, this.caption);
         this.body.append(this.plot, this.list);
         this.root.append(header, this.tools, this.status, this.notice, this.body);
         options.element.append(this.root);
@@ -186,6 +200,32 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     }
 
     private buildToolbar(): void {
+        this.layoutChoice.dataset.control = "layout";
+        this.layoutChoice.setAttribute("aria-label", this.t("LayoutChoice"));
+        for (const [value, key] of [["force", "LayoutForce"], ["circular", "LayoutCircular"], ["radial", "LayoutRadial"]] as const) {
+            const option = element("option");
+            option.value = value;
+            option.textContent = this.t(key);
+            this.layoutChoice.append(option);
+        }
+        this.layoutChoice.addEventListener("change", () => {
+            const value = this.layoutChoice.value;
+            if (value !== "force" && value !== "circular" && value !== "radial") return;
+            this.layoutMode = value;
+            this.populateEntities();
+            this.localFocusChanged();
+        });
+        this.centerChoice.dataset.control = "layout-center";
+        this.centerChoice.setAttribute("aria-label", this.t("RadialCenter"));
+        this.centerChoice.addEventListener("change", () => {
+            this.requestedRoot = this.centerChoice.value;
+            this.localFocusChanged();
+        });
+        this.circularControls.append(
+            this.button("AllItems", "all-items", () => this.setCircularDetail(this.circularDetail === "allItems" ? "overview" : "allItems")),
+            this.button("ResetCircle", "reset-circle", () => this.setCircularDetail("overview"))
+        );
+        this.circularControls.hidden = true;
         this.search.type = "search";
         this.search.maxLength = 512;
         this.search.placeholder = this.t("Search");
@@ -201,6 +241,10 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             this.focusId = this.entity.value;
             if (this.mode === "all") this.mode = "neighbors";
             this.focusMode.value = this.mode;
+            if (this.isCircular() && this.data.graph.items?.length) {
+                this.setCircularDetail("source", this.focusId);
+                return;
+            }
             this.localFocusChanged();
         });
         this.focusMode.dataset.control = "focus-mode";
@@ -226,11 +270,15 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             this.localFocusChanged();
         });
         this.toolbar.append(
-            this.search, this.entity, this.focusMode, this.pathTarget,
+            this.layoutChoice, this.centerChoice, this.search, this.entity, this.focusMode, this.pathTarget, this.circularControls,
             this.button("ResetFocus", "reset-focus", () => {
                 this.mode = "all";
                 this.focusMode.value = "all";
                 this.search.value = "";
+                if (this.isCircular()) {
+                    this.setCircularDetail("overview");
+                    return;
+                }
                 this.localFocusChanged();
             }),
             this.button("Fit", "fit", () => { this.autoFit = true; this.fit(); }),
@@ -278,14 +326,24 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         }
         const size = this.plotSize();
         const state: SavedView = {
-            version: 1, focus: this.focusId, target: this.targetId, mode: this.mode,
+            version: 2, layout: this.layoutMode, root: this.requestedRoot, geometry: geometryFingerprint(this.layout.signature),
+            focus: this.focusId, target: this.targetId, mode: this.mode,
             search: this.search.value, view: this.viewPreference,
             centerX: (size.width / 2 - this.camera.x) / this.camera.scale,
-            centerY: (size.height / 2 - this.camera.y) / this.camera.scale, scale: this.camera.scale
+            centerY: (size.height / 2 - this.camera.y) / this.camera.scale, scale: this.camera.scale,
+            circularDetail: this.circularDetail,
+            ...(this.circularSource ? { circularSource: this.circularSource } : {}),
+            ...(this.circularTarget ? { circularTarget: this.circularTarget } : {}),
+            ...(this.circularItem ? { circularItem: this.circularItem } : {})
         };
+        const serialized = JSON.stringify(state);
+        if (!parseSavedView(serialized)) {
+            this.notice.textContent = this.t("SaveFailed");
+            return;
+        }
         void Promise.resolve().then(() => {
             if (!this.destroyed) this.host.persistProperties({
-                merge: [{ objectName: "navigation", selector: {}, properties: { savedView: JSON.stringify(state) } }]
+                merge: [{ objectName: "navigation", selector: {}, properties: { savedView: serialized } }]
             });
         }).then(() => {
             if (!this.destroyed) this.notice.textContent = this.t("SavedView");
@@ -300,10 +358,15 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         if (value === this.savedViewValue) return undefined;
         const state = typeof value === "string" ? parseSavedView(value) : null;
         this.savedViewValue = typeof value === "string" ? value : undefined;
-        if (!state || (state.focus && !this.index.nodes.has(state.focus)) || (state.target && !this.index.nodes.has(state.target))) {
+        if (!state || (state.focus && !this.index.nodes.has(state.focus)) || (state.target && !this.index.nodes.has(state.target)) ||
+            !this.validCircularState(state)) {
             this.mode = "all";
+            this.circularDetail = "overview";
+            this.circularSource = this.circularTarget = this.circularItem = "";
             this.search.value = "";
             this.viewPreference = this.configuredView;
+            this.layoutMode = this.configuredLayout;
+            this.requestedRoot = "";
             this.autoFit = true;
             if (value !== undefined) this.notice.textContent = this.t("BadSavedView");
             return undefined;
@@ -313,7 +376,13 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         this.mode = state.mode;
         this.search.value = state.search;
         this.viewPreference = state.view;
-        this.autoFit = false;
+        this.layoutMode = state.version === 2 ? state.layout : state.circularDetail ? this.configuredLayout : "force";
+        this.requestedRoot = state.version === 2 ? state.root : "";
+        this.circularDetail = state.circularDetail ?? "overview";
+        this.circularSource = state.circularSource ?? "";
+        this.circularTarget = state.circularTarget ?? "";
+        this.circularItem = state.circularItem ?? "";
+        this.autoFit = true;
         return state;
     }
 
@@ -350,11 +419,11 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
                 this.configuredView = configured;
                 this.viewPreference = configured;
             }
-            const changed = topologySignature(this.data.graph) !== this.layout.signature;
-            if (changed) {
-                this.layout = layoutGraph(this.data.graph);
-                this.page = 0;
-                this.autoFit = true;
+            const layout = this.settings.exploration.layout.value.value;
+            const validLayout: LayoutMode = layout === "radial" || layout === "circular" ? layout : "force";
+            if (validLayout !== this.configuredLayout) {
+                this.configuredLayout = validLayout;
+                this.layoutMode = validLayout;
             }
             if (!this.data.graph.nodes.some(node => node.id === this.focusId)) {
                 this.focusId = this.data.graph.nodes[0]?.id ?? "";
@@ -363,6 +432,18 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             }
             if (!this.index.nodes.has(this.targetId)) this.targetId = this.data.graph.nodes[this.data.graph.nodes.length - 1]?.id ?? "";
             const restored = this.restoreView(view);
+            if (!this.validCircularState({
+                circularDetail: this.circularDetail, circularSource: this.circularSource,
+                circularTarget: this.circularTarget, circularItem: this.circularItem
+            })) {
+                this.circularDetail = "overview";
+                this.circularSource = this.circularTarget = this.circularItem = "";
+                this.notice.textContent = this.t("BadSavedView");
+                this.autoFit = true;
+            }
+            this.ensureLayout();
+            const restoreCamera = restored?.version === 2 && restored.geometry === geometryFingerprint(this.layout.signature);
+            if (restoreCamera) this.autoFit = false;
             this.applyResponsive();
             this.populateEntities();
             this.applyTheme();
@@ -370,7 +451,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             this.renderList();
             this.syncSelection();
             this.renderStatus();
-            if (restored) {
+            if (restored && restoreCamera) {
                 const size = this.plotSize();
                 this.camera = { scale: restored.scale, x: size.width / 2 - restored.centerX * restored.scale, y: size.height / 2 - restored.centerY * restored.scale };
                 this.transform();
@@ -393,6 +474,8 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             this.layout = layoutGraph(this.data.graph);
             this.nodeElements.clear();
             this.edgeElements.clear();
+            this.itemElements.clear();
+            this.badgeLegend.replaceChildren();
             this.labels.clear();
             this.displayLabels.clear();
             this.visible.clear();
@@ -416,13 +499,28 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     private populateEntities(): void {
         this.entity.replaceChildren();
         this.pathTarget.replaceChildren();
+        this.centerChoice.replaceChildren();
+        const automatic = element("option");
+        automatic.value = "";
+        automatic.textContent = this.t("AutomaticCenter");
+        this.centerChoice.append(automatic);
         for (const node of this.data.graph.nodes) {
             const option = element("option");
             option.value = node.id;
             option.textContent = this.nodeLabel(node.id);
             this.entity.append(option);
             this.pathTarget.append(option.cloneNode(true));
+            this.centerChoice.append(option.cloneNode(true));
         }
+        if (this.requestedRoot && !this.index.nodes.has(this.requestedRoot)) {
+            const missing = element("option");
+            missing.value = this.requestedRoot;
+            missing.textContent = `${this.t("Missing")}: ${this.requestedRoot}`;
+            this.centerChoice.append(missing);
+        }
+        this.centerChoice.value = this.requestedRoot;
+        this.centerChoice.hidden = this.layoutMode !== "radial";
+        this.layoutChoice.value = this.layoutMode;
         this.entity.value = this.focusId;
         this.pathTarget.value = this.targetId;
         this.focusMode.value = this.mode;
@@ -454,8 +552,10 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             return fallback;
         };
         this.root.classList.toggle("high-contrast", highContrast);
-        this.root.style.setProperty("--background", highContrast ? color(palette.background.value, "#FFFFFF") : "#FFFFFF");
-        this.root.style.setProperty("--foreground", highContrast ? color(palette.foreground.value, "#000000") : "#172D3D");
+        this.root.style.setProperty("--background", color(palette.background?.value ?? "#FFFFFF", "#FFFFFF"));
+        this.root.style.setProperty("--bg", "var(--background)");
+        this.root.style.setProperty("--bucket-surface", highContrast ? "var(--background)" : this.darkSurface() ? "#252B34" : "#F3F4F6");
+        this.root.style.setProperty("--foreground", highContrast ? color(palette.foreground.value, "#000000") : this.darkSurface() ? "#F3F4F6" : "#172D3D");
         this.root.style.setProperty("--node", highContrast ? color(palette.foreground.value, "#000000") : color(this.settings.appearance.nodeColor.value?.value, "#007D87"));
         this.root.style.setProperty("--edge", highContrast ? color(palette.foreground.value, "#000000") : color(this.settings.appearance.edgeColor.value?.value, "#596579"));
         this.root.style.setProperty("--accent", highContrast ? color(palette.foregroundSelected.value, "#000000") : "#A64000");
@@ -466,13 +566,350 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     }
 
     private refreshFocus(): void {
+        if (this.isCircular()) {
+            this.visible = new Set(this.data.graph.nodes.map(node => node.id));
+            this.shownEdges = this.data.graph.edges.filter(edge => this.layout.routes.has(edge.id));
+            return;
+        }
         const path = this.mode === "path" ? shortestPath(this.data.graph, this.focusId, this.targetId) : undefined;
         this.visible = path ? new Set(path.nodes) : reachable(this.data.graph, this.focusId, this.mode);
         const pathEdges = new Set(path?.edges);
         this.shownEdges = this.data.graph.edges.filter(edge =>
             this.visible.has(edge.source) && this.visible.has(edge.target) &&
             (this.mode !== "incident" || edge.source === this.focusId || edge.target === this.focusId) &&
-            (!path || pathEdges.has(edge.id)));
+            (!path || pathEdges.has(edge.id)) && this.layout.routes.has(edge.id));
+    }
+
+    private isCircular(): boolean { return this.layoutMode === "circular"; }
+
+    private darkSurface(): boolean {
+        const value = this.host.colorPalette.background?.value ?? "#ffffff";
+        const hex = /^#[\da-f]{6}$/i.test(value) ? value.slice(1) :
+            /^#[\da-f]{3}$/i.test(value) ? [...value.slice(1)].map(c => c + c).join("") : "ffffff";
+        const [r, g, b] = [0, 2, 4].map(offset => Number.parseInt(hex.slice(offset, offset + 2), 16) / 255)
+            .map(channel => channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4);
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.35;
+    }
+
+    private validCircularState(state: Pick<SavedView, "circularDetail" | "circularSource" | "circularTarget" | "circularItem">): boolean {
+        return (!state.circularSource || this.index.nodes.has(state.circularSource)) &&
+            (!state.circularTarget || this.index.nodes.has(state.circularTarget)) &&
+            (!state.circularItem || !!this.data.graph.items?.some(item => item.id === state.circularItem)) &&
+            (!state.circularDetail || state.circularDetail === "overview" || !!this.data.graph.items?.length);
+    }
+
+    private layoutOptions(): LayoutOptions {
+        const exploration = this.settings.exploration;
+        return {
+            layoutMode: this.layoutMode,
+            requestedRoot: this.requestedRoot,
+            circularOrder: exploration.circularOrder.value.value === "weight" ? "weight" : "alphabetical",
+            selfLinks: exploration.selfLinks.value.value === "show" ? "show" : exploration.selfLinks.value.value === "hide" ? "hide" : "auto",
+            roleRings: this.settings.appearance.roleRings.value,
+            avoidLabelOverlap: this.settings.appearance.avoidLabelOverlap.value,
+            darkSurface: this.darkSurface(),
+            ...(this.isCircular() && this.circularDetail !== "overview" ? { detail: {
+                allItems: this.circularDetail === "allItems",
+                ...(this.circularDetail === "source" ? { focusSource: this.circularSource, hideSelfLinks: true } : {}),
+                ...(this.circularDetail === "pair" ? { focusPair: [this.circularSource, this.circularTarget] as const } : {})
+            } } : {})
+        };
+    }
+
+    private ensureLayout(): void {
+        const options = this.layoutOptions();
+        if (topologySignature(this.data.graph, options) !== this.layout.signature) {
+            this.layout = layoutGraph(this.data.graph, options);
+            this.autoFit = true;
+            this.page = 0;
+        }
+        this.root.dataset.layout = this.layoutMode;
+        this.root.dataset.layoutCenter = this.layout.root ?? "";
+    }
+
+    private setCircularDetail(detail: NonNullable<SavedView["circularDetail"]>, source = "", target = ""): void {
+        this.circularDetail = detail;
+        this.circularSource = source;
+        this.circularTarget = target;
+        this.circularItem = "";
+        this.ensureLayout();
+        this.localFocusChanged();
+        // A replaced keyboard mark must not strand focus in the document body.
+        this.svg.focus();
+    }
+
+    private entityColor(id: string): string {
+        if (this.host.colorPalette.isHighContrast) return this.root.style.getPropertyValue("--foreground");
+        if (this.index.nodes.get(id)?.isFallbackBucket) return circularColor(id, this.darkSurface(), true);
+        const mode = resolveColorMode(this.isCircular() ? "circular" : "force", this.colorMode());
+        return mode === "uniform" ? this.root.style.getPropertyValue("--node") :
+            circularColor(id, this.darkSurface(), this.index.nodes.get(id)?.isFallbackBucket);
+    }
+
+    private colorMode(): "auto" | "source" | "relationshipType" | "uniform" {
+        const mode = this.settings.appearance.colorMode.value.value;
+        return mode === "source" || mode === "relationshipType" || mode === "uniform" ? mode : "auto";
+    }
+
+    private diagramLabel(value: string): string {
+        const characters = [...value];
+        return characters.length > 80 ? `${characters.slice(0, 77).join("")}...` : value;
+    }
+
+    private resolvedEdgeColor(edge: GraphEdge | GraphItemEdge): string {
+        if (this.host.colorPalette.isHighContrast) return this.root.style.getPropertyValue("--foreground");
+        if (edge.missingWeight) return this.root.style.getPropertyValue("--edge");
+        const mode = resolveColorMode("circular", this.colorMode());
+        return mode === "source" ? this.entityColor(edge.source) : mode === "relationshipType" ?
+            circularColor(`type:${edge.type}`, this.darkSurface()) : this.root.style.getPropertyValue("--edge");
+    }
+
+    private asItemEdge(edge: GraphItemEdge): GraphEdge {
+        return { ...edge, label: edge.id };
+    }
+
+    private asItem(item: GraphItem): GraphEdge {
+        return {
+            ...item, source: item.ownerId ?? "", target: item.ownerId ?? "",
+            label: item.label
+        };
+    }
+
+    private bindMark(node: SVGGElement, activate: (event: MouseEvent) => void,
+        tooltip: (x: number, y: number, touch?: boolean) => void, rows: number[]): void {
+        node.setAttribute("tabindex", "0");
+        node.setAttribute("role", "button");
+        node.addEventListener("click", event => {
+            event.stopPropagation();
+            if (event.detail === 0 || event.timeStamp > this.suppressClickUntil) activate(event);
+        });
+        node.addEventListener("keydown", event => {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                event.stopPropagation();
+                activate(new MouseEvent("click", { ctrlKey: event.ctrlKey, metaKey: event.metaKey, shiftKey: event.shiftKey }));
+            }
+        });
+        node.addEventListener("pointerenter", event => {
+            node.classList.add("emphasized");
+            tooltip(event.clientX, event.clientY, event.pointerType === "touch");
+        });
+        node.addEventListener("pointerleave", () => { node.classList.remove("emphasized"); this.hideTooltip(); });
+        node.addEventListener("focus", () => {
+            node.classList.add("emphasized");
+            const rect = node.getBoundingClientRect();
+            tooltip(rect.left, rect.bottom);
+        });
+        node.addEventListener("blur", () => { node.classList.remove("emphasized"); this.hideTooltip(); });
+        this.bindContext(node, rows);
+    }
+
+    private renderCircularGraph(): void {
+        const layout = this.layout as CircularBaseLayout;
+        const detail = this.circularDetail !== "overview" ? this.layout as CircularDetailLayout : undefined;
+        const items = new Map(this.data.graph.items?.map(item => [item.id, item]));
+        const defs = svgElement("defs");
+        const renderedIds = new Set(detail?.renderedItemEdges.map(edge => edge.id));
+        const edges: (GraphEdge | GraphItemEdge)[] = detail ?
+            (this.data.graph.itemEdges ?? []).filter(edge => renderedIds.has(edge.id)) : this.shownEdges;
+        const colors = [...new Set(edges.map(edge => this.resolvedEdgeColor(edge)))];
+        const markers = new Map(colors.map((color, index) => [color, `${this.markerId}-${index}`]));
+        for (const [color, id] of markers) {
+            const marker = svgElement("marker", {
+                id, markerWidth: "14", markerHeight: "14", viewBox: "0 0 14 14", refX: "13", refY: "7",
+                orient: "auto", markerUnits: "userSpaceOnUse"
+            });
+            marker.append(svgElement("path", { d: "M 0 0 L 14 7 L 0 14 z", fill: color }));
+            defs.append(marker);
+        }
+        this.world.append(defs, svgElement("circle", {
+            class: "network-guide-ring", cx: String(layout.guide.cx), cy: String(layout.guide.cy),
+            r: String(layout.guide.r), fill: "none", stroke: "var(--edge)"
+        }));
+        if (detail) {
+            this.world.append(svgElement("circle", {
+                class: "network-guide-ring network-inner-guide", cx: "320", cy: "320", r: String(detail.innerGuide.r),
+                fill: "none", stroke: "var(--edge)"
+            }));
+            for (const tether of detail.ownershipTethers) this.world.append(svgElement("path", {
+                class: `network-item-tether${tether.muted ? " is-bucket" : ""}`,
+                "data-item-id": tether.itemId, d: tether.route.path, fill: "none",
+                stroke: this.entityColor(tether.ownerId), "stroke-width": "1.25", "stroke-dasharray": "2 3"
+            }));
+        }
+        const maxWeight = Math.max(0, ...edges.filter(edge => !edge.missingWeight).map(edge => edge.weight ?? 0));
+        const types = [...new Set(edges.map(edge => edge.type))].sort();
+        for (const edge of edges) {
+            const itemEdge = "itemId" in edge ? edge : undefined;
+            const group = svgElement("g", {
+                class: `network-edge${itemEdge ? " network-item-edge" : ""}`, "data-edge-id": edge.id,
+                ...(itemEdge ? { "data-item-id": itemEdge.itemId } : {})
+            });
+            const path = layout.routes.get(edge.id)!.path;
+            const color = this.resolvedEdgeColor(edge);
+            const width = edge.missingWeight || edge.weight === null ? 1.5 : edge.weight === 0 ? 1 :
+                Math.max(1.25, edge.weight / (maxWeight || 1) * (detail?.strokeMax ?? 9));
+            const line = svgElement("path", {
+                class: `edge-line${edge.missingWeight ? " incomplete-weight" : ""}`, d: path, fill: "none",
+                stroke: color, "stroke-width": String(width), "marker-end": `url(#${markers.get(color)})`,
+                ...(edge.missingWeight ? { "stroke-dasharray": "3 3" } :
+                    types.length > 1 && edge.type !== types[0] ? { "stroke-dasharray": "6 4" } : {})
+            });
+            const description = itemEdge ? this.asItemEdge(itemEdge) : edge as GraphEdge;
+            const title = svgElement("title");
+            title.textContent = itemEdge ?
+                `${this.nodeLabel(edge.source)} → ${items.get(itemEdge.itemId)!.label}; ${this.edgeDescription(description)}` :
+                this.edgeDescription(description);
+            group.setAttribute("aria-label", title.textContent);
+            group.append(title,
+                svgElement("path", { class: "edge-guide", d: path, fill: "none", stroke: color, "stroke-width": "1" }),
+                line, svgElement("path", {
+                    class: "edge-hit", d: path, fill: "none", stroke: "transparent", "stroke-width": "18",
+                    "pointer-events": "stroke", "vector-effect": "non-scaling-stroke"
+                }));
+            this.bindMark(group, event => {
+                this.selectRows(edge.rows, event);
+                if (itemEdge) {
+                    this.circularItem = itemEdge.itemId;
+                    this.styleSelection();
+                } else if (this.data.graph.items?.length && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+                    this.setCircularDetail("pair", edge.source, edge.target);
+                }
+            }, (x, y, touch) => {
+                if (itemEdge) {
+                    const item = items.get(itemEdge.itemId)!;
+                    this.deliverTooltip([
+                        { displayName: this.t("Source"), value: this.nodeLabel(edge.source) },
+                        { displayName: this.t("ItemDetails"), value: this.itemDescription(item) },
+                        { displayName: this.t("Details"), value: this.edgeDescription(description) },
+                        ...tooltipValues(this.data, description, this.host.locale, this.t("Multiple"), this.t("Missing"), this.t("TooltipLimit"))
+                    ], edge.rows, x, y, touch ?? false);
+                } else this.showTooltip(description, x, y, touch);
+            }, edge.rows);
+            this.world.append(group);
+            this.edgeElements.set(edge.id, group);
+        }
+        for (const placement of layout.nodes.values()) {
+            const { node, point } = placement;
+            const color = this.entityColor(node.id);
+            const group = svgElement("g", {
+                class: `network-node${placement.isFallbackBucket ? " is-bucket" : ""}`,
+                "data-node-id": node.id, transform: `translate(${point.x},${point.y})`,
+                "aria-label": `${this.nodeLabel(node.id)}: ${this.t("SelectNode")}${this.data.graph.items?.length ? `; ${this.t("ItemFocusSource")}` : ""}`
+            });
+            const title = svgElement("title");
+            title.textContent = group.getAttribute("aria-label");
+            group.append(title);
+            if (placement.haloRadius !== null) group.append(svgElement("circle", {
+                class: "network-role-halo", r: String(placement.haloRadius), fill: "none", stroke: color, "stroke-width": "2"
+            }));
+            group.append(svgElement("circle", {
+                class: "network-node-core", r: String(placement.coreRadius),
+                fill: placement.isFallbackBucket ? "var(--bucket-surface)" : this.settings.appearance.roleRings.value ? "var(--bg)" : color,
+                stroke: color, "stroke-width": String(placement.isFallbackBucket ? 2 : placement.sourceStrokeWidth),
+                ...(placement.isFallbackBucket ? { "stroke-dasharray": "3 2" } : {})
+            }));
+            if (placement.badgeNumber) {
+                const badge = svgElement("text", { class: "network-badge", x: "0", y: "5", "text-anchor": "middle", fill: "var(--foreground)" });
+                badge.textContent = String(placement.badgeNumber);
+                group.append(badge);
+                const entry = this.button("Focus", "circle-legend", () => {
+                    if (this.data.graph.items?.length) this.setCircularDetail("source", node.id);
+                    else this.nodeElements.get(node.id)?.focus();
+                });
+                entry.dataset.nodeId = node.id;
+                entry.setAttribute("aria-label", `${placement.badgeNumber}. ${this.nodeLabel(node.id)}; ${this.t("Focus")}`);
+                const swatch = element("span", "network-color-swatch");
+                swatch.style.setProperty("--swatch", color);
+                swatch.setAttribute("aria-hidden", "true");
+                const name = element("bdi");
+                name.textContent = `${placement.badgeNumber}. ${this.nodeLabel(node.id)}`;
+                entry.replaceChildren(swatch, name);
+                this.badgeLegend.append(entry);
+            } else if (this.settings.appearance.showLabels.value) {
+                const label = svgElement("text", {
+                    class: "network-perimeter-label", x: String(placement.label.x - point.x),
+                    y: String(placement.label.y - point.y + 4), "text-anchor": placement.label.textAnchor, fill: "var(--foreground)"
+                });
+                label.textContent = this.diagramLabel(this.nodeLabel(node.id));
+                group.append(label);
+            }
+            const rows = this.index.incident.get(node.id)!;
+            this.bindMark(group, event => {
+                this.selectRows(rows, event);
+                if (this.data.graph.items?.length && this.circularDetail === "overview" &&
+                    !event.ctrlKey && !event.metaKey && !event.shiftKey) this.setCircularDetail("source", node.id);
+            }, (x, y, touch) => this.showEntityTooltip(node.id, x, y, touch), []);
+            this.world.append(group);
+            this.nodeElements.set(node.id, group);
+        }
+        this.badgeLegend.hidden = !layout.usesBadges;
+        this.badgeLegend.setAttribute("role", "group");
+        this.badgeLegend.setAttribute("aria-label", this.t("Entities"));
+        if (detail) for (const placement of detail.itemNodes.values()) {
+            const item = items.get(placement.item.id)!;
+            const { point, label } = placement;
+            const group = svgElement("g", {
+                class: "network-item", "data-item-id": item.id,
+                transform: `translate(${point.x},${point.y})`, "aria-label": this.itemDescription(item)
+            });
+            const title = svgElement("title");
+            title.textContent = this.itemDescription(item);
+            group.append(title, svgElement("circle", {
+                class: "network-item-core", r: "10", fill: "var(--bg)",
+                stroke: item.ownerId ? this.entityColor(item.ownerId) : "var(--edge)", "stroke-width": "2"
+            }), svgElement("circle", { class: "network-item-hit", r: "12", fill: "transparent" }));
+            if (this.settings.appearance.showLabels.value) {
+                const text = svgElement("text", {
+                    class: "network-item-label", x: "0", y: "4", "text-anchor": label.textAnchor, fill: "var(--foreground)",
+                    transform: `translate(${label.x - point.x},${label.y - point.y}) rotate(${label.rotation})`
+                });
+                text.textContent = this.diagramLabel(item.label);
+                group.append(text);
+            }
+            this.bindMark(group, event => {
+                this.circularItem = item.id;
+                this.selectRows(item.rows, event);
+                this.styleSelection();
+            }, (x, y, touch) => this.showItemTooltip(item, x, y, touch), item.rows);
+            this.world.append(group);
+            this.itemElements.set(item.id, group);
+        }
+    }
+
+    private itemDescription(item: GraphItem): string {
+        const edges = this.data.graph.itemEdges?.filter(edge => edge.itemId === item.id).length ?? 0;
+        return `${item.label}; ${this.t("ItemOwner")}: ${item.ownerId ? this.nodeLabel(item.ownerId) : this.t("Missing")}; ` +
+            (!this.data.graph.weighted ? `${this.t("Unweighted")}; ` :
+                `${this.t(item.missingWeight ? "IncompleteWeight" : "Weight")}: ${item.weight === null ? this.t("Missing") : this.weightLabel(item.weight)}; `) +
+            `${edges} ${this.t("EdgeCount")}; ${item.rows.length} ${this.t("Rows")}`;
+    }
+
+    private showEntityTooltip(id: string, x: number, y: number, touch = false): void {
+        const rows = this.index.incident.get(id) ?? [];
+        this.deliverTooltip([
+            { displayName: this.t("Entities"), value: this.nodeLabel(id) },
+            { displayName: this.t("IncidentCount"), value: String(new Set([...this.index.incoming.get(id)!, ...this.index.outgoing.get(id)!].map(edge => edge.id)).size) }
+        ], rows, x, y, touch);
+    }
+
+    private showItemTooltip(item: GraphItem, x: number, y: number, touch = false): void {
+        this.deliverTooltip([
+            { displayName: this.t("ItemDetails"), value: this.itemDescription(item) },
+            ...tooltipValues(this.data, this.asItem(item), this.host.locale, this.t("Multiple"), this.t("Missing"), this.t("TooltipLimit"))
+        ], item.rows, x, y, touch);
+    }
+
+    private deliverTooltip(dataItems: powerbi.extensibility.VisualTooltipDataItem[], rows: number[], x: number, y: number, touch: boolean): void {
+        if (this.destroyed) return;
+        try {
+            if (!this.host.tooltipService.enabled()) return;
+            const identities = relationshipSelection(rows, this.data.identities);
+            this.tooltipTouch = touch;
+            this.host.tooltipService.show({
+                coordinates: [x, y], isTouchEvent: touch, dataItems, identities: identities.ok ? identities.ids : []
+            });
+        } catch { this.notice.textContent = this.t("TooltipFailed"); }
     }
 
     private renderGraph(): void {
@@ -481,6 +918,20 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         this.nodeElements.clear();
         this.edgeElements.clear();
         this.labels.clear();
+        this.itemElements.clear();
+        this.badgeLegend.replaceChildren();
+        this.badgeLegend.hidden = true;
+        this.circularControls.hidden = !this.isCircular() || !this.data.graph.items?.length;
+        // Force traversal and directed circular item expansion are distinct local exploration modes.
+        this.focusMode.hidden = this.isCircular();
+        this.pathTarget.hidden = this.isCircular() || this.mode !== "path";
+        this.circularControls.querySelector<HTMLButtonElement>('[data-action="all-items"]')!.setAttribute("aria-pressed", String(this.circularDetail === "allItems"));
+        this.circularControls.querySelector<HTMLButtonElement>('[data-action="reset-circle"]')!.disabled = this.circularDetail === "overview";
+        this.root.classList.toggle("circular", this.isCircular());
+        if (this.isCircular()) {
+            this.renderCircularGraph();
+            return;
+        }
         const defs = svgElement("defs");
         const marker = svgElement("marker", {
             id: this.markerId, markerWidth: "8", markerHeight: "8",
@@ -561,12 +1012,38 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         for (const [count, key] of fields) if (count) messages.push(`${this.t(key)}: ${count}.`);
         if (this.data.identityMissing) messages.push(this.t("MissingIdentities"));
         if (this.data.tooltipLimited) messages.push(this.t("TooltipLimit"));
-        if (this.mode !== "all") messages.push(this.t("FocusNotice"));
-        if (this.mode === "path" && !this.visible.size) messages.push(this.t("NoPath"));
+        if (!this.isCircular() && this.mode !== "all") messages.push(this.t("FocusNotice"));
+        if (!this.isCircular() && this.mode === "path" && !this.visible.size) messages.push(this.t("NoPath"));
         if (!this.interactionsAllowed()) messages.push(this.t("InteractionsDisabled"));
         if (this.viewport.width < 180 || this.viewport.height < 150) messages.push(this.t("MicroHelp"));
+        if (this.isCircular()) messages.push(this.circularDisclosure());
+        if (this.layoutMode === "radial") {
+            const resolved = resolveLayout(graph, "radial", this.requestedRoot);
+            messages.push(this.t("RadialHelp"));
+            if (this.layout.root) messages.push(`${this.t("EffectiveCenter")}: ${this.nodeLabel(this.layout.root)}. ${this.t("ComponentCenters")}: ${this.layout.roots?.length ?? 0}.`);
+            if (!this.requestedRoot || resolved.missingRoot) messages.push(this.t("AutomaticCenterHelp"));
+            if (resolved.missingRoot) messages.push(this.t("MissingCenter"));
+        }
         this.status.textContent = messages.join(" ");
         this.status.title = this.status.textContent;
+    }
+
+    private circularDisclosure(): string {
+        if (this.circularDetail !== "overview") {
+            const detail = this.layout as CircularDetailLayout;
+            const own = this.circularDetail === "source" ? (this.data.graph.itemEdges ?? [])
+                .filter(edge => edge.source === this.circularSource && edge.target === this.circularSource) : [];
+            return `${this.t("ItemFocus")}: ${detail.visibleItems.length} ${this.t("VisibleItems")}, ` +
+                `${detail.renderedItemEdges.length} ${this.t("ItemCurves")}. ` +
+                (own.length ? `${this.t("ExcludedOwnItems")}: ${own.length}; ${this.t("Rows")}: ${new Set(own.flatMap(edge => edge.rows)).size}.` : "");
+        }
+        const summary = summarizeSelfLinks(this.data.graph);
+        if (!hideSelfLinks("circular", this.layoutOptions().selfLinks) || !summary.selfEdgeCount) return "";
+        const value = (weight: number | null): string => !this.data.graph.weighted ? this.t("Unweighted") :
+            weight === null ? this.t("Missing") : this.weightLabel(weight);
+        const incomplete = this.data.graph.edges.some(edge => edge.missingWeight) ? ` ${this.t("IncompleteWeight")}.` : "";
+        return `${this.t("HiddenSelfLinks")}: ${summary.selfEdgeCount}; ${this.t("HiddenSelfLinkRows")}: ${summary.selfRowCount}; ` +
+            `${this.t("HiddenSelfLinkWeight")}: ${value(summary.selfWeight)}; ${this.t("DrawnWeight")}: ${value(summary.drawnWeight)}.${incomplete}`;
     }
 
     private switchList(mode: "entities" | "relationships"): void {
@@ -584,7 +1061,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         const query = this.search.value.toLocaleLowerCase(this.host.locale).trim();
         const matches = new Set(this.data.graph.nodes.filter(node => this.nodeLabel(node.id).toLocaleLowerCase(this.host.locale).includes(query)).map(node => node.id));
         const nodes = this.data.graph.nodes.filter(node => this.visible.has(node.id) && matches.has(node.id));
-        const edges = this.shownEdges.filter(edge => matches.has(edge.source) || matches.has(edge.target));
+        const edges = (this.isCircular() ? this.data.graph.edges : this.shownEdges).filter(edge => matches.has(edge.source) || matches.has(edge.target));
         const count = this.listMode === "entities" ? nodes.length : edges.length;
         const pages = Math.max(1, Math.ceil(count / PAGE_SIZE));
         this.page = Math.max(0, Math.min(this.page, pages - 1));
@@ -599,6 +1076,10 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
                 name.dir = "auto";
                 const actions = element("div", "list-actions");
                 const focus = this.button("Focus", "focus-node", () => {
+                    if (this.isCircular() && this.data.graph.items?.length) {
+                        this.setCircularDetail("source", node.id);
+                        return;
+                    }
                     this.focusId = node.id;
                     this.entity.value = node.id;
                     this.mode = "neighbors";
@@ -635,6 +1116,16 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
                     select.title = this.t(native.reason === "limit" ? "SelectionLimit" : "SelectionMissing");
                 }
                 actions.append(focus, inspect, select);
+                if (this.layoutMode === "radial") {
+                    const center = this.button("CenterNode", "center-node", () => {
+                        this.requestedRoot = node.id;
+                        this.populateEntities();
+                        this.localFocusChanged();
+                        this.centerChoice.focus();
+                    });
+                    center.dataset.focusKey = node.id;
+                    actions.append(center);
+                }
                 row.append(name, counts, actions);
                 items.append(row);
             }
@@ -836,6 +1327,10 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
 
     private styleSelection(graphMarks = true): void {
         const graph = this.data.graph;
+        const itemEdges = new Map(graph.itemEdges?.map(edge => [edge.id, edge]));
+        const items = new Map(graph.items?.map(item => [item.id, item]));
+        const connectedNodes = new Set((graph.itemEdges ?? []).filter(edge => edge.itemId === this.circularItem)
+            .flatMap(edge => [edge.source, edge.target]));
         const query = this.search.value.trim().toLocaleLowerCase(this.host.locale);
         const nodes: (HTMLElement | SVGElement)[] = [
             ...(graphMarks ? this.nodeElements.values() : []),
@@ -849,7 +1344,10 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             node.classList.toggle("local-focus", id === this.focusId && this.mode !== "all");
             node.classList.toggle("search-match", !!query && this.nodeLabel(id).toLocaleLowerCase(this.host.locale).includes(query));
             const highlighted = this.index.highlightedNodes.has(id);
-            node.classList.toggle("dimmed", (this.selected.length > 0 && state === "false") || (graph.hasHighlights && !highlighted));
+            node.classList.toggle("highlighted", graph.hasHighlights && highlighted);
+            node.classList.toggle("local-item", !!this.circularItem && connectedNodes.has(id));
+            node.classList.toggle("dimmed", (this.selected.length > 0 && state === "false") || (graph.hasHighlights && !highlighted) ||
+                (this.isCircular() && node instanceof SVGElement && !!this.circularItem && !connectedNodes.has(id)));
             node.setAttribute("aria-pressed", state);
         }
         const edges: (HTMLElement | SVGElement)[] = [
@@ -857,17 +1355,50 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             ...this.list.querySelectorAll<HTMLElement>("[data-edge-id]")
         ];
         for (const node of edges) {
-            const edge = this.index.edges.get(node.dataset.edgeId!);
+            const edge = this.index.edges.get(node.dataset.edgeId!) ?? itemEdges.get(node.dataset.edgeId!);
             if (!edge) continue;
             const state = this.selectionState(edge.rows);
             node.classList.toggle("selected", state !== "false");
-            node.classList.toggle("dimmed", (this.selected.length > 0 && state === "false") || (graph.hasHighlights && !edge.highlighted));
-            if (node instanceof HTMLButtonElement) node.setAttribute("aria-pressed", state);
+            node.classList.toggle("highlighted", graph.hasHighlights && edge.highlighted);
+            const connected = !this.circularItem || ("itemId" in edge && edge.itemId === this.circularItem);
+            node.classList.toggle("local-item", !!this.circularItem && connected);
+            node.classList.toggle("dimmed", (this.selected.length > 0 && state === "false") || (graph.hasHighlights && !edge.highlighted) ||
+                (this.isCircular() && !(node instanceof HTMLButtonElement) && !connected));
+            node.setAttribute("aria-pressed", state);
+        }
+        if (graphMarks) {
+            for (const [id, node] of this.itemElements) {
+                const item = items.get(id);
+                if (!item) continue;
+                const state = this.selectionState(item.rows);
+                node.setAttribute("aria-pressed", state);
+                node.classList.toggle("selected", state !== "false");
+                node.classList.toggle("highlighted", graph.hasHighlights && item.highlighted);
+                node.classList.toggle("local-item", id === this.circularItem);
+                node.classList.toggle("dimmed", (this.selected.length > 0 && state === "false") ||
+                    (graph.hasHighlights && !item.highlighted) || (!!this.circularItem && id !== this.circularItem));
+            }
+            for (const tether of this.world.querySelectorAll<SVGPathElement>(".network-item-tether")) {
+                const item = items.get(tether.dataset.itemId!);
+                const state = this.selectionState(item?.rows ?? []);
+                tether.classList.toggle("local-item", !!this.circularItem && tether.dataset.itemId === this.circularItem);
+                tether.classList.toggle("dimmed", (!!this.circularItem && tether.dataset.itemId !== this.circularItem) ||
+                    (this.selected.length > 0 && state === "false") || (graph.hasHighlights && !item?.highlighted));
+            }
         }
         if (graphMarks) this.placeLabels();
     }
 
     private placeLabels(): void {
+        if (this.isCircular()) {
+            const detail = this.circularDetail === "overview" ? undefined : this.layout as CircularDetailLayout;
+            const count = this.world.querySelectorAll(".network-perimeter-label, .network-item-label").length;
+            this.svg.dataset.visibleLabels = String(count);
+            this.caption.textContent = detail ? this.circularDisclosure() :
+                `${this.t("Visible")}: ${this.visible.size} ${this.t("EntityCount")}, ${this.shownEdges.length} ${this.t("EdgeCount")}. ${this.circularDisclosure()}`;
+            this.caption.title = this.caption.textContent;
+            return;
+        }
         const size = this.plotSize();
         const scale = this.camera.scale;
         const fontSize = Math.max(8, Math.min(24, Number.isFinite(this.settings.appearance.labelSize.value) ? this.settings.appearance.labelSize.value : 12));
@@ -924,6 +1455,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         this.entity.value = this.focusId;
         this.focusMode.value = this.mode;
         this.pathTarget.hidden = this.mode !== "path";
+        this.ensureLayout();
         this.renderGraph();
         this.renderList();
         this.styleSelection();
@@ -938,10 +1470,19 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     }
 
     private fit(): void {
-        const bounds = layoutBounds({
+        let bounds = this.isCircular() ? this.layout.bounds : layoutBounds({
             ...this.data.graph, nodes: this.data.graph.nodes.filter(node => this.visible.has(node.id)),
             edges: this.shownEdges
         }, this.layout.positions, this.layout.routes, 12, false);
+        if (this.isCircular() && this.settings.appearance.showLabels.value) {
+            const fontSize = this.settings.appearance.labelSize.value;
+            const expansion = Number.isFinite(fontSize) ? Math.max(1, Math.min(24, fontSize) / 12) : 1;
+            // Circular geometry budgets 80-character labels at 12px. Expand conservatively for larger host settings.
+            bounds = {
+                x: 320 + (bounds.x - 320) * expansion, y: 320 + (bounds.y - 320) * expansion,
+                width: bounds.width * expansion, height: bounds.height * expansion
+            };
+        }
         const size = this.plotSize();
         const margin = this.labels.size ? Math.min(size.width * 0.2, 24 + Math.max(0, ...[...this.labels.values()].map(label => label.width)) / 2) : 8;
         this.camera.scale = Math.min(2, Math.max(0.001, Math.min(Math.max(1, size.width - margin * 2) / bounds.width, Math.max(1, size.height - 16) / bounds.height) * 0.94));
@@ -1056,6 +1597,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         this.pointers.clear();
         this.nodeElements.clear();
         this.edgeElements.clear();
+        this.itemElements.clear();
         this.labels.clear();
         this.descriptions.clear();
         this.displayLabels.clear();
