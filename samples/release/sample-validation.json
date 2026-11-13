@@ -1,6 +1,6 @@
 {
   "status": "local-structure-only",
-  "assemblerSha256": "010db33b3c05c4b0c298789c1d97123fb2ef51c2091a4c25a26219d819b7d5b0",
+  "assemblerSha256": "e6d94df3ccaccd224f3684202081608bac237643e634def3b7eb4758304bb259",
   "visual": {
     "guid": "AtlynNetworkAB24C68297094C32AF64D50D92C01711",
     "version": "1.2.0.0",
@@ -9,9 +9,9 @@
   "archive": {
     "source": "dist/AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.2.0.0.pbiviz",
     "embeddedCopy": "package/AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.2.0.0.pbiviz",
-    "bytes": 252053,
-    "sourceSha256": "b7d57313bf2cf6f490b1780374c3ea892915951e0b5d8fa984642932f3e91a81",
-    "embeddedSha256": "b7d57313bf2cf6f490b1780374c3ea892915951e0b5d8fa984642932f3e91a81",
+    "bytes": 252598,
+    "sourceSha256": "5b18f5c32c689fad6a8e666a91c4db7fb12d134993ef27c2f056e5ff0c1dd03f",
+    "embeddedSha256": "5b18f5c32c689fad6a8e666a91c4db7fb12d134993ef27c2f056e5ff0c1dd03f",
     "equal": true
   },
   "resources": [
@@ -24,9 +24,9 @@
     },
     {
       "path": "resources/AtlynNetworkAB24C68297094C32AF64D50D92C01711.pbiviz.json",
-      "bytes": 1814943,
-      "sourceSha256": "a9b86828debe7f737ead9b18786b3017232b61e368e2d93fb51c7547478f0503",
-      "embeddedSha256": "a9b86828debe7f737ead9b18786b3017232b61e368e2d93fb51c7547478f0503",
+      "bytes": 1817919,
+      "sourceSha256": "8145dbe1272f38e5ae407ad9541ebb1021a812b03ea3b010f3714ac19bb21feb",
+      "embeddedSha256": "8145dbe1272f38e5ae407ad9541ebb1021a812b03ea3b010f3714ac19bb21feb",
       "equal": true
     }
   ],
@@ -178,15 +178,15 @@
     },
     {
       "path": "Network.Report/definition/pages/PageCircular/visuals/CircularDetails/visual.json",
-      "sha256": "c17bdc0fa1be271dabacf5faa55cd511b49a107cc3dc4202a83bc707d4d9ca65"
+      "sha256": "7efa49576a6bc90c33907815fa11266406664521a8dbdfb99321c32e25547045"
     },
     {
       "path": "Network.Report/definition/pages/PageCircular/visuals/CircularGraph/visual.json",
-      "sha256": "b999aff85e42590812e338e1ee2f79a49498a9ce7a124716bc019e6f5c56fecb"
+      "sha256": "e19dd7357a7e9ba91b89afe01308805ac7dc3a30db337f49734cd62f03596ecc"
     },
     {
       "path": "Network.Report/definition/pages/PageCircular/visuals/CircularGuide/visual.json",
-      "sha256": "22ac4b4016bac424377a89ea80cd5806b79df7931e4de27bbb7fdca44f7d4aa2"
+      "sha256": "3c76d62bf10cbe500a22977136715fa9cb87fc895666e25926887919afcfd331"
     },
     {
       "path": "Network.Report/definition/pages/PageCircular/visuals/CircularHeading/visual.json",
@@ -214,11 +214,11 @@
     },
     {
       "path": "Network.Report/definition/pages/PageRadial/visuals/RadialGraph/visual.json",
-      "sha256": "bd915f835b962808bf4dade00691d59e1f94fb2a700dd1246991ae3836219a0e"
+      "sha256": "46c87f68498d0a159acde3d1332a90f07547527ab2a7e33346427899296d09d8"
     },
     {
       "path": "Network.Report/definition/pages/PageRadial/visuals/RadialGuide/visual.json",
-      "sha256": "4e71fe4063c656cf99d295be8502f77fb4ba2322b4aaff099e62f2516f3d4cc1"
+      "sha256": "328c502a1bb4d70be329aeb518970b472fdb0211ec5dd3196f5fa9402ce29a17"
     },
     {
       "path": "Network.Report/definition/pages/PageRadial/visuals/RadialHeading/visual.json",

@@ -945,22 +945,30 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         for (const edge of edges) {
             const group = svgElement("g", { class: "network-edge", "data-edge-id": edge.id });
             const path = this.layout.routes.get(edge.id)!.path;
+            const radial = this.layoutMode === "radial";
             const line = svgElement("path", {
-                d: path, fill: "none", stroke: "var(--edge)",
-                "stroke-width": edge.missingWeight || edge.weight === null ? "1.5" : String(1.5 + Math.sqrt(edge.weight / maxWeight) * 3),
+                ...(radial ? { class: "edge-line" } : {}), d: path, fill: "none", stroke: "var(--edge)",
+                "stroke-width": edge.missingWeight || edge.weight === null ? "1.5" :
+                    String(radial ? 1 + Math.sqrt(edge.weight / (maxWeight || 1)) * 1.5 : 1.5 + Math.sqrt(edge.weight / maxWeight) * 3),
                 "marker-end": `url(#${this.markerId})`
             });
             const hit = svgElement("path", { d: path, fill: "none", stroke: "transparent", "stroke-width": "14", "vector-effect": "non-scaling-stroke", class: "edge-hit" });
             const title = svgElement("title");
             title.textContent = this.edgeDescription(edge);
             group.append(title, line, hit);
-            group.addEventListener("click", event => {
-                event.stopPropagation();
-                if (event.detail === 0 || event.timeStamp > this.suppressClickUntil) this.selectRows(edge.rows, event);
-            });
-            group.addEventListener("pointerenter", event => this.showTooltip(edge, event.clientX, event.clientY, event.pointerType === "touch"));
-            group.addEventListener("pointerleave", () => this.hideTooltip());
-            this.bindContext(group, edge.rows);
+            if (radial) {
+                group.setAttribute("aria-label", title.textContent);
+                this.bindMark(group, event => this.selectRows(edge.rows, event),
+                    (x, y, touch) => this.showTooltip(edge, x, y, touch ?? false), edge.rows);
+            } else {
+                group.addEventListener("click", event => {
+                    event.stopPropagation();
+                    if (event.detail === 0 || event.timeStamp > this.suppressClickUntil) this.selectRows(edge.rows, event);
+                });
+                group.addEventListener("pointerenter", event => this.showTooltip(edge, event.clientX, event.clientY, event.pointerType === "touch"));
+                group.addEventListener("pointerleave", () => this.hideTooltip());
+                this.bindContext(group, edge.rows);
+            }
             this.world.append(group);
             this.edgeElements.set(edge.id, group);
         }
@@ -1392,10 +1400,37 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     private placeLabels(): void {
         if (this.isCircular()) {
             const detail = this.circularDetail === "overview" ? undefined : this.layout as CircularDetailLayout;
-            const count = this.world.querySelectorAll(".network-perimeter-label, .network-item-label").length;
+            const layout = this.layout as CircularBaseLayout;
+            const svg = this.svg.getBoundingClientRect();
+            const scale = this.camera.scale;
+            const fontSize = Math.max(8, Math.min(24, Number.isFinite(this.settings.appearance.labelSize.value) ? this.settings.appearance.labelSize.value : 12));
+            const overlap = (a: DOMRect, b: DOMRect): boolean =>
+                a.left < b.right + 2 && a.right + 2 > b.left && a.top < b.bottom + 2 && a.bottom + 2 > b.top;
+            const labels = [...this.world.querySelectorAll<SVGTextElement>(".network-perimeter-label")];
+            const occupied: DOMRect[] = labels.length ?
+                [...this.world.querySelectorAll<SVGElement>(".network-node-core, .network-role-halo, .network-item-core, .network-item-label")]
+                    .map(mark => mark.getBoundingClientRect()).filter(rect => rect.width > 0 && rect.height > 0) : [];
+            for (const label of labels) {
+                const id = label.parentElement?.getAttribute("data-node-id");
+                const placement = id ? layout.nodes.get(id) : undefined;
+                if (!placement) continue;
+                const radius = (placement.haloRadius ?? placement.coreRadius) * scale + 5;
+                const anchor = placement.label.textAnchor;
+                label.style.display = "";
+                label.setAttribute("transform", `scale(${1 / scale})`);
+                label.setAttribute("x", String(anchor === "middle" ? 0 : anchor === "start" ? radius : -radius));
+                label.setAttribute("y", String(anchor === "middle" ?
+                    (placement.label.hemisphere === "top" ? -radius : radius + fontSize) : fontSize * 0.35));
+                const rect = label.getBoundingClientRect();
+                if (rect.width && rect.height && (rect.left < svg.left || rect.right > svg.right || rect.top < svg.top ||
+                    rect.bottom > svg.bottom || (this.settings.appearance.avoidLabelOverlap.value && occupied.some(other => overlap(rect, other))))) label.style.display = "none";
+                else if (rect.width && rect.height) occupied.push(rect);
+            }
+            const count = labels.filter(label => label.style.display !== "none").length + this.world.querySelectorAll(".network-item-label").length;
             this.svg.dataset.visibleLabels = String(count);
             this.caption.textContent = detail ? this.circularDisclosure() :
-                `${this.t("Visible")}: ${this.visible.size} ${this.t("EntityCount")}, ${this.shownEdges.length} ${this.t("EdgeCount")}. ${this.circularDisclosure()}`;
+                `${this.t("Visible")}: ${this.visible.size} ${this.t("EntityCount")}, ${this.shownEdges.length} ${this.t("EdgeCount")}. ` +
+                (labels.length ? `${count}/${labels.length} ${this.t("LabelsShown")}. ` : "") + this.circularDisclosure();
             this.caption.title = this.caption.textContent;
             return;
         }

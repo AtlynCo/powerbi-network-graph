@@ -74,6 +74,9 @@
     .network-edge.dimmed path:not(.edge-hit) { opacity: .3; }
     .network-list button.dimmed { border-style: dashed; }
     .network-circle-controls { display: flex; gap: 5px; flex-wrap: wrap; }
+    &[data-layout="radial"] {
+        .network-edge.emphasized .edge-line { stroke: var(--accent); stroke-width: 4px; }
+    }
     .network-guide-ring { opacity: .2; stroke-width: 1px; pointer-events: none; }
     .network-inner-guide { stroke-dasharray: 2 3; }
     .network-item-tether { opacity: .45; pointer-events: none; }

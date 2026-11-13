@@ -330,7 +330,7 @@ function routePolarGraph(graph: Graph, positions: Map<string, Point>, polar: Map
                 return;
             }
             const center = a.center;
-            const lane = (a.radius === b.radius ? a.radius + 48 : (a.radius + b.radius) / 2) + 32 * (fraction - 0.5);
+            const lane = (a.radius === b.radius ? a.radius - 48 : (a.radius + b.radius) / 2) + 32 * (fraction - 0.5);
             const angleA = a.radius ? a.angle : b.angle - 0.35;
             const angleB = b.radius ? b.angle : a.angle + 0.35;
             const signA = Math.sign(lane - a.radius), signB = Math.sign(lane - b.radius);

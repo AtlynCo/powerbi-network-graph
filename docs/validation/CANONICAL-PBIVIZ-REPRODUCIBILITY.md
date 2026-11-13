@@ -1,9 +1,15 @@
 # Canonical PBIVIZ packaging follow-up
 
-**Current candidate, 2026-11-13:** the canonical package is 252,053 bytes,
+**Current layout-cleanup candidate, 2026-11-13:** 252,598 bytes, SHA-256
+`5b18f5c32c689fad6a8e666a91c4db7fb12d134993ef27c2f056e5ff0c1dd03f`.
+An unchanged-input rebuild reproduced the archive and all members byte-for-byte.
+Native acceptance and approval of new listing media remain open.
+
+**Previous candidate, 2026-11-13:** the canonical package was 252,053 bytes,
 SHA-256 `b7d57313bf2cf6f490b1780374c3ea892915951e0b5d8fa984642932f3e91a81`.
 The local unchanged-input rebuild reproduced the archive and all members
-byte-for-byte. The October package identities below are historical.
+byte-for-byte. That result applies to those bytes, not the current
+layout-cleanup candidate. The October package identities below are historical.
 
 **Recorded: 2026-10-03.** This is a source/build-path follow-up on the existing
 draft implementation branch/PR #6, not Microsoft certification or permission

@@ -159,6 +159,21 @@ describe("unchanged force geometry from c19276b", () => {
             expect(layoutGraph(make([...rows].reverse()), { layoutMode: "radial", requestedRoot: "s:root" })).toEqual(layout);
         });
 
+        it("keeps dense same-ring relationships inside the outer ring without hiding or overlapping nodes", () => {
+            const rows = [
+                ...Array.from({ length: 8 }, (_, i) => ({ source: "root", target: `N${i}`, edgeId: `spoke${i}` })),
+                ...Array.from({ length: 13 }, (_, i) => ({ source: `N${i % 8}`, target: `N${(i * 3 + 1) % 8}`, edgeId: `peer${i}` }))
+            ];
+            const graph = make(rows);
+            const layout = layoutGraph(graph, { layoutMode: "radial", requestedRoot: "s:root" });
+            checkGeometry(graph, layout);
+            for (const edge of graph.edges.filter(edge => edge.source !== "s:root" && edge.source !== edge.target)) {
+                const info = layout.polar!.get(edge.source)!;
+                const points = flatten(layout.routes.get(edge.id)!.path);
+                expect(Math.max(...points.map(point => distance(point, info.center)))).toBeLessThan(info.radius);
+            }
+        });
+
         it("chooses largest component then distinct non-self degree then typed ID, never edge count or weight", () => {
             const rows = [
                 { source: "B", target: "A", edgeId: "BA" }, { source: "B", target: "C", edgeId: "BC" },
