@@ -27,3 +27,18 @@ relationship Accounts_Types
 	fromColumn: Accounts.RelationshipType
 	toColumn: AccountsTypes.RelationshipType
 	crossFilteringBehavior: oneDirection
+
+relationship Contributions_Sources
+	fromColumn: Contributions.SourceID
+	toColumn: ContributionsSources.SourceID
+	crossFilteringBehavior: oneDirection
+
+relationship Contributions_Targets
+	fromColumn: Contributions.TargetID
+	toColumn: ContributionsTargets.TargetID
+	crossFilteringBehavior: oneDirection
+
+relationship Contributions_Types
+	fromColumn: Contributions.RelationshipType
+	toColumn: ContributionsTypes.RelationshipType
+	crossFilteringBehavior: oneDirection

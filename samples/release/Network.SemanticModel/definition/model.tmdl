@@ -14,3 +14,7 @@ ref table Accounts
 ref table AccountsSources
 ref table AccountsTargets
 ref table AccountsTypes
+ref table Contributions
+ref table ContributionsSources
+ref table ContributionsTargets
+ref table ContributionsTypes

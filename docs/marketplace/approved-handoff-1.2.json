@@ -3,6 +3,15 @@
   "authority": "Explicit owner decisions relayed by the coordinating session",
   "visualVersion": "1.2.0.0",
   "packageSha256": "6136c82c28ecf597634cbb90685f9cb1fbc3c435ce64613a8be180e8ff0f00ff",
+  "packageSha256Scope": "Historical owner-approved 2026-09-25 handoff, not the current candidate.",
+  "currentCandidate": {
+    "visualVersion": "1.2.0.0",
+    "bytes": 252053,
+    "sha256": "b7d57313bf2cf6f490b1780374c3ea892915951e0b5d8fa984642932f3e91a81",
+    "nativePbixVerified": false,
+    "nativeScreenshotsApproved": false,
+    "note": "The historical native PBIX and media approvals below do not establish approval of these package bytes."
+  },
   "privacyUrl": "https://atlynco.github.io/atlyn-powerbi-support/legal/privacy/",
   "publisherEulaUrl": "https://atlynco.github.io/atlyn-powerbi-support/legal/terms/",
   "supportUrl": "https://atlynco.github.io/atlyn-powerbi-support/docs/faq/",

@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import path from "node:path";
 import JSZip from "jszip";
 import { assertBundledNoticeText, assertNoPrivateKeyMaterial } from "../scripts/artifact.mjs";
 import { assertCanonicalZipMetadata, canonicalizeZip } from "../scripts/canonical-zip.mjs";
@@ -9,6 +11,22 @@ describe("certification command contract", () => {
         const metadata = JSON.parse(readFileSync("package.json", "utf8")) as { scripts: Record<string, string> };
         expect(metadata.scripts.eslint).toBe("npx eslint . --ext .js,.jsx,.ts,.tsx");
         expect(metadata.scripts.lint).toBe("eslint src test scripts");
+    });
+});
+
+describe("offline sample package contract", () => {
+    it("records the exact embedded 1.2 archive and the five-page, three-domain model", async () => {
+        const root = path.join("samples", "release");
+        const validation = JSON.parse(readFileSync(path.join(root, "sample-validation.json"), "utf8")) as {
+            archive: { embeddedCopy: string; embeddedSha256: string };
+            model: { tables: number; measures: number; relationships: number; pages: number; boundGraphVisuals: number };
+        };
+        const archive = readFileSync(path.join(root, validation.archive.embeddedCopy));
+        expect(createHash("sha256").update(archive).digest("hex")).toBe(validation.archive.embeddedSha256);
+        const zip = await JSZip.loadAsync(archive, { checkCRC32: true });
+        const manifest = JSON.parse(await zip.file("package.json")!.async("string")) as { version: string };
+        expect(manifest.version).toBe("1.2.0.0");
+        expect(validation.model).toMatchObject({ tables: 12, measures: 21, relationships: 9, pages: 5, boundGraphVisuals: 4 });
     });
 });
 

@@ -1,5 +1,10 @@
 # Atlyn Network 1.2 prepublication evidence
 
+**Current candidate, 2026-11-13:** `1.2.0.0`, 252,053 bytes, SHA-256
+`b7d57313bf2cf6f490b1780374c3ea892915951e0b5d8fa984642932f3e91a81`.
+The dated native observations and approvals below apply to earlier package
+bytes and do not establish native acceptance of the current candidate.
+
 **2026-09-24 to 2026-09-25. In-progress native acceptance and preparation; not a
 Microsoft certification, submission or authorization to publish.** Explicit
 owner privacy/EULA/support, classification and two-image decisions are below.

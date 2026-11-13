@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { assertUniqueMeasureNames, measureDefinitions } from "../scripts/sample-measures.mjs";
 
 const sample = path.join(process.cwd(), "samples", "release");
-const tables = ["Services", "Accounts"];
+const tables = ["Services", "Accounts", "Contributions"];
 const names = ["Total Weight", "Input Rows", "Events", "Average Duration ms", "Blank Weights", "Nonpositive Weights", "Visible Nodes"];
 
 describe("model-global sample measures", () => {
@@ -23,7 +23,7 @@ describe("model-global sample measures", () => {
         expect(() => assertUniqueMeasureNames([{ table: "Services", measures: ["Events", "Events"] }])).toThrow(/Duplicate/);
     });
 
-    it("keeps column references, expressions and formats while prefixing all fourteen names", () => {
+    it("keeps column references, expressions and formats while prefixing all twenty-one names", () => {
         for (const table of tables) {
             const definitions = measureDefinitions(table);
             expect(definitions.map(([name]) => name)).toEqual(names.map(name => `${table} ${name}`));
@@ -36,7 +36,7 @@ describe("model-global sample measures", () => {
         })))).not.toThrow();
     });
 
-    it("finds fourteen globally unique measures in the actual TMDL, matching metadata and definitions", () => {
+    it("finds twenty-one globally unique measures in the actual TMDL, matching metadata and definitions", () => {
         const contract = JSON.parse(readFileSync(path.join(sample, "sample-contract.json"), "utf8")) as {
             domains: { table: string; measures: string[][] }[];
         };
@@ -46,8 +46,8 @@ describe("model-global sample measures", () => {
             return { table: path.basename(file, ".tmdl"), measures: [...source.matchAll(/^\s*measure '([^']+)' =/gm)].map(match => match[1]) };
         });
         const allNames = actual.flatMap(table => table.measures);
-        expect(allNames).toHaveLength(14);
-        expect(new Set(allNames.map(name => name.toLowerCase())).size).toBe(14);
+        expect(allNames).toHaveLength(21);
+        expect(new Set(allNames.map(name => name.toLowerCase())).size).toBe(21);
         for (const table of tables) {
             expect(actual.find(item => item.table === table)?.measures).toEqual(names.map(name => `${table} ${name}`));
             expect(contract.domains.find(item => item.table === table)?.measures).toEqual(measureDefinitions(table));
@@ -57,9 +57,11 @@ describe("model-global sample measures", () => {
 
     it.each(tables)("keeps every %s graph/detail measure projection and query identifier consistent", table => {
         let count = 0;
+        const page = table === "Contributions" ? "Circular" : table;
+        const prefix = table === "Contributions" ? "Circular" : table[0];
         for (const suffix of ["Graph", "Details"]) {
-            const visual = JSON.parse(readFileSync(path.join(sample, "Network.Report", "definition", "pages", `Page${table}`,
-                "visuals", `${table[0]}${suffix}`, "visual.json"), "utf8"));
+            const visual = JSON.parse(readFileSync(path.join(sample, "Network.Report", "definition", "pages", `Page${page}`,
+                "visuals", `${prefix}${suffix}`, "visual.json"), "utf8"));
             for (const state of Object.values(visual.visual.query.queryState) as { projections: {
                 field: { Measure?: { Expression: { SourceRef: { Entity: string } }; Property: string } };
                 queryRef: string; nativeQueryRef: string;

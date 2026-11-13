@@ -4,6 +4,15 @@ import { describe, expect, it } from "vitest";
 import { assertReportVersions, PBIR_ARTIFACT_VERSION, PBIR_DEFINITION_VERSION } from "../scripts/sample-report-versions.mjs";
 
 describe("independent PBIR artifact and report-definition versions", () => {
+    it("keeps the unified visual and npm versions synchronized", () => {
+        const visual = JSON.parse(readFileSync("pbiviz.json", "utf8"));
+        const metadata = JSON.parse(readFileSync("package.json", "utf8"));
+        const lock = JSON.parse(readFileSync("package-lock.json", "utf8"));
+        expect(visual.visual.version).toBe("1.2.0.0");
+        expect(metadata.version).toBe("1.2.0");
+        expect(lock.version).toBe(metadata.version);
+        expect(lock.packages[""].version).toBe(metadata.version);
+    });
     it("keeps the artifact at 4.0 and the page-definition format at 2.0.0", () => {
         expect(PBIR_ARTIFACT_VERSION).toBe("4.0");
         expect(PBIR_DEFINITION_VERSION).toBe("2.0.0");
@@ -25,18 +34,5 @@ describe("independent PBIR artifact and report-definition versions", () => {
         expect(artifact.version).toBe("4.0");
         expect(definition.version).toBe("2.0.0");
         expect(() => assertReportVersions(artifact, definition)).not.toThrow();
-    });
-
-    it("places consistently numbered hints last after the four graph examples", () => {
-        const pages = path.join(process.cwd(), "samples", "release", "Network.Report", "definition", "pages");
-        const metadata = JSON.parse(readFileSync(path.join(pages, "pages.json"), "utf8")) as { pageOrder: string[] };
-        expect(metadata.pageOrder).toEqual(["PageServices", "PageAccounts", "PageCircular", "PageRadial", "PageHints"]);
-        metadata.pageOrder.forEach((name, index) => {
-            const page = JSON.parse(readFileSync(path.join(pages, name, "page.json"), "utf8")) as { displayName: string };
-            expect(page.displayName.startsWith(`${index + 1}. `)).toBe(true);
-        });
-        const hints = readFileSync(path.join(pages, "PageHints", "visuals", "Hints", "visual.json"), "utf8");
-        expect(hints).toContain("5. Hints and semantics");
-        expect(hints).toContain("all four graphs");
     });
 });

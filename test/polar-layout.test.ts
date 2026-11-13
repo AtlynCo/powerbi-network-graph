@@ -91,11 +91,10 @@ describe("unchanged force geometry from c19276b", () => {
             edgeId: `E${String(i).padStart(4, "0")}`, weight: i
         })));
         const result = layoutGraph(graph);
-        expect(layoutGraph(graph, "force", "missing")).toEqual(result);
+        expect(layoutGraph(graph, { layoutMode: "force", requestedRoot: "missing" })).toEqual(result);
         const text = JSON.stringify({ positions: [...result.positions], routes: [...result.routes], bounds: result.bounds, signature: result.signature });
         expect(createHash("sha256").update(text).digest("hex")).toBe(expected);
     });
-
     describe("rooted radial geometry", () => {
         it.each([7, 41, 2026])("matches independent undirected all-pairs distances for every center (seed %i)", initial => {
             const count = 14;
@@ -115,7 +114,7 @@ describe("unchanged force geometry from c19276b", () => {
             const graph = make(rows);
             const before = JSON.stringify(graph);
             for (let root = 0; root < count; root++) {
-                const layout = layoutGraph(graph, "radial", `n:${root}`);
+                const layout = layoutGraph(graph, { layoutMode: "radial", requestedRoot: `n:${root}` });
                 const levels = new Map<string, Map<number, number>>();
                 for (const node of graph.nodes) {
                     const info = layout.polar!.get(node.id)!;
@@ -138,9 +137,9 @@ describe("unchanged force geometry from c19276b", () => {
 
         it("re-layers a shortcut that formerly spanned multiple depths; no retained edge can skip a BFS ring", () => {
             const chain = Array.from({ length: 6 }, (_, i) => ({ source: i, target: i + 1, edgeId: `chain${i}`, weight: i }));
-            expect(layoutGraph(make(chain), "radial", "n:0").polar!.get("n:5")!.depth).toBe(5);
+            expect(layoutGraph(make(chain), { layoutMode: "radial", requestedRoot: "n:0" }).polar!.get("n:5")!.depth).toBe(5);
             const graph = make([...chain, { source: 0, target: 5, edgeId: "shortcut", weight: 0 }, { source: 5, target: 0, edgeId: "reverse", weight: 100 }]);
-            const layout = layoutGraph(graph, "radial", "n:0");
+            const layout = layoutGraph(graph, { layoutMode: "radial", requestedRoot: "n:0" });
             expect(layout.polar!.get("n:5")!.depth).toBe(1);
             for (const edge of graph.edges) expect(Math.abs(layout.polar!.get(edge.source)!.depth - layout.polar!.get(edge.target)!.depth)).toBeLessThanOrEqual(1);
             checkGeometry(graph, layout);
@@ -154,10 +153,10 @@ describe("unchanged force geometry from c19276b", () => {
                 { source: "X", target: "Y", edgeId: "other" }, { source: "Z", target: "Z", edgeId: "isolated-loop" }
             ];
             const graph = make(rows);
-            const layout = layoutGraph(graph, "radial", "s:root");
+            const layout = layoutGraph(graph, { layoutMode: "radial", requestedRoot: "s:root" });
             expect(layout.roots).toEqual(["s:root", "s:X", "s:Z"]);
             checkGeometry(graph, layout);
-            expect(layoutGraph(make([...rows].reverse()), "radial", "s:root")).toEqual(layout);
+            expect(layoutGraph(make([...rows].reverse()), { layoutMode: "radial", requestedRoot: "s:root" })).toEqual(layout);
         });
 
         it("chooses largest component then distinct non-self degree then typed ID, never edge count or weight", () => {
@@ -169,18 +168,18 @@ describe("unchanged force geometry from c19276b", () => {
             const graph = make(rows);
             expect(resolveLayout(graph, "radial").root).toBe("s:B");
             expect(resolveLayout(graph, "radial", "s:missing")).toEqual({ ...resolveLayout(graph, "radial"), missingRoot: true });
-            expect(layoutGraph(graph, "radial", "s:Y").roots).toEqual(["s:B", "s:Y"]);
+            expect(layoutGraph(graph, { layoutMode: "radial", requestedRoot: "s:Y" }).roots).toEqual(["s:B", "s:Y"]);
             const reappeared = make([...rows, { source: "missing", target: "B", edgeId: "back" }]);
             expect(resolveLayout(reappeared, "radial", "s:missing").root).toBe("s:missing");
         });
 
-        it.each(["circular", "radial"] as const)("keeps every row and all 1,000 routes in %s mode", mode => {
+        it("keeps every row and all 1,000 routes in radial mode", () => {
             const rows = Array.from({ length: 1000 }, (_, i) => ({
                 source: i % 250, target: i < 250 ? i % 250 : (i + 1) % 250, edgeId: `E${i}`
             }));
             const graph = make(Array.from({ length: 5 }, () => rows).flat());
             const before = JSON.stringify(graph);
-            const layout = layoutGraph(graph, mode);
+            const layout = layoutGraph(graph, { layoutMode: "radial" });
             expect(graph.nodes).toHaveLength(250);
             expect(graph.edges).toHaveLength(1000);
             expect(graph.edges.flatMap(edge => edge.rows)).toHaveLength(5000);
@@ -193,34 +192,7 @@ describe("unchanged force geometry from c19276b", () => {
                 source: kind === "reciprocal" && i % 2 ? "B" : "A",
                 target: kind === "loop" || (kind === "reciprocal" && i % 2) ? "A" : "B", edgeId: i
             })));
-            for (const mode of ["circular", "radial"] as const) checkGeometry(graph, layoutGraph(graph, mode));
+            checkGeometry(graph, layoutGraph(graph, { layoutMode: "radial" }));
         }, 30000);
-    });
-});
-
-describe("circular geometry", () => {
-    it.each([0, 1, 2, 3, 12, 250])("places all %i nodes on one stable ring, including disconnected nodes", count => {
-        const graph = make(Array.from({ length: count }, (_, i) => ({ source: i, target: i, edgeId: i })));
-        const layout = layoutGraph(graph, "circular");
-        const radii = [...layout.positions.values()].map(point => Math.hypot(point.x, point.y));
-        for (const radius of radii) expect(radius).toBeCloseTo(radii[0], 7);
-        if (count <= 12) checkGeometry(graph, layout);
-        expect(layout.signature).toBe(resolveLayout(graph, "circular", "ignored").key);
-    });
-    it("routes skip-one, diametral, reciprocal, parallel and loop paths away from unrelated glyphs", () => {
-        const rows = Array.from({ length: 36 }, (_, i) => ({
-            source: `N${String(i % 12).padStart(2, "0")}`,
-            target: `N${String((i + (i < 12 ? 2 : i < 24 ? 6 : 0)) % 12).padStart(2, "0")}`, edgeId: i
-        }));
-        const graph = make(rows);
-        const layout = layoutGraph(graph, "circular");
-        checkGeometry(graph, layout);
-        const reordered = make([...rows].reverse().map(row => ({ ...row, weight: 999, highlight: 0 })));
-        expect([...layoutGraph(reordered, "circular").positions]).toEqual([...layout.positions]);
-        expect([...layoutGraph(reordered, "circular").routes]).toEqual([...layout.routes]);
-    });
-    it("uses exact typed ID ordering, not display labels or locale", () => {
-        const graph = make([7, "7", " 7", "A", "a"].map((source, edgeId) => ({ source, target: source, edgeId })));
-        expect([...layoutGraph(graph, "circular").positions.keys()]).toEqual(["n:7", "s: 7", "s:7", "s:A", "s:a"]);
     });
 });

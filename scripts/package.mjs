@@ -19,6 +19,14 @@ const buildInputsPath = path.join(root, "dist", "build-inputs.json");
 const statisticsPath = path.join(root, "webpack.statistics.prod.html");
 const outputPaths = [artifactPath, packageMetadataPath, buildInputsPath, statisticsPath];
 const tools = path.join(root, "node_modules", "powerbi-visuals-tools");
+if (process.platform === "win32") {
+    const webpack = readFileSync(path.join(tools, "lib", "WebPackWrap.js"), "utf8");
+    const certificate = readFileSync(path.join(tools, "lib", "CertificateTools.js"), "utf8");
+    assert(webpack.includes("exec('npm list powerbi-visuals-api version', { windowsHide: true })") &&
+        webpack.includes("exec(`npm install --save powerbi-visuals-api@${apiVersion}`, { windowsHide: true })") &&
+        certificate.includes("nodeExec(command, { ...options, windowsHide: true }, callback ? callback : defaultCallback)"),
+    "SDK launch paths are not hidden; run node scripts/patch-loader.mjs before packaging");
+}
 const config = JSON.parse(readFileSync(path.join(tools, "config.json"), "utf8"));
 const home = path.join(root, ".tool-home");
 const certificateFolder = path.join(home, config.server.certificateFolder);
@@ -33,11 +41,12 @@ const temp = path.join(home, "temp");
 mkdirSync(temp, { recursive: true });
 const env = {
     ...process.env, HOME: home, USERPROFILE: home, TEMP: temp, TMP: temp,
+    npm_config_cache: path.join(home, "npm-cache"),
     ATLYN_CERT_PFX: files.pfx, ATLYN_CERT_PASS_FILE: files.pass
 };
 
 function run(command, args) {
-    const result = spawnSync(command, args, { cwd: root, env, stdio: "inherit" });
+    const result = spawnSync(command, args, { cwd: root, env, stdio: "inherit", windowsHide: true });
     if (result.error) throw result.error;
     if (result.status !== 0) throw new Error(`${command} failed with exit code ${result.status}`);
 }

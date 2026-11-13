@@ -29,7 +29,7 @@ async function restoreOutputs() {
     }
 }
 try {
-    execFileSync(process.execPath, [path.join(root, "scripts", "package.mjs"), "--audit"], { cwd: root, stdio: "inherit" });
+    execFileSync(process.execPath, [path.join(root, "scripts", "package.mjs"), "--audit"], { cwd: root, stdio: "inherit", windowsHide: true });
     const after = await readArtifact();
     assert.deepEqual(await buildInputs(), inputs, "Source changed during the reproducibility check");
     const members = async artifact => Object.fromEntries(await Promise.all(Object.values(artifact.zip.files)

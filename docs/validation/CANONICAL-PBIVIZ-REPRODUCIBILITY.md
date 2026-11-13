@@ -1,5 +1,10 @@
 # Canonical PBIVIZ packaging follow-up
 
+**Current candidate, 2026-11-13:** the canonical package is 252,053 bytes,
+SHA-256 `b7d57313bf2cf6f490b1780374c3ea892915951e0b5d8fa984642932f3e91a81`.
+The local unchanged-input rebuild reproduced the archive and all members
+byte-for-byte. The October package identities below are historical.
+
 **Recorded: 2026-10-03.** This is a source/build-path follow-up on the existing
 draft implementation branch/PR #6, not Microsoft certification or permission
 to release. It does not modify the frozen PBIVIZ/PBIX evidence, sample package,

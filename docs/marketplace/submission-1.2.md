@@ -1,5 +1,10 @@
 # Atlyn Network 1.2 submission material draft
 
+**Current candidate, 2026-11-13:** `1.2.0.0`, 252,053 bytes, SHA-256
+`b7d57313bf2cf6f490b1780374c3ea892915951e0b5d8fa984642932f3e91a81`.
+The dated native and approved-media evidence below belongs to earlier bytes
+and does not approve the current candidate.
+
 **Prepared 2026-09-24; owner privacy/EULA/support decisions recorded 2026-09-25. Local handoff
 only; not entered into Partner Center, submitted for certification or
 published.** The approved URLs and monitored contact below do not approve
@@ -27,7 +32,7 @@ Explore directed relationships with Force, Circular and Radial layouts and acces
 ```text
 Atlyn Network helps report authors and readers explore directed relationships supplied by a Power BI semantic model.
 
-Bind Source ID and Target ID, then add optional Weight, Relationship type, Edge ID and tooltip measures. Preserve cycles, reciprocal links, parallel relationships, self-loops and disconnected components without forcing the network into a tree.
+Bind Source ID and Target ID, then add optional Weight, Relationship type, Edge ID, Item ID and tooltip measures. Preserve cycles, reciprocal links, parallel relationships, self-loops and disconnected components without forcing the network into a tree.
 
 Choose Force, Circular or Radial. Force retains a deterministic component-aware arrangement. Circular places all loaded endpoints on one circle in stable ID order. Radial groups each connected component into rings by minimum undirected hop distance around an automatic or selected center. Arrows retain their original direction; weights do not change hop distance. Center choice is a layout convenience, not a centrality score or business-importance ranking.
 

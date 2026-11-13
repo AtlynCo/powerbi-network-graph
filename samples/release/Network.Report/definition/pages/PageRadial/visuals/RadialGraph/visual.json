@@ -165,7 +165,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Radial: the same directed service relationships'"
+                  "Value": "'Rooted Radial: directed service relationships'"
                 }
               }
             }
@@ -178,7 +178,7 @@
             "altText": {
               "expr": {
                 "Literal": {
-                  "Value": "'Radial: the same directed service relationships'"
+                  "Value": "'Rooted Radial: directed service relationships'"
                 }
               }
             }

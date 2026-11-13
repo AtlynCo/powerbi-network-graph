@@ -91,7 +91,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Use the Radial center selector or Use as radial center in the entity list. This does not change visible local focus, weights, report filters or selection.",
+                    "value": "Use the Radial center selector or Use as radial center in the entity list. This does not change local focus, weights, report filters or selection.",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "11pt"
@@ -113,7 +113,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Each ring is minimum UNDIRECTED hop distance over all loaded relationships. Arrows still preserve original direction. Parallel edges and loops do not add hops.",
+                    "value": "Each ring is minimum undirected hop distance over loaded relationships. Arrows retain their direction. Disconnected components are packed separately.",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "11pt"
@@ -135,51 +135,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Archive/Backup is separately packed with its own real center; there is no distance between disconnected components.",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "11pt"
-                    }
-                  }
-                ]
-              },
-              {
-                "textRuns": [
-                  {
-                    "value": "",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "11pt"
-                    }
-                  }
-                ]
-              },
-              {
-                "textRuns": [
-                  {
-                    "value": "A filtered-out requested center is retained, with a visible automatic fallback, and returns when loaded again.",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "11pt"
-                    }
-                  }
-                ]
-              },
-              {
-                "textRuns": [
-                  {
-                    "value": "",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "11pt"
-                    }
-                  }
-                ]
-              },
-              {
-                "textRuns": [
-                  {
-                    "value": "Search, focus and highlights do not move nodes. Save local view stores mode/center; native bookmark and Desktop/Service replay still require owner verification.",
+                    "value": "A filtered-out requested center uses an automatic fallback. Save local view explicitly to retain the center.",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "11pt"

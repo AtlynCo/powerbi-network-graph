@@ -26,6 +26,12 @@ export async function loadBrowserArtifact() {
 }
 
 export async function createBrowserHarness({ artifact, touch = false } = {}) {
+    if (process.platform === "win32") {
+        const launcher = await readFile(path.join(root, "node_modules", "playwright-core", "lib", "server", "utils", "processLauncher.js"), "utf8");
+        assert(launcher.includes("  const spawnOptions = {\n    windowsHide: true,") &&
+            launcher.includes("Stop-Process -Id $id -Force") && !launcher.includes("taskkill /pid"),
+        "Playwright launch paths are not hidden; run node scripts/patch-loader.mjs before browser tests");
+    }
     artifact ??= await loadBrowserArtifact();
     if (!artifact.historical) {
         const manifest = JSON.parse(await readFile(path.join(root, "dist", "build-inputs.json"), "utf8"));
@@ -52,6 +58,7 @@ export async function createBrowserHarness({ artifact, touch = false } = {}) {
     });
     const requests = [];
     const errors = [];
+    const warnings = [];
     const errorDetails = [];
     await context.route("**/*", async route => {
         requests.push(route.request().url());
@@ -64,6 +71,7 @@ export async function createBrowserHarness({ artifact, touch = false } = {}) {
         errorDetails.push({ kind: "pageerror", message: error.message, stack: error.stack });
     });
     page.on("console", message => {
+        if (message.type() === "warning") warnings.push(message.text());
         if (message.type() === "error") {
             errors.push(message.text());
             errorDetails.push({ kind: "console", message: message.text(), location: message.location() });
@@ -90,7 +98,7 @@ export async function createBrowserHarness({ artifact, touch = false } = {}) {
     const settle = () => page.evaluate(async () => {
         for (let i = 0; i < 4; i++) await new Promise(resolve => window.requestAnimationFrame(resolve));
     });
-    return { artifact, browser, context, page, requests, errors, errorDetails, mount, update, settle, close: () => browser.close() };
+    return { artifact, browser, context, page, requests, errors, warnings, errorDetails, mount, update, settle, close: () => browser.close() };
 }
 
 export function installMockHost({ guid, resources, locale, highContrast, width, height, name = "fixture" }) {
@@ -149,7 +157,7 @@ export function installMockHost({ guid, resources, locale, highContrast, width, 
         createLocalizationManager: () => ({ getDisplayName: key => resources[locale]?.[key] ?? key }),
         colorPalette: {
             isHighContrast: highContrast,
-            foreground: { value: "#FFFF00" }, background: { value: "#000000" },
+            foreground: { value: "#FFFF00" }, background: { value: highContrast ? "#000000" : "#ffffff" },
             foregroundSelected: { value: "#00FFFF" }, hyperlink: { value: "#00FFFF" },
             getColor: () => ({ value: "#007D87" })
         },
@@ -179,7 +187,10 @@ export function installMockHost({ guid, resources, locale, highContrast, width, 
         visual, host, calls, faults, rows: [], view: undefined, container,
         release() { const ready = pending; pending = []; ready.forEach(finish => finish()); },
         createView(rows, options = {}) {
-            const fields = ["source", "target", ...(options.types === false ? [] : ["relationshipType"]), ...(options.edgeIds ? ["edgeId"] : [])];
+            const fields = [
+                "source", "target", ...(options.types === false ? [] : ["relationshipType"]),
+                ...(options.edgeIds ? ["edgeId"] : []), ...(options.itemIds ? ["itemId"] : [])
+            ];
             const categories = fields.map(role => ({
                 source: { displayName: role, queryName: `fixture.${role}`, roles: { [role]: true }, type: { text: true } },
                 values: rows.map(row => row[role === "relationshipType" ? "type" : role] ?? (role === "relationshipType" ? "uses" : null)),
@@ -245,21 +256,6 @@ export function releaseFixtures() {
     return { typical, maximum, accounts };
 }
 
-export async function microsoftSankeyFixture() {
-    const filename = path.join("test", "fixtures", "microsoft-sankey.json");
-    const bytes = await readFile(path.join(root, filename));
-    const fixture = JSON.parse(bytes);
-    assert.deepEqual(fixture.columns, ["Origin City", "Destination City", "Passenger Volume"]);
-    assert.equal(fixture.rows.length, 9);
-    assert.equal(fixture.provenance.sheet, "Sankey Chart");
-    const rows = fixture.rows.map(([source, target, weight]) => ({ source, target, weight }));
-    assert.equal(rows.reduce((sum, row) => sum + row.weight, 0), 6975);
-    return {
-        rows, options: { types: false, edgeIds: false, tooltipFields: [] },
-        provenance: { ...fixture.provenance, fixtureFile: filename, fixtureSha256: digest(bytes) }
-    };
-}
-
 export async function releaseSampleFixtures() {
     const filename = path.join("samples", "release", "sample-contract.json");
     const bytes = await readFile(path.join(root, filename));
@@ -269,17 +265,21 @@ export async function releaseSampleFixtures() {
     assert(!path.relative(root, source).startsWith(".."), "Sample literal source must remain inside the worktree");
     assert.equal(digest(await readFile(source)), contract.sourceSha256, "Sample contract differs from its literal source; regenerate it before capturing evidence");
     const domains = {};
-    for (const name of ["Services", "Accounts"]) {
+    for (const name of ["Services", "Accounts", "Contributions"]) {
         const domain = contract.domains.find(domain => domain.table === name);
         assert(domain, `Missing ${name} certification sample domain`);
-        assert.equal(domain.rows.length, name === "Services" ? 14 : 16);
+        assert.equal(domain.rows.length, name === "Services" ? 14 : name === "Accounts" ? 16 : 24);
         domains[name] = domain.rows.map(row => {
+            if (name === "Contributions") {
+                assert.equal(row.length, 8);
+                const [source, target, type, edgeId, itemId, weight, durationMs, eventCount] = row;
+                return { source, target, type, edgeId, itemId, weight, durationMs, eventCount };
+            }
             assert.equal(row.length, 7);
             const [source, target, type, edgeId, weight, durationMs, eventCount] = row;
             return { source, target, type, edgeId, weight, durationMs, eventCount };
         });
     }
-
     return {
         domains,
         provenance: {

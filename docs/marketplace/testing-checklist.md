@@ -1,5 +1,11 @@
 # Submission and additional-certification gates
 
+**Current target:** `1.2.0.0`. The 2026-11-13 source sample has five pages,
+12 tables, 21 measures and nine relationships. Earlier native observations
+below do not validate its current PBIVIZ or PBIP. Native Desktop conversion,
+host matrix, native listing screenshots, publisher verification, upload and
+Microsoft review remain open.
+
 **Verified requirements: 2026-09-09. Only the explicitly dated coordinator observations below represent completed native coverage; none represents a Microsoft certification test.**
 
 **2026-09-10 owner approval:** external Atlyn storefront subscription acquisition with ungated visual runtime/free shared viewing. There is no paid-author enforcement or pending runtime licensing integration. Preserve offline behavior; do not add keys, new signing/AAD/API systems, feature gates or requests. The additional Microsoft Power BI visual certification badge is a required release outcome, not a completed gate. Main/certification refs, merging and submission remain held for the parent's final gate.
@@ -12,36 +18,6 @@ Sources:
 4. [Publishing guidelines](https://learn.microsoft.com/en-us/power-bi/developer/visuals/guidelines-powerbi-visuals) — context menu, logos, IAP and landing-page guidance.
 
 Record **package SHA-256, source commit, tool/Desktop/browser/OS version, input dataset, steps, expected/actual result, capture/log location and operator/date** for each executed case. A test is unexecuted until that evidence exists. Existing unit/mock-host tests can be linked as partial evidence, not substituted for native checks.
-
-## 2026-09-24 local 1.2 command and dataset follow-up
-
-- [x] Named `npm run eslint` executes the documented `npx eslint . --ext .js,.jsx,.ts,.tsx`; it and retained `npm run lint` passed.
-- [x] Microsoft's linked workbook **Sankey Chart worksheet relationship path**, limited to its exact nine rows, exercised in source and actual-package offline browser tests in Force/Circular/Radial. Provenance: `test/fixtures/microsoft-sankey.json`; [pinned workbook](https://github.com/PowerBi-Projects/PowerBI-visuals/blob/21c5f65b4ee4f9d0a755175b0884c20be949bcb4/assets/excel/workbook/test-visuals-data.xlsx), SHA-256 `c17157c21cb99e1946dedca29e47a8f877fd0aaeadb57d2ba6ee8bcaec2b70e1`. The full workbook is not vendored.
-- [ ] Native workbook import/model evaluation and any further Microsoft-required dataset/host coverage remain unverified. The two limited local passes above do not close the native matrix, source-branch alignment, reviewer access or Microsoft approval.
-
-Current candidate hashes, **168 unit cases** and **38 release-browser groups**
-are in [RESULTS-1.2](../validation/RESULTS-1.2.md). Historical observations below
-remain dated 1.1 evidence and do not attest the 1.2 package.
-
-## 2026-09-25 bounded native and owner update
-
-[PREPUBLISH-1.2](../validation/PREPUBLISH-1.2.md) records genuine Desktop
-2.157.1354.0 refresh/rendering of all five final-order pages and eight bounded
-model-backed interaction checks: local exploration versus report filtering,
-native type slicer, requested-center return, exact edge/Ctrl selection,
-keyboard Enter/Escape, formatted values and explicit local-view request.
-These are partial evidence for G03/G08/G10/G11/G12/G22/G24, not full-matrix
-passes. The owner subsequently saved a genuine `R:\Network.pbix`; read-only
-inspection proved exact 1.2 member bytes and final page order, and a new native
-process cold-reopened all five pages without refresh, restoring the saved
-Orders root/camera. The owner explicitly approved Non-Business (stored Personal)
-for the Marketplace sample, replacing Public, and exactly the two genuine
-native Circular/Radial listing PNGs. No relabeling/resave was performed.
-The owner approved privacy, existing terms as publisher EULA, support FAQ and
-monitored contact; fast-forward-only source-branch alignment is authorized
-after final checks. Publisher/account and Network offer IDs/authenticated draft
-configuration remain unverified. No publishing/submission/certification request
-is authorized.
 
 ## Host-version control
 
@@ -119,7 +95,7 @@ Policy §1180.2 explicitly names **string values, empty values, negative values,
 - [ ] Rendering started/finished/failed API correctly reports lifecycle, including exceptional/empty/invalid inputs.
 - [ ] Safe DOM/user-data handling; no `innerHTML`/D3 HTML with data, unsafe dynamic code, eval/Function, prohibited network APIs/resources, unhandled browser errors or minified authored source.
 - [ ] Empty/omitted WebAccess privilege; no outgoing HTTP(S)/WebSockets, external resources, telemetry or remote fonts/assets.
-- [ ] Confirm Microsoft's required [sample-dataset](https://github.com/PowerBi-Projects/PowerBI-visuals/tree/gh-pages/assets) and native-host coverage is sufficient. The exact Sankey Chart relationship worksheet path is exercised locally as recorded above; do not substitute this limited pass for full workbook/native/Microsoft acceptance.
+- [ ] Use Microsoft's linked [certification test sample dataset](https://github.com/PowerBi-Projects/PowerBI-visuals/tree/gh-pages/assets) as requested, in addition to Atlyn's synthetic graph sample. The official link currently exposes asset subdirectories rather than an obvious standalone sample PBIX; document the exact dataset used or request clarification from Microsoft. Do not quietly substitute our sample and mark this gate complete.
 - [ ] Lowercase `certification` branch, frozen exact commit and secure Microsoft reviewer access including dependencies. Owner action only.
 - [ ] If an already certified visual is updated, obtain certification for the update too; certification does not automatically carry over.
 - [ ] Confirm source/property changes preserve previous reports; test v1 report upgrade without changing GUID.

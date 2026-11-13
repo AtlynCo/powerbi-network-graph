@@ -44,7 +44,7 @@ describe("Microsoft-linked workbook: Sankey Chart relationship path only", () =>
     it.each(["force", "circular", "radial"] as const)("renders the unchanged dataset in %s without altering identities", mode => {
         const result = graph();
         const before = JSON.stringify(result);
-        const layout = layoutGraph(result, mode);
+        const layout = layoutGraph(result, { layoutMode: mode });
         expect(layout.positions.size).toBe(8);
         expect(layout.routes.size).toBe(9);
         expect(new Set([...layout.routes.values()].map(route => route.path)).size).toBe(9);

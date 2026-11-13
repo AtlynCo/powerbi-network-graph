@@ -2,7 +2,7 @@
 
 An offline custom visual for exploring **directed relationships supplied by a Power BI report**. Display cycles, reciprocal links, parallel relationships, and self-links without forcing the data into a tree. Explore the loaded graph with local search, neighborhood and directional traversal, or use accessible entity and relationship lists.
 
-**Status:** private Atlyn release candidate; version `1.2.0.0`. Certification-oriented, **not Microsoft certified**. Packaging and browser checks are not evidence of native Desktop, service, or export compatibility. See the [release gates](docs/RELEASE.md) before distribution. Historical `1.1.0.0` Desktop evidence and `1.1.1.0` packages do not validate this candidate.
+**Status:** private Atlyn release candidate; version `1.2.0.0`. Certification-oriented, **not Microsoft certified**. Packaging and browser checks are not evidence of native Desktop, service, or export compatibility. See the [release gates](docs/RELEASE.md) before distribution.
 
 **Approved commercial/runtime model (2026-09-10):** acquisition is through existing Atlyn storefront subscriptions; the visual runtime is intentionally ungated, including free shared-report viewing. It does not enforce paid-author status. No license keys, new signer, AAD/API integration, feature gates, WebAccess, or runtime license requests are required or authorized. The existing offline renderer is the intended runtime; licensing integration is no longer a blocker.
 
@@ -13,7 +13,7 @@ An offline custom visual for exploring **directed relationships supplied by a Po
 - Nodes come only from relationship endpoints. Standalone isolated entities are not supported.
 - Source-to-target direction is preserved, including cycles and reciprocal relationships.
 - Deterministic, bounded component-aware layout; no ongoing simulation, timers, or animation.
-- Selectable **Force** (unchanged default), **Circular**, and rooted **Radial** layouts.
+- Force-directed, Circular ring with optional Two-Ring Item ID detail, and Rooted Radial layouts. Circular links are node-link paths, not ribbon chords. Radial rings represent undirected loaded hops, not business importance.
 - Curved parallel/reciprocal links and distinct arrowed loop petals; collision-aware labels, pan, pinch/wheel zoom, and fit.
 - Local entity search, incident relationships, neighborhood, upstream/downstream traversal, and one shortest directed path.
 - Explicit graph/list/split views and saved local exploration state, separate from report selection.
@@ -30,73 +30,14 @@ This is **relationship exploration**, not causal-impact prediction, fraud detect
 2. In Power BI Desktop, use the Visualizations pane's **Import a visual from a file** action and select the package. Menu names may differ between Desktop versions. Tenant policy may prevent importing or using uncertified custom visuals.
 3. Import a relationship table. The [offline samples](samples/README.md) include CSV and Power Query M sources, field mapping, and expected topology.
 4. Add Atlyn Network to a report page; bind **Source ID** and **Target ID**.
-5. Optionally bind Weight, Relationship type, Edge ID, and up to eight tooltip measures. Review the status text for omitted data, incomplete weights, or unavailable native identities.
+5. Optionally bind Weight, Relationship type, Edge ID, Item ID, and up to eight tooltip measures. Review the status text for omitted data, incomplete weights, or unavailable native identities.
 6. Use **Entities** or **Relationships** for accessible exploration, and distinguish **Focus locally** from **Select loaded incident relationships**.
 
 Native opening, saving/reopening, and PBIX conversion must be performed in Desktop. An authored PBIP source is not evidence of a successful native open. Never rename a JSON file, ZIP, or source folder to `.pbix`.
 
-The [complete offline PBIP](samples/release/README.md) contains four bound graph pages (two Force examples, Circular and Radial), native slicers/detail tables, a final hints page, eight literal model tables, fourteen measures, and the exact embedded visual. [Marketplace preparation](docs/marketplace/README.md) supplies current draft fields and the remaining host/portal gates. The [competitor workflow comparison](docs/marketplace/workflow-benchmark.md) credits verified Graph PRO/Powerviz capabilities without claiming superiority.
+The [offline PBIP](samples/release/README.md) contains five pages, four bound graphs, native slicers and detail tables, twelve literal model tables, twenty-one measures, nine single-direction relationships, and the exact embedded visual. Native Desktop verification and PBIX conversion remain open. [Marketplace preparation](docs/marketplace/README.md) supplies draft fields and the remaining native/legal gates. The [competitor workflow comparison](docs/marketplace/workflow-benchmark.md) credits verified Graph PRO/Powerviz capabilities and identifies Atlyn's missing features without claiming superiority.
 
-The [2026-09-25 native handoff](docs/validation/PREPUBLISH-1.2.md) records a
-genuine owner-saved 1.2 PBIX, exact visual-member equality and cold reopen of all
-five pages without refresh, including saved radial state. The owner approved
-Non-Business classification and exactly two native listing images. This is
-bounded native evidence, not the full native matrix or Microsoft certification;
-Partner Center publisher/offer identity and configuration remain unverified.
-
-See [current 1.2 candidate results](docs/validation/RESULTS-1.2.md) for the exact
-package, local checks, layout benchmarks and owner gates. The [sealed 1.1
-quality results](docs/validation/RESULTS.md) remain historical evidence only.
-
-## Choosing a layout
-
-Use **Format visual > Exploration > Initial layout** to set the author's default.
-The accessible **Layout (local only)** selector changes the current exploration
-without selecting, filtering, or writing report properties. **Initial view**
-(Automatic / Graph and list / Graph / List) remains a separate setting.
-Absent layout properties and old reports use **Force**.
-
-| Layout | Meaning |
-| --- | --- |
-| Force | The original fixed-iteration, component-packed layout. Existing coordinates and edge routes are preserved. |
-| Circular | Every loaded endpoint is on one circle in exact typed-ID order, even across disconnected components. A singleton occupies the center. Angles/proximity do not encode hops, hierarchy or importance. |
-| Radial | Each weak component has a real center and concentric rings by minimum **undirected** hop distance in the whole retained graph. Weights, edge direction, self-loops and duplicate/parallel edges do not increase distance. Arrows still retain the original directed relationships. |
-
-In Radial, choose **Radial center (local only)** or **Use as radial center** in an
-entity's list row. Automatic chooses the largest component, then the highest
-distinct non-self neighbor count, then stable typed-ID order. Other components
-choose their own centers and are separately packed. This is a layout
-convenience, **not a centrality score, causal root, or business-importance
-ranking**. There is no cross-component distance. If a requested center is
-filtered out, a visible automatic fallback is used without a host write; the
-requested ID is retained and used again when it returns.
-
-All modes retain every bounded directed, reciprocal, parallel, cyclic and
-self relationship and its native row identities. Search, local neighborhood/
-path focus, selection, highlights and resize never recalculate positions from
-a subset. A changed loaded topology, layout, or effective radial center can
-change geometry. New undirected shortcuts recompute hop levels; consequently
-every retained non-self edge joins the same or adjacent radial rings.
-
-Circular centers are at least 72 world units apart. Radial rings have at least
-72 units within each ring and at least 96 units between radii. Polar routing
-uses bounded empty annular lanes and clipped radial ports, not straight
-diametral chords through other nodes. Parallel lanes and short loop petals
-remain distinct even at the 1,000-edge cap, but dense paths can still overlap
-one another or labels. This is **not edge bundling or chord ribbons**; use the
-complete relationship list, local focus and zoom for exact inspection.
-Outward-preferred labels remain horizontal; hidden-label counts are visible.
-
-**Save local view** explicitly stores version-2 focus/search/view/camera plus
-layout and requested center. Geometry-compatible cameras are restored only
-after resolving the layout and center. Incompatible geometry is visibly
-refitted. Version-1 snapshots migrate to Force and refit their unversioned
-camera. Both encoding and decoding enforce 4,096 characters; oversized state
-is refused visibly, never truncated. `navigation.savedView` is marked
-`filterState: true` and `suppressFormatPainterCopy: true` according to the
-installed API schema and Microsoft's [bookmark guidance](https://learn.microsoft.com/en-us/power-bi/developer/visuals/bookmarks-support).
-Host metadata replay is locally exercised; actual Desktop/Service bookmarks,
-format-painter behavior, report save/reopen and exports remain native gates.
+See [sealed quality results](docs/validation/RESULTS.md) for measured improvements, package identity, actual-package media, and remaining limitations.
 
 ## Data contract
 
@@ -109,7 +50,10 @@ The visual consumes a **categorical DataView**, not a table of independently add
 | Weight | Numeric measure | No; maximum one | Nonnegative finite contribution to a delivered relationship group |
 | Relationship type | Grouping | No; maximum one | Distinguishes relationship kinds between the same directed endpoints |
 | Edge ID | Grouping | No; maximum one | Stable relationship identifier; distinguishes same-type parallel relationships |
+| Item ID | Grouping | No; maximum one | Optional stable item identifier for Circular ring's two-ring detail; does not replace Edge ID |
 | Tooltips | Measures | No; maximum eight | Additional model-formatted values; not assumed additive |
+
+Item ID enables the optional inner work-item ring in Circular ring mode. It is a separate grouping field; leaving it unbound does not change Force mode or its relationship contracts.
 
 ### Identifiers and endpoints
 
@@ -200,6 +144,12 @@ Local incident inspection does **not** reduce the identities in an entity-select
 
 Local exploration is transient until **Save local view** is used. The snapshot is stored in a hidden visual property, and changed saved metadata can restore it when a report bookmark is replayed. Saving a view does not itself create a Power BI bookmark. Malformed snapshots or snapshots referencing unavailable entities visibly reset local focus. Native bookmark/property persistence and export replay remain Desktop/service gates.
 
+### Circular ring and two-ring item detail
+
+Choose **Exploration → Layout mode → Circular ring** for a perimeter guide ring. Target entities receive a concentric halo; source entities use a 3px core stroke, so bidirectional entities show both roles. Curves and arrowheads use stable source-category colors, with parallel relationship types distinguished by solid/dashed strokes. Self-links are hidden from the diagram by default but retained in the relationship list and disclosed in status counts and weight. When **Group blank targets** is enabled, blank targets use a dashed-ring **External / unknown** bucket.
+
+Binding **Item ID** enables two-ring detail: plain entity activation focuses its outgoing items, and plain chord activation focuses items for that directed source/target pair. **All items** shows all loaded items; **Reset circle** returns to the overview. These are local drill-in actions and do not filter the report. Force-directed mode and its existing traversal/path controls remain unchanged.
+
 ### Context menus and tooltips
 
 Right-click or use **Shift+F10 / the Context Menu key** on a list action. An edge with exactly one complete native identity can supply that identity to the host context menu. **Entity menus and multi-identity aggregated-edge menus are visual-level**, because the current SDK call accepts a single identity; they do not choose an arbitrary relationship to stand for the group. Context scope differs intentionally from full-identity selection scope.
@@ -218,7 +168,7 @@ Relationship tooltips use Power BI's tooltip service; the relationship list also
 - Automatic view uses an accessible list below 180px width or 150px height, graph-only below 700px width or 320px height, and split graph/list otherwise. Controls collapse in compact tiles; the view button can switch representations. Scrolling preserves access in tiny tiles, but no dense graph is claimed readable at 80×80.
 - Labels keep a readable screen size and, by default, hide when overlapping or out of view. The caption reports how many labels are shown. Zoom/focus or use the entity list to read hidden labels; hiding a label never removes its entity or relationships.
 
-The **Appearance** formatting card controls entity color, relationship color, label visibility, label size (8–24), and overlapping-label avoidance. **Exploration** controls initial view (automatic/split/graph/list) and initial layout (Force/Circular/Radial). High contrast can override custom colors for legibility. Validate with your actual assistive technology and report layout; structural accessibility support is not a claim of completed accessibility certification.
+The **Appearance** formatting card controls entity color, relationship color, label visibility, label size (8–24), and overlapping-label avoidance. **Exploration** controls the initial view (automatic/split/graph/list). High contrast can override custom colors for legibility. Validate with your actual assistive technology and report layout; structural accessibility support is not a claim of completed accessibility certification.
 
 ## Development and validation
 
@@ -234,7 +184,9 @@ Visuals tools 7.2.1 resolves a development certificate even when packaging. The 
 
 The package wrapper uses the official `pbiviz package --all-locales` option. With Power BI visuals tools 7.2.1 and formatting utilities 7, this avoids a locale-pruning loader incompatibility with the formatting utilities' ESM output. All number/date culture data stays bundled **offline**; this does not add runtime requests or translate the UI beyond `en-US` and `ar-SA`. Recheck this choice when upgrading the SDK or formatting utilities rather than removing it solely to shrink the bundle.
 
-The dependency baseline uses Vitest 4.1.11 and scoped development overrides for `qs` 6.16.0 under `webpack-dev-server` and `uuid` 11.1.1 under `sockjs`. Retain the lockfile and re-run audits after upgrades. A previously clean audit is not a permanent security guarantee; runtime and full dependency audits cover different scopes.
+The dependency baseline uses Vitest 4.1.12, ESLint 9.39.5 and typescript-eslint 8.72.1, with minimatch 11.0.1 and scoped development overrides for `qs` 6.17.0 under `webpack-dev-server` and `uuid` 11.1.1 under `sockjs`. On 2026-11-06 the owner approved Network's build-only minimatch override outside parent major ranges and retention of the sockjs UUID override outside its declared UUID 8 range. These packages are absent from the distributed visual; isolated Node 24 tests and exact payload comparisons support the exception, not upstream compatibility or a clean online audit. Retain the lockfile and re-run authorized audits after upgrades. A previously clean audit is not a permanent security guarantee; runtime and full dependency audits cover different scopes.
+
+First-party terms authority is the owner-designated https://atlynco.com/legal/terms. The storefront source is `web/src/app/pages/legal/terms/terms.html`; the URL was not fetched during offline release preparation. The proprietary `LICENSE` and npm `UNLICENSED` identifier do not grant open-source rights. Identified third-party components retain their respective licenses.
 
 ```powershell
 npm ci

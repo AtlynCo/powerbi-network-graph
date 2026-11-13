@@ -1,0 +1,170 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "CircularDetails",
+  "position": {
+    "x": 280,
+    "y": 560,
+    "width": 1062,
+    "height": 184,
+    "z": 5880,
+    "tabOrder": 5880
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Contributions"
+                    }
+                  },
+                  "Property": "SourceID"
+                }
+              },
+              "queryRef": "Contributions.SourceID",
+              "nativeQueryRef": "SourceID"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Contributions"
+                    }
+                  },
+                  "Property": "TargetID"
+                }
+              },
+              "queryRef": "Contributions.TargetID",
+              "nativeQueryRef": "TargetID"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Contributions"
+                    }
+                  },
+                  "Property": "RelationshipType"
+                }
+              },
+              "queryRef": "Contributions.RelationshipType",
+              "nativeQueryRef": "RelationshipType"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Contributions"
+                    }
+                  },
+                  "Property": "ItemID"
+                }
+              },
+              "queryRef": "Contributions.ItemID",
+              "nativeQueryRef": "ItemID"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Contributions"
+                    }
+                  },
+                  "Property": "Contributions Total Weight"
+                }
+              },
+              "queryRef": "Contributions.Contributions Total Weight",
+              "nativeQueryRef": "Contributions Total Weight"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Contributions"
+                    }
+                  },
+                  "Property": "Contributions Events"
+                }
+              },
+              "queryRef": "Contributions.Contributions Events",
+              "nativeQueryRef": "Contributions Events"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Contributions"
+                    }
+                  },
+                  "Property": "Contributions Input Rows"
+                }
+              },
+              "queryRef": "Contributions.Contributions Input Rows",
+              "nativeQueryRef": "Contributions Input Rows"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Contributions"
+                    }
+                  },
+                  "Property": "Contributions Average Duration ms"
+                }
+              },
+              "queryRef": "Contributions.Contributions Average Duration ms",
+              "nativeQueryRef": "Contributions Average Duration ms"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Contribution details'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Contribution details'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

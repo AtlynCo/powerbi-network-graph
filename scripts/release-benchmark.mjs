@@ -38,12 +38,12 @@ const budgets = {
 };
 const report = {
     artifact: null, sha256: null,
-    protocolVersion: 3, host: HOST_DISCLAIMER, started: new Date().toISOString(), tag, samples, warmup,
+    protocolVersion: 2, host: HOST_DISCLAIMER, started: new Date().toISOString(), tag, samples, warmup,
     clock: "Browser performance.now(): synchronous action plus mock-host completion and two requestAnimationFrame opportunities; no Node/Playwright transport included",
     methodology: {
         serial: "One browser/page and one operation at a time; exclusive worktree benchmark lock. Does not claim machine-wide process isolation.",
         fixtureConstruction: "Categorical DataView construction and reset/clear excluded from timed region; cold-render uses an empty topology first, not a cold browser/JIT",
-        localNavigation: "Entity change followed by explicit neighbors-mode change in each of Force, Circular and Radial. Layout always uses whole retained topology; radial center is automatic.",
+        localNavigation: "Entity change followed by explicit neighbors-mode change, supported identically in v1.0 and v1.1; not the new incident-only mode.",
         selection: "DOM click dispatch enters the packaged event handler; awaits actual mock API promise settlement and two frames. This is NOT native Power BI selection latency.",
         paint: "Two rAF callbacks provide a browser paint opportunity, not proof of native host export readiness or completed GPU presentation.",
         percentile: "Nearest rank ceil(p*n), raw samples retained; no outlier removal",
@@ -52,7 +52,7 @@ const report = {
         contention: "Other editor/visual/browser sessions may be active on this shared machine. Relevant process CPU counters and aggregate CPU busy delta recorded before/after; Windows os.loadavg is not a useful load signal."
     },
     machine: { hostname: os.hostname(), platform: os.platform(), release: os.release(), architecture: os.arch(), cpu: os.cpus()[0]?.model, logicalCpus: os.cpus().length, ramBytes: os.totalmem(), freeRamBefore: os.freemem(), node: process.version },
-    budgetsP95EndToEndMs: budgets, results: [], passed: false
+    budgetsP95EndToEndMs: budgets, results: [], layoutResults: [], passed: false
 };
 try {
     harness = await createBrowserHarness();
@@ -66,7 +66,7 @@ try {
     report.processesBefore = processSnapshot();
     const cpuBefore = cpu();
     const fixtures = releaseFixtures();
-    for (const layout of ["force", "circular", "radial"]) for (const fixtureName of ["typical", "maximum"]) {
+    for (const fixtureName of ["typical", "maximum"]) {
         let seed = 0xA71A2026;
         const rows = [...fixtures[fixtureName]];
         for (let i = rows.length - 1; i > 0; i--) {
@@ -75,11 +75,11 @@ try {
             [rows[i], rows[j]] = [rows[j], rows[i]];
         }
         await harness.mount({ width: 1366, height: 768 });
-        await harness.update(rows, { edgeIds: true, objects: { exploration: { layout } } });
-        await page.evaluate(({ rows, focus, layout }) => {
-            window.benchmarkView = window.fixture.createView(rows, { edgeIds: true, objects: { exploration: { layout } } });
+        await harness.update(rows, { edgeIds: true });
+        await page.evaluate(({ rows, focus }) => {
+            window.benchmarkView = window.fixture.createView(rows, { edgeIds: true });
             window.benchmarkFocus = focus;
-        }, { rows, layout, focus: fixtureName === "maximum" ? "s:N000" : "s:Review" });
+        }, { rows, focus: fixtureName === "maximum" ? "s:N000" : "s:Review" });
         for (const operation of ["cold-render", "data-update", "local-neighborhood-focus", "relationship-selection-hostmock"]) {
             await page.locator('[data-action="reset-focus"]').click();
             const values = await page.evaluate(async ({ operation, samples, warmup }) => {
@@ -133,14 +133,70 @@ try {
                 (fixtureName === "maximum" ? { nodes: 250, edges: 1000 } : { nodes: 7, edges: 10 });
             assert.deepEqual(visibleTopology, expectedTopology, "Timed operation ended on the wrong topology");
             const result = {
-                layout, fixture: fixtureName, rows: rows.length, fixtureSha256: digest(JSON.stringify(rows)), operation, visibleTopology,
+                fixture: fixtureName, rows: rows.length, fixtureSha256: digest(JSON.stringify(rows)), operation, visibleTopology,
                 synchronousMs: summarize(values.map(value => value.synchronousMs)),
                 endToEndMs: summarize(values.map(value => value.endToEndMs)),
                 budgetP95Ms: budgets[fixtureName][operation], values
             };
             result.withinBudget = result.endToEndMs.p95 <= result.budgetP95Ms;
             report.results.push(result);
-            console.log(`${layout} ${fixtureName} ${operation}: p50 ${result.endToEndMs.p50.toFixed(1)} / p95 ${result.endToEndMs.p95.toFixed(1)} / max ${result.endToEndMs.max.toFixed(1)} ms (${samples} samples, ${result.withinBudget ? "within" : "OVER"} budget)`);
+            console.log(`${fixtureName} ${operation}: p50 ${result.endToEndMs.p50.toFixed(1)} / p95 ${result.endToEndMs.p95.toFixed(1)} / max ${result.endToEndMs.max.toFixed(1)} ms (${samples} samples, ${result.withinBudget ? "within" : "OVER"} budget)`);
+            await writeReport(`release-benchmark-${tag}.json`, report);
+        }
+    }
+    report.methodology.layoutComparison = "Force uses the existing cold-render results. Circular overview and Radial measure a topology update after an empty view; two-ring detail measures entry from Circular overview. Two frames are included. Item IDs are unique per relationship, with repeated rows sharing an ID. These exploratory layout observations have no separate p95 budget.";
+    for (const fixtureName of ["typical", "maximum"]) {
+        const rows = fixtures[fixtureName].map(row => ({ ...row, itemId: `item-${row.edgeId}` }));
+        for (const layout of ["circular-overview", "circular-two-ring", "radial"]) {
+            const options = {
+                edgeIds: true, itemIds: layout !== "radial",
+                objects: { exploration: { layout: layout === "radial" ? "radial" : "circular", view: "split" } }
+            };
+            await harness.mount({ width: 1366, height: 768 });
+            await harness.update(rows, options);
+            await page.evaluate(({ rows, options }) => {
+                window.layoutBenchmarkView = window.fixture.createView(rows, options);
+            }, { rows, options });
+            const values = await page.evaluate(async ({ options, layout, samples, warmup }) => {
+                const state = window.fixture;
+                const frame = () => new Promise(resolve => window.requestAnimationFrame(resolve));
+                const paint = async () => { await frame(); await frame(); };
+                const results = [];
+                for (let sample = -warmup; sample < samples; sample++) {
+                    if (layout === "circular-two-ring") {
+                        const reset = state.container.querySelector('[data-action="reset-circle"]');
+                        if (!reset.disabled) reset.click();
+                    } else state.update([], options);
+                    await paint();
+                    const started = window.performance.now();
+                    if (layout === "circular-two-ring") state.container.querySelector('[data-action="all-items"]').click();
+                    else {
+                        state.view = window.layoutBenchmarkView;
+                        state.visual.update({ dataViews: [state.view], viewport: { width: 1366, height: 768 }, type: 2 });
+                    }
+                    const synchronousMs = window.performance.now() - started;
+                    await paint();
+                    if (state.calls.lifecycle.at(-1) !== "finished") throw new Error("Layout benchmark rendered an error state");
+                    if (sample >= 0) results.push({ synchronousMs, endToEndMs: window.performance.now() - started });
+                }
+                return results;
+            }, { options, layout, samples, warmup });
+            const visibleTopology = await page.locator("#visual").evaluate(element => ({
+                nodes: element.querySelectorAll(".network-node").length,
+                edges: element.querySelectorAll(".network-edge").length,
+                items: element.querySelectorAll(".network-item").length
+            }));
+            assert.equal(visibleTopology.nodes, fixtureName === "maximum" ? 250 : 7, "Wrong layout topology");
+            if (layout === "circular-two-ring") assert(visibleTopology.items > 0, "Two-ring benchmark did not render items");
+            else assert.equal(visibleTopology.items, 0);
+            const result = {
+                fixture: fixtureName, layout, operation: layout === "circular-two-ring" ? "detail-entry" : "cold-render",
+                rows: rows.length, fixtureSha256: digest(JSON.stringify(rows)), visibleTopology,
+                synchronousMs: summarize(values.map(value => value.synchronousMs)),
+                endToEndMs: summarize(values.map(value => value.endToEndMs)), values
+            };
+            report.layoutResults.push(result);
+            console.log(`${fixtureName} ${layout}: p50 ${result.endToEndMs.p50.toFixed(1)} / p95 ${result.endToEndMs.p95.toFixed(1)} / max ${result.endToEndMs.max.toFixed(1)} ms`);
             await writeReport(`release-benchmark-${tag}.json`, report);
         }
     }
@@ -164,9 +220,9 @@ try {
             sha256: baseline.sha256 ?? baseline.artifact.sha256,
             warning: "Local observations on a shared machine, not controlled native-host or competitive measurements",
             results: report.results.map(result => {
-                const previous = baseline.results.find(item => item.layout === result.layout && item.fixture === result.fixture && item.operation === result.operation);
+                const previous = baseline.results.find(item => item.fixture === result.fixture && item.operation === result.operation);
                 assert(previous?.fixtureSha256 === result.fixtureSha256, "Baseline fixture differs");
-                return { layout: result.layout, fixture: result.fixture, operation: result.operation, p95BeforeMs: previous.endToEndMs.p95, p95AfterMs: result.endToEndMs.p95, ratio: result.endToEndMs.p95 / previous.endToEndMs.p95 };
+                return { fixture: result.fixture, operation: result.operation, p95BeforeMs: previous.endToEndMs.p95, p95AfterMs: result.endToEndMs.p95, ratio: result.endToEndMs.p95 / previous.endToEndMs.p95 };
             })
         };
     }
@@ -179,6 +235,7 @@ try {
 } finally {
     report.finished = new Date().toISOString();
     await writeReport(`release-benchmark-${tag}.json`, report);
+    if (tag === "final") await writeReport("release-benchmark.json", report);
     await harness?.close();
     await lock.close();
     await unlink(lockPath);

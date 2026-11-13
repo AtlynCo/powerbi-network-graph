@@ -5,7 +5,7 @@
 - Publisher: Atlyn; private `AtlynCo/powerbi-network-graph` repository.
 - Visual: Atlyn Network.
 - Stable GUID: `AtlynNetworkAB24C68297094C32AF64D50D92C01711`.
-- Current candidate visual version: `1.2.0.0`; npm version: `1.2.0`.
+- Visual version: `1.2.0.0`; npm version: `1.2.0`.
 - Intended artifact: the audited `.pbiviz` package, not source renamed as `.pbix`.
 - Certification-oriented engineering **does not mean Microsoft certified**.
 
@@ -23,8 +23,7 @@ No publication, AppSource submission, public GitHub release, screenshot upload, 
 - [ ] Preserve the stable GUID; align `pbiviz.json`, package metadata, release notes, and artifact version.
 - [ ] Confirm Node.js 24+ and a clean lockfile-based dependency installation (`npm ci`).
 - [ ] Run `npm run assets` with the project-required Node.js version and review regenerated icon/localization output; do not rely on a lower upstream tool minimum.
-- [ ] Run `npm run typecheck`, `npm run lint`, and `npm test`; retain actual outcomes.
-- [ ] Run the certification-named `npm run eslint` entry point as well; it preserves Microsoft's documented command separately from the focused lint script.
+- [ ] Run `npm run typecheck`, `npm run lint`, `npm run eslint`, and `npm test`; retain actual outcomes.
 - [ ] Run `npm run build` and `npm run package`; retain inspection and packaging logs.
 - [ ] Run all gates locally; do not run GitHub Actions, hosted CI/CD, cloud coding or Codespaces. Use the isolated `scripts/package.mjs` wrapper with PowerShell 7 (`pwsh`) on Windows or OpenSSL on a local Unix host. Do not require `pbiviz install-cert` or mutate a user's certificate store/trust settings.
 - [ ] Verify ignored `.tool-home` isolation, cleanup of local short-lived certificate/key/PFX/passphrase material, and exclusion of that private material from Git, the final package, logs, and release evidence. Check cleanup explicitly if packaging was interrupted.
@@ -78,6 +77,9 @@ Use an actual report with a relationship table, another visual displaying those 
 - [ ] Verify Ctrl/Cmd native relationship multiselect, selected/mixed states, and incoming native selection updates. Check overlapping incident groups using native SDK toggle semantics; do not assert additive union or an entity-multiselect abstraction.
 - [ ] Clear report selection independently of pan/zoom, local focus, and search.
 - [ ] Verify local focus/search/traversal do not send a report filter or alter native selection.
+- [ ] Circular Overview plain entity/chord activation keeps the native row-selection action above and also opens a local outgoing-item/source-target detail when items are loaded. Ctrl/Cmd/Shift activation does not drill. Toolbar/list **Focus**, **All items**, **Reset circle**, and numbered legend focus only explore locally, without selecting report rows. Person detail excludes own-item self-links even when self-links are shown in Overview. Inner item activation selects all contributing loaded item rows; Source → Item activation selects that curve's contributing rows. Item emphasis and circle reset do not clear native selection.
+- [ ] Circular entity/relationship lists retain all loaded topology, including diagram-hidden self-links, independently of circular detail. Search still filters list names locally.
+- [ ] Force traversal/path controls are hidden in Circular mode, which exposes directed source/pair item expansion instead. All local views remain bounded to loaded data.
 - [ ] Verify disabled host interactions are respected, and host selection/context failures produce usable notices.
 - [ ] Verify pending selection followed by Clear settles cleared; destroy prevents late host actions. Tooltip failures must leave the accessible relationship list usable.
 - [ ] Verify a single-identity edge's native context menu; entity and multi-identity edge context menus are explicitly visual-level.
@@ -87,11 +89,6 @@ The current context-menu SDK surface accepts a single identity. Do not pass an a
 
 ## 4. Rendering, accessibility, and responsiveness
 
-- [ ] Verify Force is the absent-property/v1 default and has unchanged positions/routes. Test Circular typed-ID ordering and Radial minimum undirected hops with an independent distance oracle.
-- [ ] Verify automatic/explicit center, separately packed components, missing-center disclosure and reappearance. Self/parallel edges and weights must not distort root scoring or distance.
-- [ ] Verify >=72-unit center spacing, >=96-unit radial ring gaps, complete edge/row preservation, glyph-safe polar routes, arc/loop bounds, outward horizontal labels and dense disclosure.
-- [ ] Verify local layout/root actions never select/filter/persist; only Save local view writes a snapshot. Test v1 migration, mode/root-aware camera compatibility and 4,096-character encode/decode refusal.
-- [ ] Verify the author layout property and local selectors in every tile/locale/contrast mode, transformed picking, multiple instances, saved state and complete keyboard lists.
 - [ ] Verify bounded deterministic synchronous layout with no simulation/timer, external assets, or animations; repeated highlight/selection updates must not restart layout.
 - [ ] Verify readable directed arrows and nonoverlapping paths for representative reciprocal/parallel groups and multiple loops.
 - [ ] Verify Fit includes curves, loop extents, and labels; test zoom extremes, pan, resize, and empty data transitions.
@@ -105,6 +102,8 @@ The current context-menu SDK surface accepts a single identity. Do not pass an a
 - [ ] Verify modern formatting changes and persistence: entity color, relationship color, label visibility, 8–24 label size, overlap avoidance, and initial view.
 - [ ] Verify pan starting over marks, move/tap discrimination, two-pointer pinch, transformed picking, and simultaneous visual instances.
 - [ ] Verify explicit Save local view and native bookmark replay separately from report selection; invalid or unavailable-entity snapshots must reset visibly.
+- [ ] Verify Circular overview and Item ID two-ring detail, blank-target grouping, hidden self-link disclosure, dense numbered legend, and source/type slicer interactions in native hosts.
+- [ ] Verify Rooted Radial automatic and explicit center selection, disconnected components, saved views, and directed links in native hosts.
 - [ ] Inspect actual dense final-package screenshots and retain reproducible render/navigation/selection p50/p95/max with hardware, warmups, samples, and contention disclosed. A local mock selection roundtrip is not native report-filter latency.
 
 Browser tests can support DOM/SVG, keyboard, layout, and injected-host behavior. They cannot certify assistive-technology behavior inside native Power BI.
@@ -139,7 +138,7 @@ and does not authorize merging, certification-reference changes or submission.
 - [ ] Obtain the required additional Power BI visual certification/badge through Microsoft's review; do not infer it from local preflight or Marketplace listing approval.
 - [ ] Verify support responsiveness and suitability for the distribution audience before publication/external distribution. Existing metadata is Atlyn / `atlyn.help@gmail.com` / `https://atlynco.github.io/atlyn-powerbi-support/docs/faq/`; the coordinator has confirmed it and verified support-page content. This confirmation does not close the responsiveness gate or authorize publication.
 - [ ] Explain that private GitHub source/issues/PR URLs require authorized access; provide a verified support route appropriate to any eventual distribution audience.
-- [ ] Ensure Atlyn examples are synthetic, third-party test rows are attributed, and no report, dataset, credentials, screenshots, or customer identifiers are unintentionally distributed.
+- [ ] Ensure all examples are synthetic and no report, dataset, credentials, screenshots, or customer identifiers are unintentionally distributed.
 - [ ] Review product wording: relationship exploration only; no causal prediction, fraud-detection, complete-network, or full process-mining claims.
 - [ ] Obtain separate owner authorization for any distribution or publishing action. This project is currently private only.
 
@@ -148,37 +147,3 @@ and does not authorize merging, certification-reference changes or submission.
 The release must include a fully authored offline PBIP source with useful bound report pages, semantic-model tables, literal synthetic data, and the exact tested embedded visual. Validate schema/reference/field bindings and retain its asset hashes. Authored source validation is **not** evidence that Desktop has opened, rendered, saved, or reopened it.
 
 The coordinator owns native Desktop opening and conversion to a real PBIX, service/export evidence, genuine legal/pricing approvals, and live Partner Center actions. Do not fabricate PBIX, native screenshots, successful import, certification, or publication approval. Freeze a lowercase certification source baseline only after final source is committed, and never overwrite an existing submitted baseline.
-
-## 1.2 candidate readiness boundaries (2026-09-24)
-
-**2026-09-25 owner/native supplement:** `docs/validation/PREPUBLISH-1.2.md`
-records a genuine matching PBIX and cold reopen, bounded native interactions,
-approved Non-Business classification, approved privacy/publisher-EULA/support
-fields and exactly two native listing images. The local manifest now verifies
-the durable PBIX, cold-launch/read evidence and selected PNG hashes against
-`docs/marketplace/approved-handoff-1.2.json`. Remaining full native matrix and
-Partner Center publisher/offer/authenticated setup are not claimed complete.
-Owner-authorized certification alignment is fast-forward-only after final
-checks; no main merge, submission or publication is authorized.
-
-Current local outcomes and hashes belong in the separate
-`docs/validation/RESULTS-1.2.md` and the worktree's `dist` reports, not the frozen
-1.1 evidence. Preserve the `1.1.1.0` sample archive and all existing marketplace
-media/provenance. The 1.2 sample has five pages and four bound graph visuals;
-only its new versioned package is embedded.
-
-| Gate | Current evidence boundary / owner action |
-| --- | --- |
-| Source, package, API/tools | Stable GUID/data roles; API 5.11.0 from SDK 5.11.1, tools 7.2.1. Run local schema, unit, type, ESLint, `package --certification-audit`, audit and compiled-code preflight. Recheck latest SDK/tools before submission. |
-| Sample | Final Hints-last literal PBIP and genuine owner-saved 1.2.0.0 PBIX are verified: exact package members, model-backed native rendering and new-process cold reopen without refresh. Durable PBIX/hash and bounded coverage are in `PREPUBLISH-1.2.md`; old 1.1 evidence is separate. |
-| Native host | Authorized isolated Desktop 2.157.1354.0 processes exercised the bounded cases recorded in the native report. Remaining full bookmark/format-painter/conversion/reading-edit/multi-instance/Service/export/assistive-technology matrix is not inferred from those passes. |
-| Events | `renderingStarted` begins updates; exactly one finished/failed terminal event is exercised with the compiled mock host, including error states. This is not native export proof. |
-| Images | Existing logo is 300x300. Owner approved exactly the two native Circular/Radial PNGs under `dist/listing-native-1.2`, each 1366x768 and <1,024,000 bytes. Older `dist/release-screenshots` captures remain explicitly mock-host and unselected. No frozen media is overwritten. |
-| Support/privacy | Owner approved the existing HTTPS support FAQ, product-specific privacy URL and monitored `atlyn.help@gmail.com` contact on 2026-09-25. No response-time SLA or portal configuration is invented. |
-| Terms | Owner selected the existing Atlyn terms HTTPS URL as publisher EULA. Repository `LICENSE` is still a separate proprietary rights notice, not replacement customer terms. No irreversible portal contract acceptance occurred. |
-| External review | Publisher/account and Network offer identity/authenticated draft configuration, full native matrix and Microsoft's review remain open. Local passes do not authorize submission/publication. The separate explicit owner authorization permits only guarded fast-forward certification-source alignment after final checks. |
-
-The API 5.11.1 capability schema supports `filterState` and
-`suppressFormatPainterCopy` on `navigation.savedView`; both are set. This
-aligns local saved properties with Microsoft's bookmark guidance without
-issuing report filters. Native bookmark/painter behavior is still unchecked.

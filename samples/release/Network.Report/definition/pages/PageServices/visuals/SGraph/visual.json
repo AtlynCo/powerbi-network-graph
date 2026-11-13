@@ -196,13 +196,6 @@
                   "Value": "'split'"
                 }
               }
-            },
-            "layout": {
-              "expr": {
-                "Literal": {
-                  "Value": "'force'"
-                }
-              }
             }
           }
         }

@@ -1,6 +1,6 @@
 {
   "status": "local-structure-only",
-  "assemblerSha256": "0f09e53b60fc3a94d7280542bd1eb72edbec26e701f5fd92f98ca7a646ddf62b",
+  "assemblerSha256": "010db33b3c05c4b0c298789c1d97123fb2ef51c2091a4c25a26219d819b7d5b0",
   "visual": {
     "guid": "AtlynNetworkAB24C68297094C32AF64D50D92C01711",
     "version": "1.2.0.0",
@@ -9,36 +9,36 @@
   "archive": {
     "source": "dist/AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.2.0.0.pbiviz",
     "embeddedCopy": "package/AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.2.0.0.pbiviz",
-    "bytes": 153889,
-    "sourceSha256": "6136c82c28ecf597634cbb90685f9cb1fbc3c435ce64613a8be180e8ff0f00ff",
-    "embeddedSha256": "6136c82c28ecf597634cbb90685f9cb1fbc3c435ce64613a8be180e8ff0f00ff",
+    "bytes": 252053,
+    "sourceSha256": "b7d57313bf2cf6f490b1780374c3ea892915951e0b5d8fa984642932f3e91a81",
+    "embeddedSha256": "b7d57313bf2cf6f490b1780374c3ea892915951e0b5d8fa984642932f3e91a81",
     "equal": true
   },
   "resources": [
     {
       "path": "package.json",
-      "bytes": 760,
-      "sourceSha256": "3fcaa2b8d15a955003469e32f63d84368a352fd9116c3cc5ef04a0ec763aa136",
-      "embeddedSha256": "3fcaa2b8d15a955003469e32f63d84368a352fd9116c3cc5ef04a0ec763aa136",
+      "bytes": 758,
+      "sourceSha256": "1976a579eff3daa6da540ee1f36a342545205d61ffd9b80f3d5c937ea3c8f0a7",
+      "embeddedSha256": "1976a579eff3daa6da540ee1f36a342545205d61ffd9b80f3d5c937ea3c8f0a7",
       "equal": true
     },
     {
       "path": "resources/AtlynNetworkAB24C68297094C32AF64D50D92C01711.pbiviz.json",
-      "bytes": 881889,
-      "sourceSha256": "84276fa508720313cdb100d44ddc34ba0cf2b437627eea47ae3946d03cf57bc9",
-      "embeddedSha256": "84276fa508720313cdb100d44ddc34ba0cf2b437627eea47ae3946d03cf57bc9",
+      "bytes": 1814943,
+      "sourceSha256": "a9b86828debe7f737ead9b18786b3017232b61e368e2d93fb51c7547478f0503",
+      "embeddedSha256": "a9b86828debe7f737ead9b18786b3017232b61e368e2d93fb51c7547478f0503",
       "equal": true
     }
   ],
   "schemas": {
     "commit": "83ce11373faada0d01e76264a5cceb0ba70003e6",
     "documents": 14,
-    "validatedFiles": 30
+    "validatedFiles": 33
   },
   "model": {
-    "tables": 8,
-    "relationships": 6,
-    "measures": 14,
+    "tables": 12,
+    "relationships": 9,
+    "measures": 21,
     "globallyUniqueMeasureNames": true,
     "measureNames": [
       {
@@ -63,6 +63,30 @@
       },
       {
         "table": "AccountsTypes",
+        "measures": []
+      },
+      {
+        "table": "Contributions",
+        "measures": [
+          "Contributions Total Weight",
+          "Contributions Input Rows",
+          "Contributions Events",
+          "Contributions Average Duration ms",
+          "Contributions Blank Weights",
+          "Contributions Nonpositive Weights",
+          "Contributions Visible Nodes"
+        ]
+      },
+      {
+        "table": "ContributionsSources",
+        "measures": []
+      },
+      {
+        "table": "ContributionsTargets",
+        "measures": []
+      },
+      {
+        "table": "ContributionsTypes",
         "measures": []
       },
       {
@@ -93,10 +117,11 @@
     "measureValidatorSha256": "5924c543fd0900366dd8db7986ee064c91d0f5cd196492bcc1bcada33a9c0f4d",
     "pages": 5,
     "boundGraphVisuals": 4,
-    "verifiedFieldBindings": 50,
+    "verifiedFieldBindings": 60,
     "rows": {
       "Services": 14,
-      "Accounts": 16
+      "Accounts": 16,
+      "Contributions": 24
     },
     "externalDataSources": 0,
     "validation": "strict-authored-template-and-references"
@@ -129,7 +154,7 @@
     },
     {
       "path": "Network.Report/definition/pages/PageAccounts/visuals/AGraph/visual.json",
-      "sha256": "083be6b89f2475e8e6c0a89a914a3f31b091207304f28e2b04caf2bdeefabb08"
+      "sha256": "26b878c124a3223e8dbe58c6e259f5b4fcb66fde92f3931f4152058864da6625"
     },
     {
       "path": "Network.Report/definition/pages/PageAccounts/visuals/AGuide/visual.json",
@@ -149,19 +174,31 @@
     },
     {
       "path": "Network.Report/definition/pages/PageCircular/page.json",
-      "sha256": "89de7ed5671bb69c561d823e5b3b94883eec2d25f3edd26622cc569d7186785d"
+      "sha256": "63cc99facb90c94eb353860a541fdfcefaf2ca610926d62eec0dd4dae868c76c"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageCircular/visuals/CircularDetails/visual.json",
+      "sha256": "c17bdc0fa1be271dabacf5faa55cd511b49a107cc3dc4202a83bc707d4d9ca65"
     },
     {
       "path": "Network.Report/definition/pages/PageCircular/visuals/CircularGraph/visual.json",
-      "sha256": "acd7f56eae1cce18e7edfa7a91c06862a550e9e8aa4d91edf97e8b207621f815"
+      "sha256": "b999aff85e42590812e338e1ee2f79a49498a9ce7a124716bc019e6f5c56fecb"
     },
     {
       "path": "Network.Report/definition/pages/PageCircular/visuals/CircularGuide/visual.json",
-      "sha256": "3b8d9175affdf9681bf7e21203677b15aa0af7bf0b4596b1f9d6cb9eda2fe962"
+      "sha256": "22ac4b4016bac424377a89ea80cd5806b79df7931e4de27bbb7fdca44f7d4aa2"
     },
     {
       "path": "Network.Report/definition/pages/PageCircular/visuals/CircularHeading/visual.json",
-      "sha256": "18b518a61415539803978df13d82e124e3ad8003ea7f6f4bff88730679de7b2a"
+      "sha256": "f09bb0ac7f427894abf5c84ab5c2af284068f06ada4db958957c43c99241c687"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageCircular/visuals/CircularSources/visual.json",
+      "sha256": "7645d66ad8b38ac0556034bceb8f7e9680ff80f3637eb98f78b356aad1f0568f"
+    },
+    {
+      "path": "Network.Report/definition/pages/PageCircular/visuals/CircularTypes/visual.json",
+      "sha256": "11849f6453fbad6778f39d99121ca5d14ac8e6c92fbceacd5a1f9fc4a94b1584"
     },
     {
       "path": "Network.Report/definition/pages/PageHints/page.json",
@@ -169,7 +206,7 @@
     },
     {
       "path": "Network.Report/definition/pages/PageHints/visuals/Hints/visual.json",
-      "sha256": "a6befa00f7cb15642bf79f9411bf4a8a5254a8a67cc48c713b735cebbcef91a3"
+      "sha256": "3a93c97eece00fbe423129037bca8a747a6b10809bfb5cb60cd19396313dc885"
     },
     {
       "path": "Network.Report/definition/pages/PageRadial/page.json",
@@ -177,11 +214,11 @@
     },
     {
       "path": "Network.Report/definition/pages/PageRadial/visuals/RadialGraph/visual.json",
-      "sha256": "74487958722e748b3f82bd373d10fb2602b69d930efd453a40dcd5bb43c2e1a2"
+      "sha256": "bd915f835b962808bf4dade00691d59e1f94fb2a700dd1246991ae3836219a0e"
     },
     {
       "path": "Network.Report/definition/pages/PageRadial/visuals/RadialGuide/visual.json",
-      "sha256": "46a8bab5a2575c67f5530e3cbcf997beeace1cf50b97ad6f4730f246da7b7d0f"
+      "sha256": "4e71fe4063c656cf99d295be8502f77fb4ba2322b4aaff099e62f2516f3d4cc1"
     },
     {
       "path": "Network.Report/definition/pages/PageRadial/visuals/RadialHeading/visual.json",
@@ -197,7 +234,7 @@
     },
     {
       "path": "Network.Report/definition/pages/PageServices/visuals/SGraph/visual.json",
-      "sha256": "779de1e42ea4653c3f9496064867dddf038b6931d8b6eb951aed993a10af5fcc"
+      "sha256": "18a43732e234f3f6623cc04eb7669e5d78666478c5b49bea196af5850f47d32a"
     },
     {
       "path": "Network.Report/definition/pages/PageServices/visuals/SGuide/visual.json",
@@ -237,11 +274,11 @@
     },
     {
       "path": "Network.SemanticModel/definition/model.tmdl",
-      "sha256": "b50e7e20a9271b20786e9264b040619439abe70c72db80b0c69b9b723c77a27c"
+      "sha256": "54af816cc4a4d75293ba68c74e4e69bcbec435bf5cc33809c420b3f5013336db"
     },
     {
       "path": "Network.SemanticModel/definition/relationships.tmdl",
-      "sha256": "30969ea314ddbf9d9790f13315f94ec2b99acd0e006ae3d8e84069db3212ab44"
+      "sha256": "d503d3a94d2fc02dee4c2c9654458b015c01b76f1a5ebb80e9e18cec305aa282"
     },
     {
       "path": "Network.SemanticModel/definition/tables/Accounts.tmdl",
@@ -258,6 +295,22 @@
     {
       "path": "Network.SemanticModel/definition/tables/AccountsTypes.tmdl",
       "sha256": "a16a62ccafea0de77b136be54783f4efde2da52dd077b5fce760b0b825c7f84f"
+    },
+    {
+      "path": "Network.SemanticModel/definition/tables/Contributions.tmdl",
+      "sha256": "a32f85786c1ca9a5654008f0f2835188f73eeb507f978b12665a31b5483c65e7"
+    },
+    {
+      "path": "Network.SemanticModel/definition/tables/ContributionsSources.tmdl",
+      "sha256": "ff0d375a09220724298fab988ddead5dc4f801f746d96bf3110161327b549bf9"
+    },
+    {
+      "path": "Network.SemanticModel/definition/tables/ContributionsTargets.tmdl",
+      "sha256": "5d7a07023a356558f53aec0caeaeb98d0570725bcc3346059c95343b9899cd1e"
+    },
+    {
+      "path": "Network.SemanticModel/definition/tables/ContributionsTypes.tmdl",
+      "sha256": "c3014578d17ab9f5498d5925d0f7641d2d00e2414ddfea78c1387bc7eb891ee8"
     },
     {
       "path": "Network.SemanticModel/definition/tables/Services.tmdl",

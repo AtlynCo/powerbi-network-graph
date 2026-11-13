@@ -1,5 +1,40 @@
 # Atlyn Network 1.2 local candidate evidence
 
+## Current local candidate, 2026-11-13
+
+The `1.2.0.0` PBIVIZ is 252,053 bytes, SHA-256
+`b7d57313bf2cf6f490b1780374c3ea892915951e0b5d8fa984642932f3e91a81`.
+The 1.2 PBIP has five pages, four graphs, 12 tables, 21 measures and nine
+relationships. Microsoft TOM deserialized and validated it with zero errors.
+Local checks recorded 226 Vitest tests, 25 browser checks, 24 release-browser
+checks, certification preflight and byte-identical rebuild. The browser uses
+an offline mock host, not Desktop. Native PBIX conversion, host matrix, native
+screenshots, publisher verification, upload and Microsoft review remain open.
+
+The serial benchmark used five warmups and 30 measurements per group. These
+are shared-machine browser/mock observations in milliseconds, not native
+latency guarantees. Force and Circular overview/Radial use topology-cold
+render; Two-Ring measures entry from Circular overview.
+
+| Fixture | Layout | p50 | p95 | max |
+| --- | --- | ---: | ---: | ---: |
+| Typical | Force | 35.7 | 36.4 | 36.8 |
+| Typical | Circular overview | 33.4 | 33.9 | 34.1 |
+| Typical | Two-Ring detail | 33.3 | 43.8 | 44.7 |
+| Typical | Rooted Radial | 32.9 | 36.0 | 41.9 |
+| Maximum | Force | 402.0 | 444.8 | 446.3 |
+| Maximum | Circular overview | 231.6 | 290.0 | 346.4 |
+| Maximum | Two-Ring detail | 450.2 | 499.2 | 554.9 |
+| Maximum | Rooted Radial | 252.6 | 292.1 | 294.8 |
+
+Raw results are in `dist/release-benchmark.json`. The local CPU profile has
+6,657 samples. Three 1366x768 mock previews are not native listing media.
+
+## Historical candidate, 2026-09-24
+
+All numbers and package identity below describe the earlier candidate, not
+the current local candidate above.
+
 **Recorded 2026-09-24. Local readiness checks passed; NOT Microsoft certified,
 AppSource approved, or ready for submission without the owner gates below.**
 This is a new record. The sealed `RESULTS.md`, historical marketplace images/

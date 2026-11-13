@@ -1,9 +1,19 @@
 import { Graph, GraphEdge, GraphNode } from "./graph";
+import { circularSignature, layoutCircularDetail, layoutCircularOverview } from "./circular";
+import type { CircularDetailOptions, CircularOptions } from "./circular";
+import type { LayoutMode, SelfLinks } from "./settings";
+
+export { layoutCircularDetail, layoutCircularOverview, orderCircularNodes } from "./circular";
+export interface LayoutOptions extends CircularOptions {
+    layoutMode?: LayoutMode;
+    requestedRoot?: string;
+    selfLinks?: SelfLinks;
+    detail?: CircularDetailOptions;
+}
 
 export interface Point { x: number; y: number }
 export interface Bounds { x: number; y: number; width: number; height: number }
 export interface EdgeRoute { path: string; controls: Point[] }
-export type LayoutMode = "force" | "circular" | "radial";
 export interface PolarNode { center: Point; radius: number; angle: number; depth: number; root: string }
 export interface Layout {
     positions: Map<string, Point>; bounds: Bounds; signature: string; routes: Map<string, EdgeRoute>;
@@ -11,12 +21,24 @@ export interface Layout {
 }
 export interface ResolvedLayout { mode: LayoutMode; root: string; missingRoot: boolean; key: string }
 
-export function isLayoutMode(value: unknown): value is LayoutMode {
-    return value === "force" || value === "circular" || value === "radial";
+function circularOptions(options: LayoutOptions): CircularDetailOptions {
+    return {
+        ...options, ...options.detail,
+        hideSelfLinks: options.detail?.hideSelfLinks ?? options.hideSelfLinks ??
+            (options.selfLinks === "hide" || (options.selfLinks !== "show" && options.layoutMode === "circular"))
+    };
 }
 
-export function topologySignature(graph: Graph): string {
-    return JSON.stringify([graph.nodes.map(node => node.id), graph.edges.map(edge => [edge.id, edge.source, edge.target])]);
+export function topologySignature(graph: Graph, options: LayoutOptions = {}): string {
+    if (options.layoutMode === "circular") return circularSignature(graph, circularOptions(options), !!options.detail);
+    if (options.layoutMode === "radial") return JSON.stringify([
+        resolveLayout(graph, "radial", options.requestedRoot).key, options.selfLinks === "hide" || !!options.hideSelfLinks
+    ]);
+    const topology = [graph.nodes.map(node => node.id), graph.edges.map(edge => [edge.id, edge.source, edge.target])];
+    if ((options.selfLinks && options.selfLinks !== "auto") || options.hideSelfLinks || options.circularOrder === "weight") {
+        return JSON.stringify([...topology, "force", options.selfLinks ?? "auto", !!options.hideSelfLinks, options.circularOrder ?? "alphabetical"]);
+    }
+    return JSON.stringify(topology);
 }
 
 function components(graph: Graph): GraphNode[][] {
@@ -40,13 +62,21 @@ function components(graph: Graph): GraphNode[][] {
     return groups;
 }
 
-export function layoutGraph(graph: Graph, mode: LayoutMode = "force", root = ""): Layout {
-    if (mode === "force") return layoutForceGraph(graph);
-    return layoutPolarGraph(graph, resolveLayout(graph, mode, root));
-}
-
-// Keep the original force geometry and router unchanged for existing reports.
-function layoutForceGraph(graph: Graph): Layout {
+// Fixed iteration counts and topology-only input: no random seed, clocks, timers or live simulation.
+export function layoutGraph(graph: Graph, options: LayoutOptions = {}): Layout {
+    if (options.layoutMode === "circular") {
+        return options.detail ? layoutCircularDetail(graph, circularOptions(options)) : layoutCircularOverview(graph, circularOptions(options));
+    }
+    if (options.layoutMode === "radial") {
+        const resolved = resolveLayout(graph, "radial", options.requestedRoot);
+        const visible = options.selfLinks === "hide" || options.hideSelfLinks ?
+            { ...graph, edges: graph.edges.filter(edge => edge.source !== edge.target) } : graph;
+        const layout = layoutRadialGraph(visible, resolved);
+        layout.signature = JSON.stringify([resolved.key, options.selfLinks === "hide" || !!options.hideSelfLinks]);
+        return layout;
+    }
+    const signature = topologySignature(graph, options);
+    if (options.selfLinks === "hide" || options.hideSelfLinks) graph = { ...graph, edges: graph.edges.filter(edge => edge.source !== edge.target) };
     const positions = new Map<string, Point>();
     const groups = components(graph);
     const packed: { nodes: GraphNode[]; positions: Map<string, Point>; bounds: Bounds }[] = [];
@@ -121,7 +151,7 @@ function layoutForceGraph(graph: Graph): Layout {
     }
     const orderedPositions = new Map(graph.nodes.map(node => [node.id, positions.get(node.id)!]));
     const routes = routeGraph(graph, orderedPositions);
-    return { positions: orderedPositions, bounds: layoutBounds(graph, orderedPositions, routes), signature: topologySignature(graph), routes };
+    return { positions: orderedPositions, bounds: layoutBounds(graph, orderedPositions, routes), signature, routes };
 }
 
 export function routeGraph(graph: Graph, positions: Map<string, Point>): Map<string, EdgeRoute> {
@@ -172,7 +202,7 @@ export function layoutBounds(graph: Graph, positions: Map<string, Point>, routes
         const label = showLabels ? 22 + Math.min(26, [...node.label].length + 3) * labelSize * 0.8 : 24;
         coordinates.push({ x: point.x - label, y: point.y - labelSize * 2 - 20 }, { x: point.x + label, y: point.y + labelSize * 2 + 20 });
     }
-    for (const edge of graph.edges) coordinates.push(...routes.get(edge.id)!.controls);
+    for (const edge of graph.edges) coordinates.push(...routes.get(edge.id)?.controls ?? []);
     if (!coordinates.length) return { x: -50, y: -50, width: 100, height: 100 };
     const x = Math.min(...coordinates.map(point => point.x)) - 12;
     const y = Math.min(...coordinates.map(point => point.y)) - 12;
@@ -218,27 +248,22 @@ export function resolveLayout(graph: Graph, mode: LayoutMode, requestedRoot = ""
     };
 }
 
-function layoutPolarGraph(graph: Graph, resolved: ResolvedLayout): Layout {
+function layoutRadialGraph(graph: Graph, resolved: ResolvedLayout): Layout {
     const positions = new Map<string, Point>();
     const polar = new Map<string, PolarNode>();
     const roots: string[] = [];
     const adjacency = undirected(graph);
-    const groups = resolved.mode === "circular" ? [[...graph.nodes].sort((a, b) => compareId(a.id, b.id))] : polarComponents(graph);
     const packed: { nodes: GraphNode[]; bounds: Bounds }[] = [];
-    for (const nodes of groups) {
-        if (!nodes.length) continue;
-        const root = resolved.mode === "circular" ? "" : nodes.some(node => node.id === resolved.root) ? resolved.root : automaticRoot(nodes, adjacency);
-        if (root) roots.push(root);
-        const depths = new Map<string, number>();
-        if (root) {
-            depths.set(root, 0);
-            const queue = [root];
-            for (let i = 0; i < queue.length; i++) for (const next of adjacency.get(queue[i])!) {
-                if (depths.has(next)) continue;
-                depths.set(next, depths.get(queue[i])! + 1);
-                queue.push(next);
-            }
-        } else for (const node of nodes) depths.set(node.id, 0);
+    for (const nodes of polarComponents(graph)) {
+        const root = nodes.some(node => node.id === resolved.root) ? resolved.root : automaticRoot(nodes, adjacency);
+        roots.push(root);
+        const depths = new Map<string, number>([[root, 0]]);
+        const queue = [root];
+        for (let i = 0; i < queue.length; i++) for (const next of adjacency.get(queue[i])!) {
+            if (depths.has(next)) continue;
+            depths.set(next, depths.get(queue[i])! + 1);
+            queue.push(next);
+        }
         const levels = new Map<number, GraphNode[]>();
         for (const node of nodes) {
             const depth = depths.get(node.id)!;
@@ -260,28 +285,23 @@ function layoutPolarGraph(graph: Graph, resolved: ResolvedLayout): Layout {
         const localGraph = { ...graph, nodes, edges: graph.edges.filter(edge => ids.has(edge.source)) };
         packed.push({ nodes, bounds: layoutBounds(localGraph, positions, routePolarGraph(localGraph, positions, polar)) });
     }
-    if (resolved.mode === "radial") {
-        const shelf = Math.max(300, Math.sqrt(packed.reduce((sum, group) => sum + (group.bounds.width + 96) * (group.bounds.height + 96), 0)));
-        let x = 0, y = 0, height = 0;
-        for (const group of packed) {
-            if (x && x + group.bounds.width > shelf) { x = 0; y += height + 96; height = 0; }
-            const center = { x: x - group.bounds.x, y: y - group.bounds.y };
-            for (const node of group.nodes) {
-                const point = positions.get(node.id)!;
-                positions.set(node.id, { x: point.x + center.x, y: point.y + center.y });
-                polar.get(node.id)!.center = center;
-            }
-            x += group.bounds.width + 96;
-            height = Math.max(height, group.bounds.height);
+    const shelf = Math.max(300, Math.sqrt(packed.reduce((sum, group) => sum + (group.bounds.width + 96) * (group.bounds.height + 96), 0)));
+    let x = 0, y = 0, height = 0;
+    for (const group of packed) {
+        if (x && x + group.bounds.width > shelf) { x = 0; y += height + 96; height = 0; }
+        const center = { x: x - group.bounds.x, y: y - group.bounds.y };
+        for (const node of group.nodes) {
+            const point = positions.get(node.id)!;
+            positions.set(node.id, { x: point.x + center.x, y: point.y + center.y });
+            polar.get(node.id)!.center = center;
         }
+        x += group.bounds.width + 96;
+        height = Math.max(height, group.bounds.height);
     }
     const routes = routePolarGraph(graph, positions, polar);
     return { positions, polar, routes, root: resolved.root, roots, signature: resolved.key, bounds: layoutBounds(graph, positions, routes) };
 }
 
-// Empty annular corridors avoid ALL glyphs, including nodes hidden by local focus.
-// Ports are 28 units from their ring, lanes are >=32; radial ring gaps are >=96.
-// Distinct per-ID lanes remain bounded even for 1,000 parallel edges (not a readability promise).
 function routePolarGraph(graph: Graph, positions: Map<string, Point>, polar: Map<string, PolarNode>): Map<string, EdgeRoute> {
     const peers = new Map<string, GraphEdge[]>();
     for (const edge of graph.edges) {
