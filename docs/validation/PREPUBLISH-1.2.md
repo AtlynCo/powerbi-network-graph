@@ -1,7 +1,7 @@
 # Atlyn Network 1.2 prepublication evidence
 
-**Current layout-cleanup candidate, 2026-11-13:** `1.2.0.0`, 252,598 bytes, SHA-256
-`5b18f5c32c689fad6a8e666a91c4db7fb12d134993ef27c2f056e5ff0c1dd03f`.
+**Current radial-smoothing candidate, 2026-11-13:** `1.2.0.0`, 253,404 bytes, SHA-256
+`33f3f8286176778f0c3d664ad22d930eca26a7614490a8d4499a97c3daaeaa9a`.
 The dated native observations and approvals below apply to earlier package
 bytes and do not establish native acceptance of the current candidate.
 

@@ -1,9 +1,13 @@
 # Canonical PBIVIZ packaging follow-up
 
-**Current layout-cleanup candidate, 2026-11-13:** 252,598 bytes, SHA-256
-`5b18f5c32c689fad6a8e666a91c4db7fb12d134993ef27c2f056e5ff0c1dd03f`.
+**Current radial-smoothing candidate, 2026-11-13:** 253,404 bytes, SHA-256
+`33f3f8286176778f0c3d664ad22d930eca26a7614490a8d4499a97c3daaeaa9a`.
 An unchanged-input rebuild reproduced the archive and all members byte-for-byte.
 Native acceptance and approval of new listing media remain open.
+
+**Previous layout-cleanup candidate, 2026-11-13:** 252,598 bytes, SHA-256
+`5b18f5c32c689fad6a8e666a91c4db7fb12d134993ef27c2f056e5ff0c1dd03f`.
+An unchanged-input rebuild reproduced that archive and all members byte-for-byte.
 
 **Previous candidate, 2026-11-13:** the canonical package was 252,053 bytes,
 SHA-256 `b7d57313bf2cf6f490b1780374c3ea892915951e0b5d8fa984642932f3e91a81`.

@@ -145,10 +145,27 @@ describe("unchanged force geometry from c19276b", () => {
             checkGeometry(graph, layout);
         });
 
+        it("routes parallel and reciprocal center spokes as distinct smooth curves", () => {
+            const graph = make([
+                { source: "root", target: "A", edgeId: "out1" },
+                { source: "root", target: "A", edgeId: "out2" },
+                { source: "A", target: "root", edgeId: "in" },
+                { source: "root", target: "B", edgeId: "other" },
+                { source: "X", target: "Y", edgeId: "disconnected" }
+            ]);
+            const layout = layoutGraph(graph, { layoutMode: "radial", requestedRoot: "s:root" });
+            checkGeometry(graph, layout);
+            for (const route of layout.routes.values()) {
+                expect(route.path).toMatch(/^M [^C]+ C /);
+                expect(route.path).not.toMatch(/[LA]/);
+            }
+        });
+
         it("routes diametral same-ring edges around the center and packs disconnected components separately", () => {
             const rows = [
                 ...Array.from({ length: 8 }, (_, i) => ({ source: "root", target: `N${i}`, edgeId: `spoke${i}` })),
                 ...Array.from({ length: 8 }, (_, i) => ({ source: `N${i}`, target: `N${(i + 4) % 8}`, edgeId: `diameter${i}` })),
+                { source: "N0", target: "N1", edgeId: "adjacent" },
                 ...Array.from({ length: 8 }, (_, i) => ({ source: "root", target: "root", edgeId: `loop${i}` })),
                 { source: "X", target: "Y", edgeId: "other" }, { source: "Z", target: "Z", edgeId: "isolated-loop" }
             ];
@@ -156,6 +173,8 @@ describe("unchanged force geometry from c19276b", () => {
             const layout = layoutGraph(graph, { layoutMode: "radial", requestedRoot: "s:root" });
             expect(layout.roots).toEqual(["s:root", "s:X", "s:Z"]);
             checkGeometry(graph, layout);
+            expect(layout.routes.get(graph.edges.find(edge => edge.edgeId === "adjacent")!.id)!.path).toMatch(/ C /);
+            expect(layout.routes.get(graph.edges.find(edge => edge.edgeId === "diameter0")!.id)!.path).toMatch(/ A /);
             expect(layoutGraph(make([...rows].reverse()), { layoutMode: "radial", requestedRoot: "s:root" })).toEqual(layout);
         });
 

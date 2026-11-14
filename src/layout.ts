@@ -302,6 +302,24 @@ function layoutRadialGraph(graph: Graph, resolved: ResolvedLayout): Layout {
     return { positions, polar, routes, root: resolved.root, roots, signature: resolved.key, bounds: layoutBounds(graph, positions, routes) };
 }
 
+function curveClearsNode(points: [Point, Point, Point, Point], node: Point, depth = 0): boolean {
+    // A Bezier stays inside its control-point bounds; subdivide to prove clearance conservatively.
+    const [a, b, c, d] = points;
+    const minX = Math.min(a.x, b.x, c.x, d.x);
+    const maxX = Math.max(a.x, b.x, c.x, d.x);
+    const minY = Math.min(a.y, b.y, c.y, d.y);
+    const maxY = Math.max(a.y, b.y, c.y, d.y);
+    const dx = Math.max(minX - node.x, 0, node.x - maxX);
+    const dy = Math.max(minY - node.y, 0, node.y - maxY);
+    if (Math.hypot(dx, dy) >= PORT_GAP) return true;
+    if (depth === 8) return false;
+    const mid = (a: Point, b: Point): Point => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
+    const ab = mid(a, b), bc = mid(b, c), cd = mid(c, d);
+    const left = mid(ab, bc), right = mid(bc, cd), center = mid(left, right);
+    return curveClearsNode([a, ab, left, center], node, depth + 1) &&
+        curveClearsNode([center, right, cd, d], node, depth + 1);
+}
+
 function routePolarGraph(graph: Graph, positions: Map<string, Point>, polar: Map<string, PolarNode>): Map<string, EdgeRoute> {
     const peers = new Map<string, GraphEdge[]>();
     for (const edge of graph.edges) {
@@ -310,6 +328,24 @@ function routePolarGraph(graph: Graph, positions: Map<string, Point>, polar: Map
         peers.get(key)!.push(edge);
     }
     const routes = new Map<string, EdgeRoute>();
+    const setCurve = (edge: GraphEdge, controls: [Point, Point, Point, Point]): boolean => {
+        const [start, first, second, end] = controls;
+        const minX = Math.min(start.x, first.x, second.x, end.x) - PORT_GAP;
+        const maxX = Math.max(start.x, first.x, second.x, end.x) + PORT_GAP;
+        const minY = Math.min(start.y, first.y, second.y, end.y) - PORT_GAP;
+        const maxY = Math.max(start.y, first.y, second.y, end.y) + PORT_GAP;
+        for (const node of graph.nodes) {
+            if (node.id === edge.source || node.id === edge.target) continue;
+            const point = positions.get(node.id)!;
+            if (point.x > minX && point.x < maxX && point.y > minY && point.y < maxY &&
+                !curveClearsNode(controls, point)) return false;
+        }
+        routes.set(edge.id, {
+            path: `M ${start.x} ${start.y} C ${first.x} ${first.y}, ${second.x} ${second.y}, ${end.x} ${end.y}`,
+            controls
+        });
+        return true;
+    };
     for (const group of peers.values()) {
         group.sort((a, b) => compareId(a.id, b.id));
         group.forEach((edge, index) => {
@@ -328,6 +364,31 @@ function routePolarGraph(graph: Graph, positions: Map<string, Point>, polar: Map
                     controls: [start, first, second, end]
                 });
                 return;
+            }
+            if (a.radius !== b.radius) {
+                const source = positions.get(edge.source)!;
+                const target = positions.get(edge.target)!;
+                const dx = target.x - source.x, dy = target.y - source.y;
+                const distance = Math.hypot(dx, dy);
+                const ux = dx / distance, uy = dy / distance;
+                const direction = compareId(edge.source, edge.target) < 0 ? 1 : -1;
+                const nx = -uy * direction, ny = ux * direction;
+                const tilt = (fraction - 0.5) * 0.5;
+                const forward = Math.sqrt(1 - tilt * tilt);
+                const start = { x: source.x + 15 * (ux * forward + nx * tilt), y: source.y + 15 * (uy * forward + ny * tilt) };
+                const end = { x: target.x + 21 * (-ux * forward + nx * tilt), y: target.y + 21 * (-uy * forward + ny * tilt) };
+                const bend = (fraction - 0.5) * 32;
+                const first = { x: start.x + ux * distance / 3 + nx * bend, y: start.y + uy * distance / 3 + ny * bend };
+                const second = { x: end.x - ux * distance / 3 + nx * bend, y: end.y - uy * distance / 3 + ny * bend };
+                if (setCurve(edge, [start, first, second, end])) return;
+            } else {
+                const lane = a.radius - 48 + 32 * (fraction - 0.5);
+                const tilt = (fraction - 0.5) * 0.3;
+                const start = polarPoint(positions.get(edge.source)!, 15, a.angle + Math.PI + tilt);
+                const end = polarPoint(positions.get(edge.target)!, 21, b.angle + Math.PI - tilt);
+                const first = polarPoint(a.center, lane, a.angle + tilt);
+                const second = polarPoint(b.center, lane, b.angle - tilt);
+                if (setCurve(edge, [start, first, second, end])) return;
             }
             const center = a.center;
             const lane = (a.radius === b.radius ? a.radius - 48 : (a.radius + b.radius) / 2) + 32 * (fraction - 0.5);

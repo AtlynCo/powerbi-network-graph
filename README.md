@@ -150,7 +150,7 @@ Choose **Exploration → Layout mode → Circular ring** for a perimeter guide r
 
 Binding **Item ID** enables two-ring detail: plain entity activation focuses its outgoing items, and plain chord activation focuses items for that directed source/target pair. **All items** shows all loaded items; **Reset circle** returns to the overview. These are local drill-in actions and do not filter the report. Force-directed mode and its existing traversal/path controls remain unchanged.
 
-Rooted Radial keeps links between distinct same-ring entities inside their ring and emphasizes a relationship on hover or keyboard focus. Dense routes may still cross; use the relationship list for details.
+Rooted Radial uses smooth links where they can clear other nodes, falling back to routed detours when needed. It keeps links between distinct same-ring entities inside their ring and emphasizes a relationship on hover or keyboard focus. Dense routes may still cross; use the relationship list for details.
 
 ### Context menus and tooltips
 
