@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "RadialGuide",
   "position": {
-    "x": 1008,
+    "x": 1090,
     "y": 100,
-    "width": 334,
+    "width": 252,
     "height": 644,
-    "z": 2008,
-    "tabOrder": 2008
+    "z": 2090,
+    "tabOrder": 2090
   },
   "visual": {
     "visualType": "textbox",
@@ -69,7 +69,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Automatic center is Orders: largest component, most distinct non-self neighbors, then stable ID. This is a layout convenience, not centrality or business importance.",
+                    "value": "Rings show minimum undirected hops in loaded relationships. Arrows retain their direction. Disconnected components have separate centers.",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "11pt"
@@ -91,7 +91,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Use the Radial center selector or Use as radial center in the entity list. This does not change local focus, weights, report filters or selection.",
+                    "value": "Choose a center in the toolbar or open Graph and list to use an entity as the center. Save local view to retain it.",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "11pt"
@@ -113,29 +113,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Each ring is minimum undirected hop distance over loaded relationships. Arrows retain their direction. Disconnected components are packed separately.",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "11pt"
-                    }
-                  }
-                ]
-              },
-              {
-                "textRuns": [
-                  {
-                    "value": "",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "11pt"
-                    }
-                  }
-                ]
-              },
-              {
-                "textRuns": [
-                  {
-                    "value": "A filtered-out requested center uses an automatic fallback. Save local view explicitly to retain the center.",
+                    "value": "The automatic center is a layout convenience, not a measure of importance.",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "11pt"

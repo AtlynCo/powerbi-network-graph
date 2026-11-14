@@ -4,7 +4,7 @@
   "position": {
     "x": 24,
     "y": 100,
-    "width": 960,
+    "width": 1050,
     "height": 644,
     "z": 1024,
     "tabOrder": 1024
@@ -193,7 +193,7 @@
             "view": {
               "expr": {
                 "Literal": {
-                  "Value": "'split'"
+                  "Value": "'graph'"
                 }
               }
             },

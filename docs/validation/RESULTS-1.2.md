@@ -1,6 +1,33 @@
 # Atlyn Network 1.2 local candidate evidence
 
-## Current local candidate, 2026-11-13
+## Current radial-smoothing candidate, 2026-11-13
+
+The `1.2.0.0` PBIVIZ is 253,404 bytes, SHA-256
+`33f3f8286176778f0c3d664ad22d930eca26a7614490a8d4499a97c3daaeaa9a`.
+The generated sample package matches those bytes. Local checks passed 228
+unit tests, typecheck, lint, package inspection and external-request audit,
+sample validation, 25 browser interactions, 25 preliminary release-browser
+groups, certification preflight, notices and a byte-identical unchanged-input
+rebuild. Browser checks use a mock host. The owner reported that the updated
+report looks great, but the inspected report did not establish the running
+package's identity. Native validation of these bytes, PBIX save and cold
+reopen, new screenshots and owner media approval remain open. This is not
+Microsoft certification.
+
+## Previous layout-cleanup candidate, 2026-11-13
+
+The `1.2.0.0` PBIVIZ is 252,598 bytes, SHA-256
+`5b18f5c32c689fad6a8e666a91c4db7fb12d134993ef27c2f056e5ff0c1dd03f`.
+The generated sample package matches those bytes. Local checks passed 227
+unit tests, typecheck, lint, package inspection and external-request audit,
+sample validation, 25 browser interactions, 25 preliminary release-browser
+groups, certification preflight, notices and an unchanged-input byte-identical
+rebuild. Browser checks use a mock host.
+Desktop refresh loaded 24 Contributions rows, but native layout validation,
+PBIX save and cold reopen, new screenshots and owner media approval remain
+open. These checks do not establish native acceptance of the current bytes.
+
+## Previous local candidate, 2026-11-13
 
 The `1.2.0.0` PBIVIZ is 252,053 bytes, SHA-256
 `b7d57313bf2cf6f490b1780374c3ea892915951e0b5d8fa984642932f3e91a81`.
@@ -33,7 +60,7 @@ Raw results are in `dist/release-benchmark.json`. The local CPU profile has
 ## Historical candidate, 2026-09-24
 
 All numbers and package identity below describe the earlier candidate, not
-the current local candidate above.
+the current layout-cleanup candidate above.
 
 **Recorded 2026-09-24. Local readiness checks passed; NOT Microsoft certified,
 AppSource approved, or ready for submission without the owner gates below.**

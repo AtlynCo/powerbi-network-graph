@@ -1,7 +1,7 @@
 # Atlyn Network 1.2 submission material draft
 
-**Current candidate, 2026-11-13:** `1.2.0.0`, 252,053 bytes, SHA-256
-`b7d57313bf2cf6f490b1780374c3ea892915951e0b5d8fa984642932f3e91a81`.
+**Current radial-smoothing candidate, 2026-11-13:** `1.2.0.0`, 253,404 bytes, SHA-256
+`33f3f8286176778f0c3d664ad22d930eca26a7614490a8d4499a97c3daaeaa9a`.
 The dated native and approved-media evidence below belongs to earlier bytes
 and does not approve the current candidate.
 

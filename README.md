@@ -6,7 +6,7 @@ An offline custom visual for exploring **directed relationships supplied by a Po
 
 **Approved commercial/runtime model (2026-09-10):** acquisition is through existing Atlyn storefront subscriptions; the visual runtime is intentionally ungated, including free shared-report viewing. It does not enforce paid-author status. No license keys, new signer, AAD/API integration, feature gates, WebAccess, or runtime license requests are required or authorized. The existing offline renderer is the intended runtime; licensing integration is no longer a blocker.
 
-**Release hold:** the additional Microsoft Power BI visual certification badge is **required, not yet obtained**. The coordinator recorded bounded Desktop `2.157.1354.0` sample rendering and genuine PBIX save/cold-reopen evidence; [the dated record](docs/validation/RESULTS.md#bounded-native-desktop-result-2026-09-10) preserves the first-refresh banners and exact coverage. Remaining native/submission cases, final assets, and the coordinator's final release gate are still open. Main/certification ref movement, merging, and submission remain on hold. Historical sealed bundles and their "unlicensed quality candidate" labels are preserved unchanged; that wording is not a requirement to add runtime enforcement.
+**Release hold:** the additional Microsoft Power BI visual certification badge is **required, not yet obtained**. The coordinator recorded bounded Desktop `2.157.1354.0` sample rendering and genuine PBIX save/cold-reopen evidence; [the dated record](docs/validation/RESULTS.md#bounded-native-desktop-result-2026-09-10) preserves the first-refresh banners and exact coverage. That record and previously approved listing media apply to earlier package bytes, not the current layout-cleanup candidate. Remaining native/submission cases, new media approval, and the coordinator's final release gate are still open. Main/certification ref movement, merging, and submission remain on hold. Historical sealed bundles and their "unlicensed quality candidate" labels are preserved unchanged; that wording is not a requirement to add runtime enforcement.
 
 ## Scope
 
@@ -150,6 +150,8 @@ Choose **Exploration → Layout mode → Circular ring** for a perimeter guide r
 
 Binding **Item ID** enables two-ring detail: plain entity activation focuses its outgoing items, and plain chord activation focuses items for that directed source/target pair. **All items** shows all loaded items; **Reset circle** returns to the overview. These are local drill-in actions and do not filter the report. Force-directed mode and its existing traversal/path controls remain unchanged.
 
+Rooted Radial uses smooth links where they can clear other nodes, falling back to routed detours when needed. It keeps links between distinct same-ring entities inside their ring and emphasizes a relationship on hover or keyboard focus. Dense routes may still cross; use the relationship list for details.
+
 ### Context menus and tooltips
 
 Right-click or use **Shift+F10 / the Context Menu key** on a list action. An edge with exactly one complete native identity can supply that identity to the host context menu. **Entity menus and multi-identity aggregated-edge menus are visual-level**, because the current SDK call accepts a single identity; they do not choose an arbitrary relationship to stand for the group. Context scope differs intentionally from full-identity selection scope.
@@ -166,7 +168,7 @@ Relationship tooltips use Power BI's tooltip service; the relationship list also
 - High contrast uses host theme colors. The UI provides Arabic RTL and English strings; model IDs and data labels are not translated.
 - Layout is synchronous and static, with no animation in either normal or reduced-motion environments.
 - Automatic view uses an accessible list below 180px width or 150px height, graph-only below 700px width or 320px height, and split graph/list otherwise. Controls collapse in compact tiles; the view button can switch representations. Scrolling preserves access in tiny tiles, but no dense graph is claimed readable at 80×80.
-- Labels keep a readable screen size and, by default, hide when overlapping or out of view. The caption reports how many labels are shown. Zoom/focus or use the entity list to read hidden labels; hiding a label never removes its entity or relationships.
+- Entity labels keep a readable screen size and, by default, hide when overlapping or out of view. The overview caption reports how many labels are shown. Zoom/focus or use the entity list to read hidden labels; hiding a label never removes its entity or relationships.
 
 The **Appearance** formatting card controls entity color, relationship color, label visibility, label size (8–24), and overlapping-label avoidance. **Exploration** controls the initial view (automatic/split/graph/list). High contrast can override custom colors for legibility. Validate with your actual assistive technology and report layout; structural accessibility support is not a claim of completed accessibility certification.
 
