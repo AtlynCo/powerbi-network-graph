@@ -8,11 +8,27 @@ The generated sample package matches those bytes. Local checks passed 228
 unit tests, typecheck, lint, package inspection and external-request audit,
 sample validation, 25 browser interactions, 25 preliminary release-browser
 groups, certification preflight, notices and a byte-identical unchanged-input
-rebuild. Browser checks use a mock host. The owner reported that the updated
-report looks great, but the inspected report did not establish the running
-package's identity. Native validation of these bytes, PBIX save and cold
-reopen, new screenshots and owner media approval remain open. This is not
-Microsoft certification.
+rebuild. Browser checks use a mock host. The owner reported importing this
+candidate and that the updated report looks great. Desktop displayed its new
+Circular interface, but the running package bytes were not independently
+verified.
+
+On 2026-11-14 the owner saved a genuine PBIX. The final observed file was
+335,659 bytes, SHA-256
+`a8790215d0a31dac1b960b1fe45640808c301e252d366ee7b8a654aa9e2fca55`.
+ZIP CRC checks passed and it contained a DataModel. Its embedded compiled
+visual resource was byte-identical to this candidate, while `package.json`
+was JSON-equivalent but not byte-identical. This does not satisfy the existing
+strict all-member byte-equality check. After a cold reopen without a requested
+refresh, Desktop displayed the older published visual's distinctive status
+text, not the new interface. The owner reported enabling Developer mode and
+reimporting the candidate without removing the visual, but the observed
+interface still showed the old status text. Do not treat the embedded bytes
+as proof of the runtime Desktop selected.
+
+Candidate-specific native validation, new screenshots, owner media approval,
+and the wider native host matrix remain open. This is not Microsoft
+certification.
 
 ## Previous layout-cleanup candidate, 2026-11-13
 

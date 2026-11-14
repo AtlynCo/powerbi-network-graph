@@ -3,7 +3,9 @@
 **Current radial-smoothing candidate, 2026-11-13:** `1.2.0.0`, 253,404 bytes, SHA-256
 `33f3f8286176778f0c3d664ad22d930eca26a7614490a8d4499a97c3daaeaa9a`.
 The dated native observations and approvals below apply to earlier package
-bytes and do not establish native acceptance of the current candidate.
+bytes and do not establish native acceptance of the current candidate. The
+owner-saved current PBIX and the cold-reopen runtime mismatch are recorded in
+[current candidate evidence](RESULTS-1.2.md#current-radial-smoothing-candidate-2026-11-13).
 
 **2026-09-24 to 2026-09-25. In-progress native acceptance and preparation; not a
 Microsoft certification, submission or authorization to publish.** Explicit
