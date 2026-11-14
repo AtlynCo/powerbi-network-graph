@@ -242,11 +242,20 @@ and the live ref, not an assumption from permission or this preflight.
 
 ## Partner Center account and offer boundary
 
-No verified Partner Center publisher/account ID or Network offer draft/ID
-was found in this repository's evidence. The old `atlyn-network` value is a
-proposal, not a reserved offer ID. A read-only request to the public Marketplace
-dashboard route redirected to Microsoft sign-in in the available unauthenticated
-web context. This does **not** prove that no account or draft exists elsewhere.
+**Later evidence:** The authenticated 2026-09-29
+[reviewer supplement](../marketplace/reviewer-handoff-1.2-20260929.md#account-identity-and-verification-addendum-2026-09-29)
+records publisher **Atlyn** (`atlyn`), seller ID `94898650`, partner ID
+`7123574`, and the existing Network offer alias `atlyn-network`, resource
+`209c9cb9-96b2-4628-bba7-5b4f6d2a75ed`. It also records rejected overall
+verification and failed employment verification pending partner action at
+that time. These are historical observations; current account, offer and
+verification status still require an authenticated readback.
+
+The following paragraphs and remaining gates are the earlier 2026-09-25
+snapshot and are superseded where later evidence exists. No verified Partner
+Center publisher/account ID or Network offer draft/ID had been found at that
+time. A read-only request to the public Marketplace dashboard route redirected
+to Microsoft sign-in in the available unauthenticated web context.
 GitHub admin access, reviewer read access and Power BI Desktop sign-in are not
 Marketplace enrollment evidence.
 
