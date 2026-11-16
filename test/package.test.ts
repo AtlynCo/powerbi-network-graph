@@ -25,7 +25,7 @@ describe("offline sample package contract", () => {
         expect(createHash("sha256").update(archive).digest("hex")).toBe(validation.archive.embeddedSha256);
         const zip = await JSZip.loadAsync(archive, { checkCRC32: true });
         const manifest = JSON.parse(await zip.file("package.json")!.async("string")) as { version: string };
-        expect(manifest.version).toBe("1.2.0.0");
+        expect(manifest.version).toBe("1.2.1.0");
         expect(validation.model).toMatchObject({ tables: 12, measures: 21, relationships: 9, pages: 5, boundGraphVisuals: 4 });
     });
 });

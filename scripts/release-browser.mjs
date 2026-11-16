@@ -107,6 +107,63 @@ try {
         assert.equal(process.env.RELEASE_FINAL_READY_SHA, artifact.sha256, "Final screenshots require parent's final package-ready SHA in RELEASE_FINAL_READY_SHA");
         assert(!preliminary, "Final and preliminary evidence cannot be combined");
     }
+    await check("nine-entity layouts keep relationships, readable labels and omitted-ID diagnostics", async () => {
+        const nodes = ["Alex", "Blair", "Casey", "Devon", "Ellis", "Frankie", "Gray", "Harper", "Indigo"];
+        const pairs = [
+            ...nodes.slice(1).map(target => [nodes[0], target]),
+            ["Blair", "Casey"], ["Casey", "Blair"], ["Blair", "Casey"], ["Casey", "Devon"],
+            ["Devon", "Ellis"], ["Ellis", "Frankie"], ["Frankie", "Gray"], ["Gray", "Harper"],
+            ["Harper", "Indigo"], ["Indigo", "Blair"], ["Blair", "Frankie"], ["Casey", "Harper"],
+            ["Devon", "Indigo"]
+        ];
+        const rows = [
+            ...pairs.map(([source, target], index) => ({
+                source, target, edgeId: `E${index}`, itemId: `I${index}`,
+                type: index % 2 ? "Comment" : "Review", weight: index % 5 + 1
+            })),
+            { source: "Alex", target: null, edgeId: "invalid-1" },
+            { source: null, target: "Alex", edgeId: "invalid-2" }
+        ];
+        for (const [layout, width, height] of [
+            ["circular", 1062, 520], ["radial", 1050, 644],
+            ["circular", 398, 298], ["radial", 398, 298]
+        ]) {
+            await mount({ width, height });
+            await update(rows, { edgeIds: true, itemIds: true, objects: { exploration: { layout, view: "graph" } } });
+            const snapshot = await geometrySnapshot(`${layout}-${width}x${height}-synthetic`);
+            assert.equal(snapshot.paths, 21);
+            assert.equal(snapshot.distinctPaths, 21);
+            assert(snapshot.finite);
+            assert.deepEqual(snapshot.outside, []);
+            assert.deepEqual(snapshot.overlaps, []);
+            assert.deepEqual(snapshot.hiddenPaths, []);
+            assert.match(await page.locator(".network-status").innerText(), /invalid or missing IDs: 2/);
+            assert.equal(await page.locator(".network-node").count(), 9);
+            if (layout === "circular") {
+                const labels = await page.locator(".network-perimeter-label:visible").evaluateAll(items =>
+                    items.map(item => item.getBoundingClientRect().height));
+                assert(labels.length > 0 && labels.every(height => height >= 10), "Circular labels must remain readable after fit");
+            } else {
+                const edge = page.locator(".network-edge").first();
+                assert.equal(await edge.getAttribute("role"), "button");
+                await edge.focus();
+                assert.match(await edge.getAttribute("class"), /emphasized/);
+                await edge.press("Enter");
+                assert.equal((await calls()).select.length, 1);
+                assert.match(await edge.locator(".edge-line").getAttribute("marker-end"), /^url\(#/);
+            }
+        }
+        await mount({ width: 398, height: 298 });
+        const exploration = { layout: "circular", view: "graph" };
+        await update(rows, { edgeIds: true, itemIds: true, objects: { exploration } });
+        const guarded = await page.locator(".network-perimeter-label:visible").count();
+        await update(rows, {
+            edgeIds: true, itemIds: true,
+            objects: { exploration, appearance: { avoidLabelOverlap: false } }
+        });
+        assert((await page.locator(".network-perimeter-label:visible").count()) > guarded,
+            "Disabling overlap avoidance should allow colliding labels when they fit in the viewport");
+    });
     await check("authored Contributions sample renders Circular and Arabic two-ring detail", async () => {
         assert.equal(samples.domains.Contributions.length, 24);
         assert.equal(samples.domains.Contributions.filter(row => row.target === null).length, 2);

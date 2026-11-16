@@ -47,7 +47,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Filter source or type. Select a relationship to inspect shared items. Blank targets represent external owners. Circle position does not imply importance.",
+                    "value": "Filter source or type. Select a relationship to inspect shared items. Blank targets represent external owners.",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "10pt"

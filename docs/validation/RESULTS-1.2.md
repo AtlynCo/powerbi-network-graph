@@ -1,6 +1,69 @@
 # Atlyn Network 1.2 local candidate evidence
 
-## Current local candidate, 2026-11-13
+## Current 1.2.1.0 update candidate, 2026-11-16
+
+Partner Center shows `1.2.0.0` published on 2026-10-18 (Live and Preview
+versions are the same), so this update uses `1.2.1.0`. Source behavior is
+unchanged from the radial-smoothing candidate below; only the version,
+generated notices and sample package changed.
+
+The `1.2.1.0` PBIVIZ is 253,403 bytes, SHA-256
+`8ad4dddefb14ccf27ea4de15d3775693b20fba0ce2c0bef239059ef88d81f241`.
+A repeat package run reproduced the same bytes and the generated sample
+package matches them. Local checks passed 228 unit tests, typecheck, lint,
+ESLint, sample validation (33 files, 4 bound graphs), certification preflight
+and 25 browser checks with zero runtime requests. Browser checks use a mock
+host. The superseded `1.2.0.0` candidate (`33f3f828…`) is archived outside
+the repository.
+
+A sample PBIX embedding `1.2.1.0`, native Desktop validation, new listing
+media and owner media approval remain open. This is not Microsoft
+certification.
+
+## Radial-smoothing candidate, 2026-11-13
+
+The `1.2.0.0` PBIVIZ is 253,404 bytes, SHA-256
+`33f3f8286176778f0c3d664ad22d930eca26a7614490a8d4499a97c3daaeaa9a`.
+The generated sample package matches those bytes. Local checks passed 228
+unit tests, typecheck, lint, package inspection and external-request audit,
+sample validation, 25 browser interactions, 25 preliminary release-browser
+groups, certification preflight, notices and a byte-identical unchanged-input
+rebuild. Browser checks use a mock host. The owner reported importing this
+candidate and that the updated report looks great. Desktop displayed its new
+Circular interface, but the running package bytes were not independently
+verified.
+
+On 2026-11-14 the owner saved a genuine PBIX. The final observed file was
+335,659 bytes, SHA-256
+`a8790215d0a31dac1b960b1fe45640808c301e252d366ee7b8a654aa9e2fca55`.
+ZIP CRC checks passed and it contained a DataModel. Its embedded compiled
+visual resource was byte-identical to this candidate, while `package.json`
+was JSON-equivalent but not byte-identical. This does not satisfy the existing
+strict all-member byte-equality check. After a cold reopen without a requested
+refresh, Desktop displayed the older published visual's distinctive status
+text, not the new interface. The owner reported enabling Developer mode and
+reimporting the candidate without removing the visual, but the observed
+interface still showed the old status text. Do not treat the embedded bytes
+as proof of the runtime Desktop selected.
+
+Candidate-specific native validation, new screenshots, owner media approval,
+and the wider native host matrix remain open. This is not Microsoft
+certification.
+
+## Previous layout-cleanup candidate, 2026-11-13
+
+The `1.2.0.0` PBIVIZ is 252,598 bytes, SHA-256
+`5b18f5c32c689fad6a8e666a91c4db7fb12d134993ef27c2f056e5ff0c1dd03f`.
+The generated sample package matches those bytes. Local checks passed 227
+unit tests, typecheck, lint, package inspection and external-request audit,
+sample validation, 25 browser interactions, 25 preliminary release-browser
+groups, certification preflight, notices and an unchanged-input byte-identical
+rebuild. Browser checks use a mock host.
+Desktop refresh loaded 24 Contributions rows, but native layout validation,
+PBIX save and cold reopen, new screenshots and owner media approval remain
+open. These checks do not establish native acceptance of the current bytes.
+
+## Previous local candidate, 2026-11-13
 
 The `1.2.0.0` PBIVIZ is 252,053 bytes, SHA-256
 `b7d57313bf2cf6f490b1780374c3ea892915951e0b5d8fa984642932f3e91a81`.
@@ -33,7 +96,7 @@ Raw results are in `dist/release-benchmark.json`. The local CPU profile has
 ## Historical candidate, 2026-09-24
 
 All numbers and package identity below describe the earlier candidate, not
-the current local candidate above.
+the current layout-cleanup candidate above.
 
 **Recorded 2026-09-24. Local readiness checks passed; NOT Microsoft certified,
 AppSource approved, or ready for submission without the owner gates below.**

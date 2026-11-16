@@ -34,7 +34,7 @@ foreach ($name in $captions.Keys) {
         $graphics.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::AntiAliasGridFit
         $graphics.FillRectangle($banner,0,0,1366,44)
         $graphics.DrawString($captions[$name],$font,$text,[System.Drawing.PointF]::new(8,4))
-        $graphics.DrawString('Actual Power BI Desktop 2.157.1354.0 | Atlyn Network 1.2.0.0 | Synthetic sample | Native render evidence, not Microsoft certification',$font,$text,[System.Drawing.PointF]::new(8,23))
+        $graphics.DrawString('Actual Power BI Desktop 2.157.1354.0 | Atlyn Network 1.2.1.0 | Synthetic sample | Native render evidence, not Microsoft certification',$font,$text,[System.Drawing.PointF]::new(8,23))
         $scale = [Math]::Min(1366.0/$image.Width,724.0/$image.Height)
         $width = [single]($image.Width*$scale)
         $height = [single]($image.Height*$scale)

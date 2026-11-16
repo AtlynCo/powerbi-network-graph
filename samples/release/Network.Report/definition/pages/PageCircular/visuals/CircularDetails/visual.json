@@ -3,11 +3,11 @@
   "name": "CircularDetails",
   "position": {
     "x": 280,
-    "y": 560,
+    "y": 628,
     "width": 1062,
-    "height": 184,
-    "z": 5880,
-    "tabOrder": 5880
+    "height": 116,
+    "z": 6560,
+    "tabOrder": 6560
   },
   "visual": {
     "visualType": "tableEx",

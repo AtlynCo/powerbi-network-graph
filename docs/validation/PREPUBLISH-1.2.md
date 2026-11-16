@@ -1,9 +1,11 @@
 # Atlyn Network 1.2 prepublication evidence
 
-**Current candidate, 2026-11-13:** `1.2.0.0`, 252,053 bytes, SHA-256
-`b7d57313bf2cf6f490b1780374c3ea892915951e0b5d8fa984642932f3e91a81`.
+**Current radial-smoothing candidate, 2026-11-13:** `1.2.0.0`, 253,404 bytes, SHA-256
+`33f3f8286176778f0c3d664ad22d930eca26a7614490a8d4499a97c3daaeaa9a`.
 The dated native observations and approvals below apply to earlier package
-bytes and do not establish native acceptance of the current candidate.
+bytes and do not establish native acceptance of the current candidate. The
+owner-saved current PBIX and the cold-reopen runtime mismatch are recorded in
+[current candidate evidence](RESULTS-1.2.md#current-radial-smoothing-candidate-2026-11-13).
 
 **2026-09-24 to 2026-09-25. In-progress native acceptance and preparation; not a
 Microsoft certification, submission or authorization to publish.** Explicit
@@ -240,11 +242,20 @@ and the live ref, not an assumption from permission or this preflight.
 
 ## Partner Center account and offer boundary
 
-No verified Partner Center publisher/account ID or Network offer draft/ID
-was found in this repository's evidence. The old `atlyn-network` value is a
-proposal, not a reserved offer ID. A read-only request to the public Marketplace
-dashboard route redirected to Microsoft sign-in in the available unauthenticated
-web context. This does **not** prove that no account or draft exists elsewhere.
+**Later evidence:** The authenticated 2026-09-29
+[reviewer supplement](../marketplace/reviewer-handoff-1.2-20260929.md#account-identity-and-verification-addendum-2026-09-29)
+records publisher **Atlyn** (`atlyn`), seller ID `94898650`, partner ID
+`7123574`, and the existing Network offer alias `atlyn-network`, resource
+`209c9cb9-96b2-4628-bba7-5b4f6d2a75ed`. It also records rejected overall
+verification and failed employment verification pending partner action at
+that time. These are historical observations; current account, offer and
+verification status still require an authenticated readback.
+
+The following paragraphs and remaining gates are the earlier 2026-09-25
+snapshot and are superseded where later evidence exists. No verified Partner
+Center publisher/account ID or Network offer draft/ID had been found at that
+time. A read-only request to the public Marketplace dashboard route redirected
+to Microsoft sign-in in the available unauthenticated web context.
 GitHub admin access, reviewer read access and Power BI Desktop sign-in are not
 Marketplace enrollment evidence.
 

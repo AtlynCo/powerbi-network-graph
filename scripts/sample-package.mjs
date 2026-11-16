@@ -239,7 +239,7 @@ async function author() {
     }
     pages.push("PageCircular");
     const circularRoot = path.join(reportRoot, "definition", "pages", "PageCircular");
-    const circularGraph = visual("CircularGraph", guid, 280, 100, 1062, 444, {
+    const circularGraph = visual("CircularGraph", guid, 280, 100, 1062, 520, {
         source: role(projection("Contributions", "SourceID")),
         target: role(projection("Contributions", "TargetID")),
         relationshipType: role(projection("Contributions", "RelationshipType")),
@@ -251,7 +251,7 @@ async function author() {
         exploration: [{ properties: { layout: literal("circular"), view: literal("graph"), groupBlankTargets: literal(true) } }],
         appearance: [{ properties: { colorMode: literal("source"), roleRings: literal(true) } }]
     };
-    const circularTable = visual("CircularDetails", "tableEx", 280, 560, 1062, 184, {
+    const circularTable = visual("CircularDetails", "tableEx", 280, 628, 1062, 116, {
         Values: role(...["SourceID", "TargetID", "RelationshipType", "ItemID"].map(name => projection("Contributions", name)),
             ...["Total Weight", "Events", "Input Rows", "Average Duration ms"].map(name => projection("Contributions", name, true)))
     }, "Contribution details");
@@ -275,12 +275,12 @@ async function author() {
     for (const item of [
         textBox("CircularHeading", "3. Circular contributions and Item ID", 24, 16, 1290, 64, "24pt"),
         circularType, circularSource,
-        textBox("CircularGuide", "Filter source or type. Select a relationship to inspect shared items. Blank targets represent external owners. Circle position does not imply importance.", 24, 492, 240, 252, "10pt"),
+        textBox("CircularGuide", "Filter source or type. Select a relationship to inspect shared items. Blank targets represent external owners.", 24, 492, 240, 252, "10pt"),
         circularGraph, circularTable
     ]) await put(path.join(circularRoot, "visuals", item.name, "visual.json"), item);
     pages.push("PageRadial");
     const radialRoot = path.join(reportRoot, "definition", "pages", "PageRadial");
-    const radialGraph = visual("RadialGraph", guid, 24, 100, 960, 644, {
+    const radialGraph = visual("RadialGraph", guid, 24, 100, 1050, 644, {
         source: role(projection("Services", "SourceID")),
         target: role(projection("Services", "TargetID")),
         relationshipType: role(projection("Services", "RelationshipType")),
@@ -288,7 +288,7 @@ async function author() {
         weight: role(projection("Services", "Total Weight", true)),
         tooltips: role(projection("Services", "Average Duration ms", true), projection("Services", "Events", true), projection("Services", "Input Rows", true))
     }, "Rooted Radial: directed service relationships");
-    radialGraph.visual.objects = { exploration: [{ properties: { view: literal("split"), layout: literal("radial") } }] };
+    radialGraph.visual.objects = { exploration: [{ properties: { view: literal("graph"), layout: literal("radial") } }] };
     await put(path.join(radialRoot, "page.json"), {
         $schema: schemas.page, name: "PageRadial", displayName: "4. Radial relationships",
         displayOption: "FitToPage", width: 1366, height: 768
@@ -297,11 +297,10 @@ async function author() {
         textBox("RadialHeading", "4. Radial relationships", 24, 16, 1290, 64, "24pt"), radialGraph,
         textBox("RadialGuide", [
             "LOADED UNDIRECTED HOP RINGS",
-            "Automatic center is Orders: largest component, most distinct non-self neighbors, then stable ID. This is a layout convenience, not centrality or business importance.",
-            "Use the Radial center selector or Use as radial center in the entity list. This does not change local focus, weights, report filters or selection.",
-            "Each ring is minimum undirected hop distance over loaded relationships. Arrows retain their direction. Disconnected components are packed separately.",
-            "A filtered-out requested center uses an automatic fallback. Save local view explicitly to retain the center."
-        ].join("\n\n"), 1008, 100, 334, 644, "11pt")
+            "Rings show minimum undirected hops in loaded relationships. Arrows retain their direction. Disconnected components have separate centers.",
+            "Choose a center in the toolbar or open Graph and list to use an entity as the center. Save local view to retain it.",
+            "The automatic center is a layout convenience, not a measure of importance."
+        ].join("\n\n"), 1090, 100, 252, 644, "11pt")
     ]) await put(path.join(radialRoot, "visuals", item.name, "visual.json"), item);
     pages.push("PageHints");
     await put(path.join(reportRoot, "definition", "pages", "PageHints", "page.json"), {

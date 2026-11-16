@@ -1,6 +1,6 @@
 # Marketplace and certification preparation
 
-**Research checked: 2026-09-09. Release target: 1.2.0.0. Status: preparation, not submission or certification.** Prior dated native results below concern earlier package bytes, not the current 252,053-byte candidate. See [current local evidence](../validation/RESULTS-1.2.md).
+**Research checked: 2026-09-09. Release target: 1.2.0.0. Status: preparation, not submission or certification.** Prior dated native results below concern earlier package bytes, not the current 253,404-byte radial-smoothing candidate. See [current local evidence](../validation/RESULTS-1.2.md).
 
 **Owner-approved pattern (2026-09-10):** external storefront subscriptions govern acquisition; visuals run ungated, with free shared viewing and no paid-author enforcement. The existing offline renderer is intended, following the coordinator's assessment of existing Distribution/Scatter source. No keys, new signer, AAD/API integration, feature gates or runtime requests are to be added. Runtime licensing is no longer a blocker.
 
