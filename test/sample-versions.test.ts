@@ -8,8 +8,8 @@ describe("independent PBIR artifact and report-definition versions", () => {
         const visual = JSON.parse(readFileSync("pbiviz.json", "utf8"));
         const metadata = JSON.parse(readFileSync("package.json", "utf8"));
         const lock = JSON.parse(readFileSync("package-lock.json", "utf8"));
-        expect(visual.visual.version).toBe("1.2.0.0");
-        expect(metadata.version).toBe("1.2.0");
+        expect(visual.visual.version).toBe("1.2.1.0");
+        expect(metadata.version).toBe("1.2.1");
         expect(lock.version).toBe(metadata.version);
         expect(lock.packages[""].version).toBe(metadata.version);
     });

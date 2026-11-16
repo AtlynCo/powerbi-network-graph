@@ -5,7 +5,7 @@
 - Publisher: Atlyn; private `AtlynCo/powerbi-network-graph` repository.
 - Visual: Atlyn Network.
 - Stable GUID: `AtlynNetworkAB24C68297094C32AF64D50D92C01711`.
-- Visual version: `1.2.0.0`; npm version: `1.2.0`.
+- Visual version: `1.2.1.0`; npm version: `1.2.1`. `1.2.0.0` was published on 2026-10-18, so this update must use a higher version.
 - Intended artifact: the audited `.pbiviz` package, not source renamed as `.pbix`.
 - Certification-oriented engineering **does not mean Microsoft certified**.
 
@@ -39,7 +39,7 @@ No publication, AppSource submission, public GitHub release, screenshot upload, 
 Example hash command after packaging:
 
 ```powershell
-Get-FileHash -Algorithm SHA256 .\dist\AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.2.0.0.pbiviz
+Get-FileHash -Algorithm SHA256 .\dist\AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.2.1.0.pbiviz
 ```
 
 Do not silently convert a warning into a passing gate. Keep verification artifacts private and exclude report/customer data and credentials.

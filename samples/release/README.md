@@ -1,6 +1,6 @@
 # Atlyn Network authored offline sample
 
-**Target:** `1.2.0.0`, GUID `AtlynNetworkAB24C68297094C32AF64D50D92C01711`, API `5.11.0`.
+**Target:** `1.2.1.0`, GUID `AtlynNetworkAB24C68297094C32AF64D50D92C01711`, API `5.11.0`.
 **Evidence status:** local PBIR/schema checks and Microsoft TOM deserialization and model validation passed. The 1.2 source has not been opened, refreshed, or converted to PBIX in Desktop.
 
 This source project has five pages: Services, Accounts, Circular contributions, Rooted Radial, and hints. Four graphs reference the embedded private custom visual. The Circular page pairs source/type slicers and a detail table with Item ID two-ring exploration. Twelve semantic-model tables, twenty-one DAX measures and nine single-direction relationships are authored. All data partitions use literal `#table` expressions; they read no CSV, workbook, URL, database or sibling directory.

@@ -2,7 +2,7 @@
 
 An offline custom visual for exploring **directed relationships supplied by a Power BI report**. Display cycles, reciprocal links, parallel relationships, and self-links without forcing the data into a tree. Explore the loaded graph with local search, neighborhood and directional traversal, or use accessible entity and relationship lists.
 
-**Status:** private Atlyn release candidate; version `1.2.0.0`. Certification-oriented, **not Microsoft certified**. Packaging and browser checks are not evidence of native Desktop, service, or export compatibility. See the [release gates](docs/RELEASE.md) before distribution.
+**Status:** private Atlyn release candidate; version `1.2.1.0`. Certification-oriented, **not Microsoft certified**. Packaging and browser checks are not evidence of native Desktop, service, or export compatibility. See the [release gates](docs/RELEASE.md) before distribution.
 
 **Approved commercial/runtime model (2026-09-10):** acquisition is through existing Atlyn storefront subscriptions; the visual runtime is intentionally ungated, including free shared-report viewing. It does not enforce paid-author status. No license keys, new signer, AAD/API integration, feature gates, WebAccess, or runtime license requests are required or authorized. The existing offline renderer is the intended runtime; licensing integration is no longer a blocker.
 

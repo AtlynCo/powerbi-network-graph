@@ -1,6 +1,26 @@
 # Atlyn Network 1.2 local candidate evidence
 
-## Current radial-smoothing candidate, 2026-11-13
+## Current 1.2.1.0 update candidate, 2026-11-16
+
+Partner Center shows `1.2.0.0` published on 2026-10-18 (Live and Preview
+versions are the same), so this update uses `1.2.1.0`. Source behavior is
+unchanged from the radial-smoothing candidate below; only the version,
+generated notices and sample package changed.
+
+The `1.2.1.0` PBIVIZ is 253,403 bytes, SHA-256
+`8ad4dddefb14ccf27ea4de15d3775693b20fba0ce2c0bef239059ef88d81f241`.
+A repeat package run reproduced the same bytes and the generated sample
+package matches them. Local checks passed 228 unit tests, typecheck, lint,
+ESLint, sample validation (33 files, 4 bound graphs), certification preflight
+and 25 browser checks with zero runtime requests. Browser checks use a mock
+host. The superseded `1.2.0.0` candidate (`33f3f828…`) is archived outside
+the repository.
+
+A sample PBIX embedding `1.2.1.0`, native Desktop validation, new listing
+media and owner media approval remain open. This is not Microsoft
+certification.
+
+## Radial-smoothing candidate, 2026-11-13
 
 The `1.2.0.0` PBIVIZ is 253,404 bytes, SHA-256
 `33f3f8286176778f0c3d664ad22d930eca26a7614490a8d4499a97c3daaeaa9a`.

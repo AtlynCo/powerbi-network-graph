@@ -3,30 +3,30 @@
   "assemblerSha256": "e6d94df3ccaccd224f3684202081608bac237643e634def3b7eb4758304bb259",
   "visual": {
     "guid": "AtlynNetworkAB24C68297094C32AF64D50D92C01711",
-    "version": "1.2.0.0",
+    "version": "1.2.1.0",
     "apiVersion": "5.11.0"
   },
   "archive": {
-    "source": "dist/AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.2.0.0.pbiviz",
-    "embeddedCopy": "package/AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.2.0.0.pbiviz",
-    "bytes": 253404,
-    "sourceSha256": "33f3f8286176778f0c3d664ad22d930eca26a7614490a8d4499a97c3daaeaa9a",
-    "embeddedSha256": "33f3f8286176778f0c3d664ad22d930eca26a7614490a8d4499a97c3daaeaa9a",
+    "source": "dist/AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.2.1.0.pbiviz",
+    "embeddedCopy": "package/AtlynNetworkAB24C68297094C32AF64D50D92C01711.1.2.1.0.pbiviz",
+    "bytes": 253403,
+    "sourceSha256": "8ad4dddefb14ccf27ea4de15d3775693b20fba0ce2c0bef239059ef88d81f241",
+    "embeddedSha256": "8ad4dddefb14ccf27ea4de15d3775693b20fba0ce2c0bef239059ef88d81f241",
     "equal": true
   },
   "resources": [
     {
       "path": "package.json",
       "bytes": 758,
-      "sourceSha256": "1976a579eff3daa6da540ee1f36a342545205d61ffd9b80f3d5c937ea3c8f0a7",
-      "embeddedSha256": "1976a579eff3daa6da540ee1f36a342545205d61ffd9b80f3d5c937ea3c8f0a7",
+      "sourceSha256": "f3ac25df4adec3b2b9f9deaa0632bbed1c9c66838294fc5fa05d0fb7f91c7479",
+      "embeddedSha256": "f3ac25df4adec3b2b9f9deaa0632bbed1c9c66838294fc5fa05d0fb7f91c7479",
       "equal": true
     },
     {
       "path": "resources/AtlynNetworkAB24C68297094C32AF64D50D92C01711.pbiviz.json",
       "bytes": 1821759,
-      "sourceSha256": "ba55b67abecc97c755fa7012baba56560ae0a34003787258f1241b0fa81c6e02",
-      "embeddedSha256": "ba55b67abecc97c755fa7012baba56560ae0a34003787258f1241b0fa81c6e02",
+      "sourceSha256": "4296d4a2959f5e5293c9792140f1308f57fffb10799ccb3581555346448a3758",
+      "embeddedSha256": "4296d4a2959f5e5293c9792140f1308f57fffb10799ccb3581555346448a3758",
       "equal": true
     }
   ],
